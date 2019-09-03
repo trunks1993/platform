@@ -1,0 +1,53 @@
+$mainColor: #05254b;
+$tableBorder: 1px solid rgba(2, 67, 157, 0.2);
+
+// checkbox样式
+.el-checkbox {
+  .el-checkbox__input {
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: 0;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    background-color: $mainColor;
+    -webkit-appearance: none;
+    border: 1px solid #0284a1;
+    border-radius: 2px;
+    outline: none;
+    &:checked {
+      background: url("../assets/icon.png") no-repeat;
+      background-position: -57px -301px;
+      background-color: $mainColor;
+    }
+  }
+}
+
+// 表格样式
+.el-table {
+  font-size: 14px;
+  border: $tableBorder;
+  text-align: center;
+  tr {
+    height: 50px;
+    td {
+      color: #FFFFFF;
+      border-left: $tableBorder;
+      border-top: $tableBorder;
+      &:first-child {
+        border-left: none;
+      }
+    }
+    th {
+      color: #4baefd;
+      &:not(:first-child) {
+        border-left: $tableBorder;
+      }
+    }
+  }
+}
