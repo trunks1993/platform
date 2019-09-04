@@ -42,6 +42,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 <script>
@@ -57,6 +58,7 @@ export default {
         } else {
           callback();
         }
+
     };
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
