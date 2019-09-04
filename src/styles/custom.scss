@@ -36,7 +36,7 @@ $tableBorder: 1px solid rgba(2, 67, 157, 0.2);
   tr {
     height: 50px;
     td {
-      color: #FFFFFF;
+      color: #ffffff;
       border-left: $tableBorder;
       border-top: $tableBorder;
       &:first-child {
@@ -50,4 +50,11 @@ $tableBorder: 1px solid rgba(2, 67, 157, 0.2);
       }
     }
   }
+}
+
+.el-select-dropdown {
+  // background: red;
+  background: url('../assets/images/optionBorder.png') no-repeat;
+  background-size:100% 100%;
+  border: none!important;
 }
