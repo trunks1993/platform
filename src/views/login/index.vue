@@ -111,15 +111,15 @@ export default {
 	 background: url(../../assets/login-Bg.png);
 	 background-size: 100% 100%;
     .login{
-	   width:566px;
-	   height:690px;
-	   text-align: center;
-	   position: absolute;
-     left: 0;
-	   top: 0;
-	   right: 0;
-     bottom: 0;
-	   margin: auto;
+      width:566px;
+      height:690px;
+      text-align: center;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
      .login-header{
         h3{
           text-align: center;
@@ -168,7 +168,7 @@ export default {
         border: none !important;
         height: 50px;
         position: relative;
-        padding-left: 70px;
+        padding-left: 50px;
         color: #5AC1FF;
         // margin-top: 40px;
       }
@@ -200,6 +200,12 @@ export default {
           left: 5%;
           top: 28%;
           z-index: 999;
+      }
+      .login-input /deep/ .el-form-item__error{
+        color: red;
+        font-size: 14px;
+        text-align: left;
+        text-indent: 5px;
       }
     }
    }
