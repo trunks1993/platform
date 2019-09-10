@@ -18,7 +18,7 @@ export const login = (username, password) => request({
   },
 });
 
-export const loginii = (username, password) => request({
+export const getUserInfo = (username, password) => request({
   url: '/user/login',
   method: 'post',
   params: {

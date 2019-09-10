@@ -32,5 +32,12 @@ export default {
         });
       });
     },
+    GetUserInfo({ commit }){
+      return new Promise((resolve, reject) => {
+        getUserInfo(getToken()).then((res) => {
+        
+        })
+      })
+    },
   },
 };

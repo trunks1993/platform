@@ -46,7 +46,7 @@
   </div>
 </template>
 <script>
-import { login } from '@/api/app'
+// import { login } from '@/api/app'
 export default {
 	name: 'login',
 	data() {
@@ -91,15 +91,17 @@ export default {
       let self = this;
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-            self.doLogin();
+            // self.doLogin();
 			  } else {
 				   return false;
 			  }
 			});
     },
     doLogin(){
-       let self = this;
-       console.log(login(this.ruleForm.username,this.ruleForm.password))
+       this.$store.dispatch('Login',{'username':'admin', 'password':'hz1505'}).then(res => {
+         console.log(res);
+       })
+      //  console.log(login(this.ruleForm.username,this.ruleForm.password))
     }
 	}
 };
@@ -208,9 +210,7 @@ export default {
         text-indent: 5px;
       }
     }
-   }
-
+  }
  }
- 
  
 </style>

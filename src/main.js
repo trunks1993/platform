@@ -7,6 +7,7 @@ import router from './router';
 import store from './store';
 import './permission'; // 权限
 import './styles/index.scss'; // global css
+import '../src/mock/index';
 
 Vue.use(ElementUI);
 console.log('process.env.BASE_API', process.env);
@@ -17,3 +18,4 @@ new Vue({
   store,
   render: h => h(App),
 }).$mount('#app');
+

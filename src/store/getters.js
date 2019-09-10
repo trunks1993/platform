@@ -1,7 +1,7 @@
 export default {
   // sidebar: state => state.app.sidebar,
 //   token: state => state.user.token,
-//   userInfo: state => state.user.userInfo,
+  userInfo: state => state.user.userInfo,
 //   messageList: state => state.user.messageList,
 //   routers: state => state.menu.routers,
   // visitedViews: state => state.app.visitedViews, //标签
