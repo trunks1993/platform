@@ -17,12 +17,21 @@ export const login = (username, password) => request({
     password,
   },
 });
-
-export const loginii = (username, password) => request({
-  url: '/user/login',
+// 获取用户菜单
+export const getSidebar = (token, userId) => request({
+  url: '/v1/menu/list',
   method: 'post',
   params: {
-    username,
-    password,
+    token,
+    userId,
+  },
+});
+// 获取用户权限
+export const getUserInfo = (token, userId) => request({
+  url: '/v1/menu/list',
+  method: 'post',
+  params: {
+    token,
+    userId,
   },
 });

@@ -99,7 +99,11 @@ export default {
     },
     doLogin(){
        let self = this;
-       console.log(login(this.ruleForm.username,this.ruleForm.password))
+      //  this.$router.push('/home')
+       this.$store.dispatch('Login',{'username':'admin', 'password':'hz1505'}).then(res => {
+         console.log(res);
+
+       })
     }
 	}
 };
