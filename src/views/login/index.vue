@@ -87,18 +87,17 @@ export default {
 		login(ruleForm) {
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-            self.doLogin();
+            this.$store.dispatch('Login',{'username':'admin', 'password':'hz1505'}).then(res => {
+              console.log(res);
+              if(res.code == 0 && res.msg == 'success'){
+                this.$router.push({path:'/home'})
+              }
+            })
 			  } else {
 				   return false;
 			  }
 			});
     },
-    doLogin(){
-       this.$store.dispatch('Login',{'username':'admin', 'password':'hz1505'}).then(res => {
-         console.log(res);
-       })
-
-    }
 	}
 };
 </script>
