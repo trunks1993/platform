@@ -62,12 +62,12 @@ export default {
                border-radius: 5px;
                padding:14px 19px;
                .sidebar {
-                   width:273px;
+                   width:259px;
                    height:100%;
                    float:left;
                }
                .appmain {
-                   width:calc(100% - 293px);
+                   width:calc(100% - 279px);
                    height:100%;
                    float:right;
                }

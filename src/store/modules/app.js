@@ -44,7 +44,7 @@ export default {
     return new Promise((resolve) => {
       getUserInfo(getToken()).then((res) => {
         commit('SET_USERINFO', res.data.data);
-        resolve(true);
+        resolve(res.data.data);
       });
     });
   },
