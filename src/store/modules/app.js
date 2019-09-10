@@ -5,7 +5,7 @@ import { login } from '@/api/app';
 
 export default {
   state: {
-    user: {},
+    userInfo: {},
     routers: [],
     token: getToken(),
   },

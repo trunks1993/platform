@@ -46,7 +46,6 @@
   </div>
 </template>
 <script>
-import { login } from '@/api/app'
 export default {
 	name: 'login',
 	data() {
@@ -70,11 +69,9 @@ export default {
         }
     };
 		return {
-			isCode: false,
 			ruleForm: {
-				username: '',
-				password: '',
-				code: '',
+				username: 'admin',
+				password: 'hz1505'
 			},
 			rules: {
 				  username: [
@@ -88,18 +85,13 @@ export default {
 	},
 	methods: {
 		login(ruleForm) {
-      let self = this;
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-            self.doLogin();
-			  } else {
-				   return false;
+            this.$store.dispatch('Login', {username: 'admin', password: 'hz1505'}).then(res => {
+              this.$route.push('/')
+            })
 			  }
 			});
-    },
-    doLogin(){
-       let self = this;
-       console.log(login(this.ruleForm.username,this.ruleForm.password))
     }
 	}
 };
