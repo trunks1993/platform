@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/newline-after-import
 import { getToken, setToken } from '@/utils/auth';
 // eslint-disable-next-line import/no-cycle
-import { login } from '@/api/app';
+import { login, getUserInfo, getSidebar } from '@/api/app';
 
 export default {
   state: {
@@ -13,6 +13,12 @@ export default {
     SET_TOKEN: (state, token) => {
       // eslint-disable-next-line semi
       state.token = token
+    },
+    SET_USERINFO: (state, userInfo) => {
+      state.userInfo = userInfo;
+    },
+    SET_SIDEBAR: (state, sideBar) => {
+      state.sideBar = sideBar;
     },
   },
   actions: {
@@ -32,5 +38,23 @@ export default {
         });
       });
     },
+  },
+  // 获取用户信息
+  GetUserInfo({ commit }) {
+    return new Promise((resolve) => {
+      getUserInfo(getToken()).then((res) => {
+        commit('SET_USERINFO', res.data.data);
+        resolve(true);
+      });
+    });
+  },
+  // 获取用户菜单
+  GetSidebar({ commit }, token, userId) {
+    return new Promise((resolve) => {
+      getSidebar(token, userId).then((res) => {
+        commit('SET_SIDEBAR', res.data.data);
+        resolve(res.data.data);
+      });
+    });
   },
 };

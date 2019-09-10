@@ -92,6 +92,14 @@ export default {
             })
 			  }
 			});
+    },
+    doLogin(){
+       let self = this;
+      //  this.$router.push('/home')
+       this.$store.dispatch('Login',{'username':'admin', 'password':'hz1505'}).then(res => {
+         console.log(res);
+
+       })
     }
 	}
 };

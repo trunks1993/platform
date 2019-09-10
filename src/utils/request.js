@@ -5,7 +5,7 @@ import { getToken } from '@/utils/auth';
 const baseURL = process.env.NODE_ENV === 'production' ? 'http:/192.168.0.1' : 'http:/192.168.0.2'
 // 创建axios实例
 const service = axios.create({
-  // baseURL: `${baseURL}/`, // api的base_url
+  // baseURL: `${baseURL}/api`, // api的base_url
   timeout: 150000, // 请求超时时间
 });
 

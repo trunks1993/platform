@@ -8,8 +8,8 @@ import store from './store';
 import './permission'; // 权限
 import './styles/index.scss'; // global css
 import './mock';
+
 Vue.use(ElementUI);
-console.log('process.env.BASE_API', process.env);
 Vue.config.productionTip = false;
 
 new Vue({
