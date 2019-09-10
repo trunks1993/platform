@@ -1,7 +1,11 @@
 <template>
-  <div class="appmain-container">
-       <h1>主体内容部分</h1>
-  </div>
+  <section class="app-main" id="app-main">
+    <transition name="fade" mode="out-in">
+      <!-- <keep-alive :include="cachedViews"> -->
+        <router-view></router-view>
+      <!-- </keep-alive> -->
+    </transition>
+  </section>
 </template>
 <script>
 export default {
@@ -21,13 +25,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-    .appmain-container {
-        width: 100%;
+    .app-main {
+        width: calc(100% - 284px);
         height: 100%;
-        background-size: 100% 100%;
-        border:1px solid #02439D;
-        h1 {
-            color:#fff;
-        }
+        margin-left: 15px;
     }
 </style>

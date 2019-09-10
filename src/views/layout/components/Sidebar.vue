@@ -1,5 +1,5 @@
 <template>
-  <div class="sideBar-container">
+  <div class="side-bar">
        
   </div>
 </template>
@@ -21,8 +21,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-    .sideBar-container {
-        width: 100%;
+    .side-bar {
+        width: 269px;
         height: 100%;
         background: url(../../../assets/sideBar-bg.png);
         background-size: 100% 100%;

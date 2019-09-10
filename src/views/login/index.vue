@@ -62,7 +62,7 @@ export default {
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入密码'));
-        } else if (value != 'hz1505'){
+        } else if (value != '123456'){
         callback(new Error('密码错误'));	
         }else {
           callback();
@@ -71,7 +71,7 @@ export default {
 		return {
 			ruleForm: {
 				username: 'admin',
-				password: 'hz1505'
+				password: '123456'
 			},
 			rules: {
 				  username: [
@@ -87,9 +87,10 @@ export default {
 		login(ruleForm) {
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-            this.$store.dispatch('Login', {username: 'admin', password: 'hz1505'}).then(res => {
-              this.$route.push('/')
-            })
+          console.log(this.ruleForm);
+          this.$store.dispatch('Login', this.ruleForm).then(res => {
+            this.$router.push('/')
+          })
 			  }
 			});
     },

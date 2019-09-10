@@ -9,29 +9,18 @@ import request from '@/utils/request';
 //   },
 // });
 
-export const login = (username, password) => request({
+export const login = (params) => request({
   url: '/cas/login',
   method: 'post',
-  params: {
-    username,
-    password,
-  },
+  params: params
 });
 // 获取用户菜单
-export const getSidebar = (token, userId) => request({
-  url: '/v1/menu/list',
+export const getMenuTree = () => request({
+  url: '/v1/menu/listById',
   method: 'post',
-  params: {
-    token,
-    userId,
-  },
 });
 // 获取用户权限
-export const getUserInfo = (token, userId) => request({
-  url: '/v1/menu/list',
-  method: 'post',
-  params: {
-    token,
-    userId,
-  },
+export const getUserInfo = () => request({
+  url: '/v1/api/user/SysUser/user',
+  method: 'get',
 });
