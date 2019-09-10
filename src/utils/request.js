@@ -2,6 +2,7 @@ import axios from 'axios';
 import store from '../store';
 import { getToken } from '@/utils/auth';
 
+// eslint-disable-next-line no-unused-vars
 const baseURL = process.env.NODE_ENV === 'production' ? 'http:/192.168.0.1' : 'http:/192.168.0.2';
 // 创建axios实例
 const service = axios.create({

@@ -15,7 +15,7 @@ router.beforeEach((to, from, next) => {
       NProgress.done();
     } else if (Object.keys(store.getters.userInfo).length === 0) {
       store.dispatch('GetUserInfo').then((userId) => { // 拉取用户信息
-        store.dispatch('GenerateRoutes', userId).then((menuRoutes) => { // 获取菜单
+        store.dispatch('GetSidebar', userId).then((menuRoutes) => { // 获取菜单
           router.addRoutes(menuRoutes);
           next({ ...to });
         }).catch(() => {
