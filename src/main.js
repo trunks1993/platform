@@ -7,7 +7,7 @@ import router from './router';
 import store from './store';
 // import './permission'; // 权限
 import './styles/index.scss'; // global css
-// import './mock';
+import './mock';
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;

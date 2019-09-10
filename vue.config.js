@@ -59,7 +59,7 @@ module.exports = {
     // 设置代理
     // proxy all requests starting with /api to jsonplaceholder
       'http://localhost:8080/': {
-        target: 'http://192.168.0.81:9091', // 真实请求的目标地址
+        target: 'http://192.168.0.124:9091/uumsApi', // 真实请求的目标地址
         changeOrigin: true,
         pathRewrite: {
           '^http://localhost:8080/': '',

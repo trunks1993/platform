@@ -52,8 +52,6 @@ export default {
 		var validatePass = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入账号'));
-        } else if(value != 'admin'){
-          callback(new Error('请输入正确账号'));
         } else {
           callback();
         }
@@ -62,16 +60,14 @@ export default {
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入密码'));
-        } else if (value != 'hz1505'){
-        callback(new Error('密码错误'));	
         }else {
           callback();
         }
     };
 		return {
 			ruleForm: {
-				username: 'admin',
-				password: 'hz1505'
+				username: '',
+				password: ''
 			},
 			rules: {
 				  username: [
@@ -85,9 +81,10 @@ export default {
 	},
 	methods: {
 		login(ruleForm) {
+      let self = this;
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-            this.$store.dispatch('Login',{'username':'admin', 'password':'hz1505'}).then(res => {
+            this.$store.dispatch('Login',{'username':self.ruleForm.username, 'password':self.ruleForm.password}).then(res => {
               console.log(res);
               if(res.code == 0 && res.msg == 'success'){
                 this.$router.push({path:'/home'})
