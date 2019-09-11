@@ -10,7 +10,7 @@
              <v-sidebar></v-sidebar>
            </div>
            <div class="appmain">
-              <vAppMain></vAppMain>
+                <vAppMain></vAppMain>
            </div>
          </div>
       </div>
@@ -30,7 +30,7 @@ export default {
     components: {
 		vHead,
         vSidebar,
-        vAppMain
+        vAppMain,
 	},
 	methods: {
 		

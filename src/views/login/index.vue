@@ -84,12 +84,13 @@ export default {
       let self = this;
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-            this.$store.dispatch('Login',{'username':self.ruleForm.username, 'password':self.ruleForm.password}).then(res => {
-              console.log(res);
-              if(res.code == 0 && res.msg == 'success'){
-                this.$router.push({path:'/home'})
-              }
-            })
+           this.$router.push({path:'/home'})
+            // this.$store.dispatch('Login',{'username':self.ruleForm.username, 'password':self.ruleForm.password}).then(res => {
+            //   console.log(res);
+            //   if(res.code == 0 && res.msg == 'success'){
+            //     this.$router.push({path:'/home'})
+            //   }
+            // })
 			  } else {
 				   return false;
 			  }
@@ -103,7 +104,7 @@ export default {
    width: 100%;
 	 height: 100%;
 	 background: url(../../assets/login-Bg.png);
-	 background-size: 100% 100%;
+   background-size: 100% 100%;
     .login{
       width:566px;
       height:690px;
@@ -172,6 +173,8 @@ export default {
          border: none;
          height: 48px;
          color: #FFFFFF;
+         outline:none;
+         cursor: pointer;
       }
       .login-input /deep/ .inputfirst:before{
           content: '';
