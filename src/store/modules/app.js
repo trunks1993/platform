@@ -2,17 +2,17 @@
 import { getToken, setToken, removeToken } from '@/utils/auth';
 // eslint-disable-next-line import/no-cycle
 import { login, getUserInfo, getMenuTree } from '@/api/app';
-const _import = require('@/router/_import_' + process.env.NODE_ENV)
+
+const _import = require(`@/router/_import_${ process.env.NODE_ENV}`);
 
 function getRouterMap(menuList) {
-  menuList.filter(item => {
-    item.path = item.url
-    if(!item.children.length) item.component = _import(item.url);
+  menuList.filter((item) => {
+    item.component = _import(item.component);
     if (item.children && item.children.length > 0) {
-      getRouterMap(item.children)
+      getRouterMap(item.children);
     }
-  })
-  return menuList
+  });
+  return menuList;
 }
 
 export default {
@@ -30,7 +30,7 @@ export default {
       state.userInfo = userInfo;
     },
     SET_ROUTERS: (state, routers) => {
-      state.routers = routers
+      state.routers = routers;
     },
   },
   actions: {
@@ -62,17 +62,17 @@ export default {
         getMenuTree().then((res) => {
           // commit('SET_SIDEBAR', res);
           // resolve(res);
-          let asyncRouterMap = getRouterMap(res)
-          asyncRouterMap.push({ path: '*', redirect: '/404', hidden: true })
-          commit('SET_ROUTERS', asyncRouterMap)
-          resolve(asyncRouterMap)
+          const asyncRouterMap = getRouterMap(res);
+          asyncRouterMap.push({ path: '*', redirect: '/404', hidden: true });
+          commit('SET_ROUTERS', asyncRouterMap);
+          resolve(asyncRouterMap);
         });
       });
     },
     // 前端 登出
     FedLogOut({ commit }) {
-      commit('SET_TOKEN', '')
-      removeToken()
-    }
+      commit('SET_TOKEN', '');
+      removeToken();
+    },
   },
 };
