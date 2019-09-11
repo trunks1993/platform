@@ -1,6 +1,6 @@
 export default {
   // sidebar: state => state.app.sidebar,
-//   token: state => state.user.token,
+  token: state => state.app.token,
   userInfo: state => state.app.userInfo,
 //   messageList: state => state.user.messageList,
 //   routers: state => state.menu.routers,

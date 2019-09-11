@@ -66,8 +66,8 @@ export default {
     };
 		return {
 			ruleForm: {
-				username: '',
-				password: ''
+				username: 'admin',
+				password: '123456'
 			},
 			rules: {
 				  username: [
@@ -84,15 +84,9 @@ export default {
       let self = this;
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-           this.$router.push({path:'/home'})
-            // this.$store.dispatch('Login',{'username':self.ruleForm.username, 'password':self.ruleForm.password}).then(res => {
-            //   console.log(res);
-            //   if(res.code == 0 && res.msg == 'success'){
-            //     this.$router.push({path:'/home'})
-            //   }
-            // })
-			  } else {
-				   return false;
+          this.$store.dispatch('Login', this.ruleForm).then(res => {
+            this.$router.push('/')
+          })
 			  }
 			});
     },

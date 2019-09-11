@@ -55,17 +55,17 @@ module.exports = {
     port: 8080,
     https: false,
     hotOnly: false,
-    proxy: {
-    // 设置代理
-    // proxy all requests starting with /api to jsonplaceholder
-      'http://localhost:8080/': {
-        target: 'http://192.168.0.124:9091/uumsApi', // 真实请求的目标地址
-        changeOrigin: true,
-        pathRewrite: {
-          '^http://localhost:8080/': '',
-        },
-      },
-    },
+    // proxy: {
+    // // 设置代理
+    // // proxy all requests starting with /api to jsonplaceholder
+    //   '/uumsApi': {
+    //     target: 'http://192.168.0.124:9091', // 真实请求的目标地址
+    //     changeOrigin: true,
+    //     // pathRewrite: {
+    //     //   '^/api': '',
+    //     // },
+    //   },
+    // },
     before: (app) => {},
   },
   // 第三方插件配置

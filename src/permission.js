@@ -14,22 +14,12 @@ router.beforeEach((to, from, next) => {
       // router在hash模式下 手动改变hash 重定向回来 不会触发afterEach 暂时hack方案 ps：history模式下无问题，可删除该行！
       NProgress.done();
     } else if (Object.keys(store.getters.userInfo).length === 0) {
-      store.dispatch('GetUserInfo').then((userId) => { // 拉取用户信息
-        store.dispatch('GetSidebar', userId).then((menuRoutes) => { // 获取菜单
+      store.dispatch('GetUserInfo').then(() => { // 拉取用户信息
+        store.dispatch('GenerateRoutes').then((menuRoutes) => { // 获取菜单
           router.addRoutes(menuRoutes);
           next({ ...to });
-        }).catch(() => {
-          store.dispatch('FedLogOut');
-          Message.error('菜单获取失败，请重新登录');
-          next({ path: '/login' });
-          NProgress.done();
-        });
-      }).catch(() => {
-        store.dispatch('FedLogOut');
-        Message.error('用户信息获取失败,请重新登录');
-        next({ path: '/login' });
-        NProgress.done();
-      });
+        })
+      })
     } else {
       next();
     }

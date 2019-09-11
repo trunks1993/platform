@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div class="appmain-container">
     <div class="main-left">
         <div class="zzBox">
@@ -54,6 +55,15 @@
         </el-pagination>
     </div>
   </div>
+=======
+  <section class="app-main" id="app-main">
+    <transition name="fade" mode="out-in">
+      <!-- <keep-alive :include="cachedViews"> -->
+        <router-view></router-view>
+      <!-- </keep-alive> -->
+    </transition>
+  </section>
+>>>>>>> 044e5507260aaca9713fb4ba0ae9c004b94cd8ee
 </template>
 <script>
 export default {
@@ -104,6 +114,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+<<<<<<< HEAD
     .appmain-container {
         width: 100%;
         height: calc(100% - 187px);
@@ -193,6 +204,12 @@ export default {
                 
             }
         }
+=======
+    .app-main {
+        width: calc(100% - 284px);
+        height: 100%;
+        margin-left: 15px;
+>>>>>>> 044e5507260aaca9713fb4ba0ae9c004b94cd8ee
     }
     .appmain-container /deep/ .el-table tr{
         height: 45px !important;
