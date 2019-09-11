@@ -23,7 +23,6 @@
 <script>
 // import { getSidebar } from '@/api/app'
 export default {
-	name: 'head',
 	data() {
 		return {
 			 options: [{
@@ -51,7 +50,6 @@ export default {
 		};
 	},
     mounted() {
-        this.getUserInfo();
 		this.getTime();
         let _this = this; 
         this.timer = setInterval(() => {
@@ -73,11 +71,6 @@ export default {
             this.currDate = year + '-' + month + '-' + dates;
             this.currTime = hour + ':' + minute;
             this.day = time.getDay();
-        },
-        getUserInfo(){
-            console.log(44)
-            let token = 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIn0..lbb_Xg7dXgdd8wrb.PMTxiwGcU76pGD7QPaENp-UM7QWl-PzlIhPISFPKlydP3ePkS3ckpruHNMTcfgurUj6bpi8oYA85tuWXzZP9NVCWhwz1kYamoklNlwPfPvBUuIyIZfuyUq_lwKY99ybZMiipxkFt9-DPjz5EfFTsaUr_Q73DZf2Q6mqSh-rauwg2btlU3TbixLctL6QX7kgwddfOv3SWkD9oPj8ve_4OB6YDUJIwImNdBUEIHSkFrFSVDje2APe7UAlLNMxU4pcJbmQs6g-7ez-gBKpAhG0KOMZAl7jL3quKyzI_LZDSxIbKJJH_7e9VetEcZ_XpDJsshsZNqvR4Tl0oRtidtbM9Y1g57HQUnQ0kQq__1TkzcAyDswWyxVH16nCVfnPXCmyl.ZeD0qf_n-4FZCX2_u_ZBQw';
-            let userId = 1; 
         }
 	},
     beforeDestroy() {

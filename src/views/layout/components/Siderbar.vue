@@ -5,7 +5,6 @@
 </template>
 <script>
 export default {
-	name: 'head',
     watch: {
       
     },
@@ -13,9 +12,9 @@ export default {
       return {
       };
 	},
-  mounted() {
+    mounted() {
 
-  },
+    },
 	computed: {
 		
 	},

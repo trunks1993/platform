@@ -1,24 +1,23 @@
 <template>
   <div class="app-container">
-    <Head></Head>
+    <Header></Header>
     <div class="app-container-content">
-      <Sidebar></Sidebar>
+      <Siderbar></Siderbar>
       <AppMain></AppMain>
     </div>
   </div>
 </template>
 <script>
-import { Head, Sidebar, AppMain } from './components'
+import { Header, Siderbar, AppMain } from './components'
 export default {
-  name: 'main',
   data() {
     return {
 
     };
   },
   components: {
-    Head,
-    Sidebar,
+    Header,
+    Siderbar,
     AppMain
   },
   methods: {

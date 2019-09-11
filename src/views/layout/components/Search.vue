@@ -203,7 +203,6 @@ export default {
         color: #fff;
         float: left;
         margin-right: 112px;
-        height: 65px;
     }
     .el-form-item:nth-child(4) {
         width:325px;
