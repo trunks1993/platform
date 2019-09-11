@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/newline-after-import
+import _ from 'lodash';
 import { getToken, setToken, removeToken } from '@/utils/auth';
 // eslint-disable-next-line import/no-cycle
 import { login, getUserInfo, getMenuTree } from '@/api/app';
-import _ from 'lodash';
 
-const _import = require(`@/router/_import_${ process.env.NODE_ENV}`);
+const _import = require(`@/router/_import_${process.env.NODE_ENV}`);
 
 function getRouterMap(menuList) {
   menuList.filter((item) => {
@@ -16,6 +16,164 @@ function getRouterMap(menuList) {
   return menuList;
 }
 
+const testMenu = [
+  {
+    menuName: '日誌管理',
+    path: '/system',
+    parentId: '0',
+    component: '/layout',
+    children: [
+      {
+        children: [],
+        menuName: '用戶管理',
+        path: '/system/user',
+        component: '/system/user',
+      },
+      {
+        menuName: '部門管理',
+        path: '/system/dept',
+        component: '/system/dept',
+        children: [
+          {
+            menuName: '後勤部',
+            path: '/system/dept',
+            component: '/system/dept',
+            children: [],
+          },
+          {
+            menuName: '行政部',
+            path: '/system/dept',
+            component: '/system/dept',
+            children: [],
+          },
+        ],
+      },
+      {
+        menuName: '菜單管理',
+        path: '/system/menu',
+        component: '/system/menu',
+        children: [],
+      },
+    ]
+  },
+  {
+    menuName: '系統管理',
+    path: '/system',
+    component: '/layout',
+    parentId: '0',
+    children: [
+      {
+        children: [],
+        menuName: '用戶管理',
+        path: '/system/user',
+        component: '/system/user',
+      },
+      {
+        menuName: '部門管理',
+        path: '/system/dept',
+        component: '/system/dept',
+        children: [
+          {
+            menuName: '後勤部',
+            path: '/system/dept',
+            component: '/system/dept',
+            children: [],
+          },
+          {
+            menuName: '行政部',
+            path: '/system/dept',
+            component: '/system/dept',
+            children: [],
+          },
+        ],
+      },
+      {
+        menuName: '菜單管理',
+        path: '/system/menu',
+        component: '/system/menu',
+        children: [],
+      },
+    ]
+  },
+  {
+    menuName: '系統管理',
+    path: '/system',
+    component: '/layout',
+    parentId: '0',
+    children: [
+      {
+        children: [],
+        menuName: '用戶管理',
+        path: '/system/user',
+        component: '/system/user',
+      },
+      {
+        menuName: '部門管理',
+        path: '/system/dept',
+        component: '/system/dept',
+        children: [
+          {
+            menuName: '後勤部',
+            path: '/system/dept',
+            component: '/system/dept',
+            children: [],
+          },
+          {
+            menuName: '行政部',
+            path: '/system/dept',
+            component: '/system/dept',
+            children: [],
+          },
+        ],
+      },
+      {
+        menuName: '菜單管理',
+        path: '/system/menu',
+        component: '/system/menu',
+        children: [],
+      },
+    ]
+  },
+  {
+    menuName: '系統管理',
+    path: '/system',
+    component: '/layout',
+    parentId: '0',
+    children: [
+      {
+        children: [],
+        menuName: '用戶管理',
+        path: '/system/user',
+        component: '/system/user',
+      },
+      {
+        menuName: '部門管理',
+        path: '/system/dept',
+        component: '/system/dept',
+        children: [
+          {
+            menuName: '後勤部',
+            path: '/system/dept',
+            component: '/system/dept',
+            children: [],
+          },
+          {
+            menuName: '行政部',
+            path: '/system/dept',
+            component: '/system/dept',
+            children: [],
+          },
+        ],
+      },
+      {
+        menuName: '菜單管理',
+        path: '/system/menu',
+        component: '/system/menu',
+        children: [],
+      },
+    ]
+  },
+]
 
 export default {
   state: {
@@ -66,7 +224,7 @@ export default {
           // resolve(res);
           const asyncRouterMap = getRouterMap(res);
           commit('SET_ROUTERS', asyncRouterMap);
-          let asyncRouterMapCopy = _.clone(asyncRouterMap);
+          const asyncRouterMapCopy = _.clone(asyncRouterMap);
           asyncRouterMapCopy.push({ path: '*', redirect: '/404', hidden: true });
           resolve(asyncRouterMapCopy);
         });
