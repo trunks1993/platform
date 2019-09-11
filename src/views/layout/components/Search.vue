@@ -225,6 +225,7 @@ export default {
         float: left;
         font-size: 14px;
         line-height: 26px !important;
+        color: #FFF;
     }
     .el-form-item--large {
         width: 660px;
@@ -244,9 +245,9 @@ export default {
     }
     .el-picker-panel {
         color: #606266;
-        border: 1px solid #e4e7ed;
+        border: 1px solid #02439D;
         box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-        background: #fff;
+        background: #05254B;
         border-radius: 4px;
         line-height: 30px;
         margin: 5px 0;
@@ -324,10 +325,22 @@ export default {
         border-radius: 50%;
     }
     .el-date-table td.today span {
-        color: #409eff;
+        color: #fff;
         font-weight: 700;
     }
     .el-date-table td.available:hover {
         color: #409eff;
+    }
+    .el-date-table td.next-month, .el-date-table td.prev-month {
+        color: #DBDCE3;
+    }
+    .el-date-picker__header-label,
+    .el-date-table th,
+    .el-date-table td,
+    .el-icon-arrow-right:before,
+    .el-icon-d-arrow-right:before, 
+    .el-icon-d-arrow-left:before,
+    .el-icon-arrow-left:before {
+        color: #4BAEFD;
     }
 </style>

@@ -95,13 +95,13 @@ export default {
         color: #fff;
         position: relative;
         .head-date {
-            line-height:60px;
+            line-height:50px;
             display:inline-block;
             margin-left:40px;
             p {
                 margin:0;
                 display: inline-block;
-                line-height:60px;
+                line-height:50px;
             }
         }
         .head-title {
@@ -119,11 +119,11 @@ export default {
         
         .head-information {
             float:right;
-            line-height:60px;
+            line-height:50px;
             margin-right:40px;
             div {
                 width:80px;
-                height:60px;
+                height:50px;
                 display:inline-block;
                 margin-right:18px;
                 cursor: pointer;
