@@ -2,6 +2,7 @@
 import { getToken, setToken, removeToken } from '@/utils/auth';
 // eslint-disable-next-line import/no-cycle
 import { login, getUserInfo, getMenuTree } from '@/api/app';
+import _ from 'lodash';
 
 const _import = require(`@/router/_import_${ process.env.NODE_ENV}`);
 
@@ -65,9 +66,10 @@ export default {
           // commit('SET_SIDEBAR', res);
           // resolve(res);
           const asyncRouterMap = getRouterMap(res);
-          asyncRouterMap.push({ path: '*', redirect: '/404', hidden: true });
           commit('SET_ROUTERS', asyncRouterMap);
-          resolve(asyncRouterMap);
+          let asyncRouterMapCopy = _.clone(asyncRouterMap);
+          asyncRouterMapCopy.push({ path: '*', redirect: '/404', hidden: true });
+          resolve(asyncRouterMapCopy);
         });
       });
     },

@@ -194,7 +194,7 @@ export default {
 .search {
     width: 100%;
     height: 150px;
-    padding: 35px 20px;
+    padding: 28px 20px;
 }
 </style>
 <style>
@@ -203,6 +203,7 @@ export default {
         color: #fff;
         float: left;
         margin-right: 112px;
+        height: 60px;
     }
     .el-form-item:nth-child(4) {
         width:325px;
