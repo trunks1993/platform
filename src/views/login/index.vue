@@ -66,8 +66,8 @@ export default {
     };
 		return {
 			ruleForm: {
-				username: 'admin',
-				password: '123456'
+				username: '',
+				password: ''
 			},
 			rules: {
 				  username: [
@@ -197,6 +197,12 @@ export default {
         font-size: 14px;
         text-align: left;
         text-indent: 5px;
+      }
+      .login-input /deep/ .el-input--suffix .el-input__suffix-inner{
+        display: none;
+      }
+      .login-input /deep/ .el-form-item{
+          margin-bottom: 0;
       }
     }
   }

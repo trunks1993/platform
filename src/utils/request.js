@@ -2,14 +2,8 @@ import axios from 'axios';
 import store from '@/store';
 import { Message, MessageBox } from 'element-ui'
 
-<<<<<<< HEAD
-// eslint-disable-next-line no-unused-vars
-const baseURL = process.env.NODE_ENV === 'production' ? 'http:/192.168.0.1' : 'http:/192.168.0.2';
-=======
 // import { getToken } from '@/utils/auth';
-
 const baseURL = process.env.NODE_ENV === 'production' ? 'http://192.168.0.124:9091' : 'http://192.168.0.81:9091'
->>>>>>> 044e5507260aaca9713fb4ba0ae9c004b94cd8ee
 // 创建axios实例
 const service = axios.create({
   baseURL: `${baseURL}/uumsApi`, // api的base_url
