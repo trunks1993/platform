@@ -1,7 +1,20 @@
 // eslint-disable-next-line import/newline-after-import
-import { getToken, setToken } from '@/utils/auth';
+import { getToken, setToken, removeToken } from '@/utils/auth';
 // eslint-disable-next-line import/no-cycle
-import { login, getUserInfo, getSidebar } from '@/api/app';
+import { login, getUserInfo, getMenuTree } from '@/api/app';
+const _import = require('@/router/_import_' + process.env.NODE_ENV)
+
+function getRouterMap(menuList) {
+  menuList.filter(item => {
+    item.path = item.url
+    if(!item.children.length) item.component = _import(item.url);
+    if (item.children && item.children.length > 0) {
+      getRouterMap(item.children)
+    }
+  })
+  return menuList
+}
+
 
 export default {
   state: {
@@ -17,8 +30,8 @@ export default {
     SET_USERINFO: (state, userInfo) => {
       state.userInfo = userInfo;
     },
-    SET_SIDEBAR: (state, sideBar) => {
-      state.sideBar = sideBar;
+    SET_ROUTERS: (state, routers) => {
+      state.routers = routers
     },
   },
   actions: {
@@ -26,35 +39,42 @@ export default {
     Login({ commit }, userInfo) {
       const username = userInfo.username.trim();
       return new Promise((resolve, reject) => {
-        login(username, userInfo.password).then((response) => {
-          const { data } = response;
-          if (data.code === 0 && data.msg === 'success') {
-            commit('SET_TOKEN', data.data.token);
-            setToken(data.data.token);
-          }
-          resolve(data);
+        login(userInfo).then(({ token }) => {
+          commit('SET_TOKEN', token);
+          setToken(token);
+          resolve(token);
         }).catch((error) => {
           reject(error);
         });
       });
     },
-  },
-  // 获取用户信息
-  GetUserInfo({ commit }) {
-    return new Promise((resolve) => {
-      getUserInfo(getToken()).then((res) => {
-        commit('SET_USERINFO', res.data.data);
-        resolve(res.data.data);
+
+    // 获取用户信息
+    GetUserInfo({ commit }) {
+      return new Promise((resolve) => {
+        getUserInfo().then((res) => {
+          commit('SET_USERINFO', res);
+          resolve();
+        });
       });
-    });
-  },
-  // 获取用户菜单
-  GetSidebar({ commit }, token, userId) {
-    return new Promise((resolve) => {
-      getSidebar(token, userId).then((res) => {
-        commit('SET_SIDEBAR', res.data.data);
-        resolve(res.data.data);
+    },
+    // 获取用户菜单
+    GenerateRoutes({ commit }) {
+      return new Promise((resolve) => {
+        getMenuTree().then((res) => {
+          // commit('SET_SIDEBAR', res);
+          // resolve(res);
+          let asyncRouterMap = getRouterMap(res)
+          asyncRouterMap.push({ path: '*', redirect: '/404', hidden: true })
+          commit('SET_ROUTERS', asyncRouterMap)
+          resolve(asyncRouterMap)
+        });
       });
-    });
+    },
+    // 前端 登出
+    FedLogOut({ commit }) {
+      commit('SET_TOKEN', '')
+      removeToken()
+    }
   },
 };

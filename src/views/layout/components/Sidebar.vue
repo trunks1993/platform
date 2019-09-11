@@ -1,12 +1,7 @@
 <template>
-  <div class="sideBar-container">
-        <el-tree
-        class="filter-tree"
-        :data="data"
-        :props="defaultProps"
-        :filter-node-method="filterNode"
-        ref="tree">
-        </el-tree>
+
+  <div class="side-bar">
+       
   </div>
 </template>
 <script>
@@ -95,8 +90,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-    .sideBar-container {
-        width: 100%;
+    .side-bar {
+        width: 269px;
         height: 100%;
         background: url(../../../assets/sideBar-bgTwo.png);
         background-size: 100% 100%;

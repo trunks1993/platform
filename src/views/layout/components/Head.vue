@@ -89,11 +89,10 @@ export default {
 </script>
 <style lang="scss" scoped>
     .head-container {
-        width: 100%;
-        height: 100%;
+        height: 118px;
         background: url(../../../assets/header-Bg.png);
         background-size: 100% 100%;
-        color:#fff;
+        color: #fff;
         position: relative;
         .head-date {
             line-height:60px;
