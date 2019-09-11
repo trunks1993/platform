@@ -10,7 +10,12 @@
              <v-sidebar></v-sidebar>
            </div>
            <div class="appmain">
-              <vAppMain></vAppMain>
+               <div class="appmain-top">
+                    <v-Search></v-Search> 
+               </div>
+               <div class="appmain-bottom">
+                    <v-AppMain></v-AppMain>
+               </div>
            </div>
          </div>
       </div>
@@ -20,6 +25,7 @@
 import vHead from '@/views/layout/components/Head'
 import vSidebar from '@/views/layout/components/Sidebar'
 import vAppMain from '@/views/layout/components/AppMain'
+import vSearch from '@/views/layout/components/Search'
 export default {
 	name: 'main',
 	data() {
@@ -30,7 +36,8 @@ export default {
     components: {
 		vHead,
         vSidebar,
-        vAppMain
+        vAppMain,
+        vSearch
 	},
 	methods: {
 		
@@ -70,6 +77,14 @@ export default {
                    width:calc(100% - 279px);
                    height:100%;
                    float:right;
+                   .appmain-top {
+                       width:100%;
+                       height:186px;
+                   }
+                   .appmain-bottom {
+                       width:100%;
+                       height:calc(100% - 186px);
+                   }
                }
            }
        }

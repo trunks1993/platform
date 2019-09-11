@@ -4,7 +4,6 @@
         class="filter-tree"
         :data="data"
         :props="defaultProps"
-        default-expand-all
         :filter-node-method="filterNode"
         ref="tree">
         </el-tree>
@@ -78,7 +77,8 @@ export default {
       };
 	},
     mounted() {
-       console.log(this.$refs.tree.$el.children)
+       console.log(this.$refs.tree.$el.children[0].style);
+       console.log(this.$refs.tree.$el.children[0].style.backgroundImage)
     },
 	computed: {
 		onRoutes() {
@@ -105,20 +105,43 @@ export default {
     }
 </style>
 <style>
-  .el-tree {
+  .sideBar-container > .el-tree { 
       color:#fff;
   }
-  .sideBar-container .el-tree > .el-tree-node{
-      background: url(../../../assets/sideBar-titleBg1.png);
+  .sideBar-container > .el-tree > .el-tree-node{
+      background: url(../../../assets/sideBar-titleBg.png);
       background-size: 100% 100%;
       margin-bottom:18px;
       width:100%;
       min-height: 44px;
       box-sizing: border-box;
       text-align:center;
+      outline:none;
   }
-  .el-tree-node__label {
-      height:44px;
-      line-height:44px;
+  .el-tree-node__content {
+      cursor: pointer;
+      outline:none;
+  }
+  .sideBar-container > .el-tree > .el-tree-node > .el-tree-node__content:nth-child(1) {
+      border-bottom: 1px solid rgba(0,214,253,0.6);
+      width: 80%;
+      height:43px;
+      line-height:43px;
+      margin-left: 10%;
+  }
+  .el-tree-node__children {
+      font-size:14px;
+  }
+  .el-tree-node {
+      outline:none;
+  }
+  .sideBar-container > .el-tree > .is-expanded {
+      background: url(../../../assets/sideBar-titleBg1.png) !important;
+      background-size: 100% 100% !important;
+      outline:none;
+  }
+    .sideBar-container .el-tree .el-tree-node .el-tree-node__content .el-tree-node__label {
+      height:36px;
+      line-height:36px;
   }
 </style>
