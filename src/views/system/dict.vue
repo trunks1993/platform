@@ -1,3 +1,3 @@
 <template>
-    <div>dict</div>
+	<div>dict</div>
 </template>
