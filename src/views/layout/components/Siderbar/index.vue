@@ -28,7 +28,8 @@ export default {
 .sider-bar {
   width: 269px;
   height: 100%;
-  // background: url(../../../assets/sideBar-bg.png);
+  padding: 40px 20px 20px;
+  background: url(../../../../assets/sideBar-bgTwo.png);
   background-size: 100% 100%;
 }
 </style>

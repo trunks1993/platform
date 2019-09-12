@@ -1,6 +1,6 @@
 $mainColor: #05254b;
 $tableBorder: 1px solid rgba(2, 67, 157, 0.2);
-
+$customBlue: #4baefd;
 // checkbox样式
 .el-checkbox {
   .el-checkbox__input {
@@ -44,7 +44,7 @@ $tableBorder: 1px solid rgba(2, 67, 157, 0.2);
       }
     }
     th {
-      color: #4baefd;
+      color: $customBlue;
       &:not(:first-child) {
         border-left: $tableBorder;
       }
@@ -52,9 +52,62 @@ $tableBorder: 1px solid rgba(2, 67, 157, 0.2);
   }
 }
 
-.el-select-dropdown {
-  // background: red;
-  background: url('../assets/images/optionBorder.png') no-repeat;
-  background-size:100% 100%;
-  border: none!important;
+// sider-bar
+.sider-bar {
+  & > ul {
+    height: 100%;
+    overflow-y: scroll;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .el-menu {
+    background-color: transparent;
+    border-right: none;
+    li[class*="is-opened el-submenu-parent"] {
+      background: url("../assets/images/menu-title-bg-expand.png") no-repeat;
+      background-size: 100% 100%;
+      .sub-title-line {
+        display: block;
+        width: 80%;
+        height: 1px;
+        background: #00D6FD;
+        margin: auto;
+      }
+    }
+    .el-menu-item {
+      color: #fff;
+      &:hover, &:focus {
+        background-color: transparent;
+      }
+      &:focus {
+        color: $customBlue;
+        background-color: transparent;
+      }
+    }
+    .el-submenu-parent {
+      background: url("../assets/images/menu-title-bg.png") no-repeat;
+      background-size: 100% 54px;
+      margin-bottom: 20px;
+      .sub-title-line {
+        display: none;
+      }
+      & > .el-submenu__title {
+        font-size: 18px;
+        text-align: center;
+        height: 54px;
+        line-height: 54px;
+      }
+      & > ul > div > li {
+        padding-left: 0;
+        text-align: center;
+      }
+    }
+    .el-submenu__title {
+      color: #fff;
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
 }
