@@ -9,10 +9,10 @@ import request from '@/utils/request';
 //   },
 // });
 
-export const login = (params) => request({
+export const login = params => request({
   url: '/cas/login',
   method: 'post',
-  params: params
+  params,
 });
 // 获取用户菜单
 export const getMenuTree = () => request({
@@ -23,4 +23,10 @@ export const getMenuTree = () => request({
 export const getUserInfo = () => request({
   url: '/v1/api/user/SysUser/user',
   method: 'get',
+});
+// 获取用户管理列表
+export const getSysUserList = params => request({
+  url: '/v1/api/user/SysUser/list',
+  method: 'post',
+  params,
 });

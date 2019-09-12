@@ -13,7 +13,7 @@
                 </li>
             </ul>
         </div>
-        <div class="search">
+        <!-- <div class="search">
             <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
                 <el-form-item label="登录名称">
                     <el-input v-model="sizeForm.name"></el-input>
@@ -40,7 +40,7 @@
                     <el-button type="primary" @click="onSubmit">查询</el-button>
                 </el-form-item>
             </el-form>
-        </div>
+        </div> -->
     </div>
 </template>
 
