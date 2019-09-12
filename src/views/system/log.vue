@@ -8,10 +8,10 @@
 			 <div class="table">
                 <!-- <div class="main-right"> -->
                     <div class="tableHead">
-                        <el-button><i class="iconComm add"></i>新增</el-button>
+                        <!-- <el-button><i class="iconComm add"></i>新增</el-button> -->
                         <el-button><i class="iconComm delete"></i>删除</el-button>
-                        <el-button><i class="iconComm modify"></i>修改</el-button>
-                        <el-button><i class="iconComm loading"></i>导入</el-button>
+                        <el-button><i class="iconComm modify"></i>清空</el-button>
+                        <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
                         <el-button><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
                             <div><span></span></div>
@@ -95,7 +95,6 @@
 <script>
 // import Search from '../layout/components/Search'
 export default {
-  name: 'main',
   data() {
     return {
          value: true,
@@ -241,52 +240,52 @@ export default {
                 .leading{
                     background-position: -57px 704px;
                 }
-                .operation {
-						width: 210px;
-						height: 36px;
-						background: #05254B;
-						border:1px solid #02439D;
-						float: right;
-						display: flex;
-						div {
-							width: 25%;
-							height: 28px;
-							margin-top: 4px;
-							position: relative;
-							cursor: pointer;
-							span {
-								width: 14px;
-								height: 14px;
-								display: inline-block;
-								background-image: url(../../assets/icon.png);
-								background-position: -57px 422px;
-								position: absolute;
-								left: 50%;
-								margin-left: -7px;
-								top: 50%;
-								margin-top: -7px;
-							}
-						}
-						div::before {
-							content: '';
-							width: 1px;
-							height: 28px;
-							display: inline-block;
-							background:linear-gradient(0deg,rgba(1,84,199,0) 0%,rgba(1,84,199,1) 42%,rgba(1,84,199,0) 100%);
-						}
-						div:nth-child(1):before {
-							width: 0;
-						}
-						div:nth-child(2) span {
-							background-position: -57px 376px;
-						}
-						div:nth-child(3) span {
-							background-position: -57px 331px;
-						}
-						div:nth-child(4) span {
-							background-position: -57px 288px;
-						}
-					}
+            }
+            .operation {
+                width: 210px;
+                height: 36px;
+                background: #05254B;
+                border:1px solid #02439D;
+                float: right;
+                display: flex;
+                div {
+                    width: 25%;
+                    height: 28px;
+                    margin-top: 4px;
+                    position: relative;
+                    cursor: pointer;
+                    span {
+                        width: 14px;
+                        height: 14px;
+                        display: inline-block;
+                        background-image: url(../../assets/icon.png);
+                        background-position: -57px 422px;
+                        position: absolute;
+                        left: 50%;
+                        margin-left: -7px;
+                        top: 50%;
+                        margin-top: -7px;
+                    }
+                }
+                div::before {
+                    content: '';
+                    width: 1px;
+                    height: 28px;
+                    display: inline-block;
+                    background:linear-gradient(0deg,rgba(1,84,199,0) 0%,rgba(1,84,199,1) 42%,rgba(1,84,199,0) 100%);
+                }
+                div:nth-child(1):before {
+                    width: 0;
+                }
+                div:nth-child(2) span {
+                    background-position: -57px 376px;
+                }
+                div:nth-child(3) span {
+                    background-position: -57px 331px;
+                }
+                div:nth-child(4) span {
+                    background-position: -57px 288px;
+                }
             }
             .tabled{
                 margin: 10px 0;
