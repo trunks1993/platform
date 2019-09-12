@@ -12,7 +12,6 @@
 <script>
 import Search from "../layout/components/Search";
 export default {
-  name: "main",
   data() {
     return {};
   },
