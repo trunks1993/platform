@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import bus from '@/views/layout/components/bus.js';
+import bus from '@/utils/bus';
 export default {
 	data() {
 		return {
@@ -92,7 +92,7 @@ export default {
 					title: '管理系统',
 					path: '/home'
 				})
-				bus.$emit('tabs', this.tagsList);
+				// bus.$emit('tabs', this.tagsList);
 			}
 		},
 		// 关闭单个标签

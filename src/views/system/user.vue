@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
 	<div class="user">
 		<div class="tabs-search">
 			<Search></Search>
@@ -113,12 +114,23 @@
 			</div>
 		</div>
 	</div>
+=======
+  <div class="user">
+    <div class="tabs-search">
+      <Search></Search>
+    </div>
+    <div class="dashboard-content">
+      <div class="organization"></div>
+      <div class="table"></div>
+    </div>
+  </div>
+>>>>>>> 8e8afd618df958f13175f8e00d390134e0c5168d
 </template>
 <script>
-import Search from '../layout/components/Search'
+import Search from "../layout/components/Search";
 export default {
-  name: 'main',
   data() {
+<<<<<<< HEAD
     return {
 		tableData: [{
           date: '2016-05-03',
@@ -170,10 +182,14 @@ export default {
 			desc: ''
         }
     };
+=======
+    return {};
+>>>>>>> 8e8afd618df958f13175f8e00d390134e0c5168d
   },
   components: {
-	  Search
+    Search
   },
+<<<<<<< HEAD
   created() {
 	  this.Sysuser();
   },
@@ -202,10 +218,13 @@ export default {
 		console.log('submit!');
 	  }
   }
+=======
+  methods: {}
+>>>>>>> 8e8afd618df958f13175f8e00d390134e0c5168d
 };
-
 </script>
 <style lang="scss">
+<<<<<<< HEAD
 	.user {
 		color: #fff;
 		height: 100%;
@@ -547,3 +566,25 @@ export default {
     }
 </style>
 
+=======
+.user {
+  color: #fff;
+  height: 100%;
+  .tabs-search {
+    height: 187px;
+  }
+  .dashboard-content {
+    height: calc(100% - 187px);
+    display: flex;
+    .organization {
+      width: 223px;
+      height: 100%;
+    }
+    .table {
+      width: calc(100% - 223px);
+      height: 100%;
+    }
+  }
+}
+</style>
+>>>>>>> 8e8afd618df958f13175f8e00d390134e0c5168d
