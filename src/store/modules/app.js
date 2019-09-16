@@ -242,15 +242,5 @@ export default {
       commit('SET_TOKEN', '');
       removeToken();
     },
-    // 获取用户管理分页
-    getUserManagementList({ commit }, obj) {
-      return new Promise((resolve, reject) => {
-        getSysUserList(obj).then((res) => {
-          resolve(res);
-        }).catch((error) => {
-          reject(error);
-        });
-      });
-    },
   },
 };

@@ -1,0 +1,141 @@
+  
+ /* 表格样式 */
+.el-row {
+	height: 40px;
+	line-height: 40px;
+	margin-bottom: 15px;
+}
+label {
+	display: block;
+	width: 17%;
+	color: #fff;
+	font-size: .7rem;
+	text-align: left;
+}
+ .prisoner-container{
+ 	width:100%;
+     height:100%;
+ }
+  .el-table ,.el-table thead{
+ 	color:#0DE3EB !important;
+ }
+  .el-table, .el-table__expanded-cell {
+ 	background:transparent;
+ }
+  .el-table th,
+   .el-table tr{
+	 background:rgba(9, 48, 96, 0) !important;		
+	 padding: 0 !important;
+ }
+  .el-table td, .el-table th {
+ 	padding:8px 0;
+ }
+  .el-table--striped .el-table__body tr.el-table__row--striped td {
+ 	background:rgba(24, 57, 112, .4) !important;		
+ }
+  .el-table__body tr.hover-row>td {
+ 	/*background:red;*/		
+ 	background:red!important;
+ }
+  .el-table--border td ,.el-table--border th{
+ 	border-right: 1px solid rgba(96, 118, 173, .3)!important;
+ }
+  .el-table td, .el-table th.is-leaf{
+ 	border-bottom: 1px solid rgba(96, 118, 173, .3) !important;
+	 text-align:center;		
+	 padding: 0;
+ }
+  .el-table th{
+ 	background: transparent !important;
+     /*opacity:0.5;*/
+ }
+  .el-table--border, .el-table--group {
+ 	border: 0;
+ }
+  .el-table--border{
+    border-bottom:0;
+ }
+  .el-table::before{
+ 	height:0!important;
+ }
+  .el-table--border::after, .el-table--group::after {
+ 	width:0!important;
+ }
+  .el-button--small {
+ 	padding: 0px 15px;
+ 	height: 30px;
+ }
+  .el-select-dropdown {
+ 	background: rgba(225,225,225, 0.1) !important;
+ 	
+ }
+  .el-select-dropdown__item {
+ 	color: #fff !important;
+ 	
+ }
+  .condition-item {
+ 	display: flex;
+ 	width: 100%;
+ 	height: 100%;
+ 	box-sizing: border-box;
+ 	padding: 0 10px;
+ 	align-items: center;
+}	
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+	background-color: #022960;
+}
+.el-checkbox input[type="checkbox"]:checked {
+    /* background: url(../assets/icon.png) no-repeat; */
+    /* background-position: -57px -301px;
+    background-color: #05254b; */
+}
+.el-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    background-color: #05254b;
+    -webkit-appearance: none;
+    border: 1px solid #0284a1;
+    border-radius: 2px;
+    outline: none;
+}
+.el-table .cell, .el-table th div, .el-table--border td:first-child .cell, .el-table--border th:first-child .cell{
+	padding-left: 0;
+}
+.el-checkbox__inner{
+	background: transparent;
+	border: 1px solid rgba(2,132,161,1);
+}
+.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
+	background:rgba(5,37,75,1);
+	border:1px solid #0EBFE6;
+}
+
+/* 分页 */
+.el-pagination.is-background .btn-prev, .el-pagination.is-background .btn-next, .el-pagination.is-background .el-pager li{
+	background: #05254B !important;
+	color:#8489A8;
+	min-width: 28px !important;
+	height: 26px;
+	line-height: 26px;
+}
+.el-pagination.is-background .el-pager li:not(.disabled).active{
+	background:#05254b !important;
+	border:1px solid rgba(14, 191, 230, 1);
+	border-radius:1px;
+}
+/* 弹框样式修改 */
+.el-dialog__wrapper {
+	background-color: rgba(0,0,0,0.6)
+}
+.el-dialog {
+	width: 75%;
+	height: 82%;
+	margin-top: 9vh !important;
+	background: url("../assets/images/dialog-bg.png") no-repeat !important;
+	background-size: 100% 100% !important;
+	padding: 60px;
+	box-sizing: border-box;
+}
+.el-dialog, .el-pager li {
+	background: transparent;
+}

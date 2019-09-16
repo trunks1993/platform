@@ -5,15 +5,15 @@
 			<div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="角色名称">
-						<el-input v-model="sizeForm.name"></el-input>
+						<el-input v-model="sizeForm.roleName"></el-input>
 					</el-form-item>
 					<el-form-item label="权限字符">
-						<el-input v-model="sizeForm.name"></el-input>
+						<el-input v-model="sizeForm.roleKey"></el-input>
 					</el-form-item>
 					<el-form-item label="角色状态">
-						<el-select v-model="sizeForm.region" placeholder="所有">
-						<el-option label="区域一" value="shanghai"></el-option>
-						<el-option label="区域二" value="beijing"></el-option>
+						<el-select v-model="sizeForm.status" placeholder="所有">
+						<el-option label="正常" value="0"></el-option>
+						<el-option label="禁用" value="1"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="创建时间">
@@ -27,7 +27,7 @@
 					</el-form-item>
 					<el-form-item size="large">
 						<el-button type="primary" @click="onSubmit">搜索</el-button>
-						<el-button type="primary" @click="onSubmit">重置</el-button>
+						<el-button type="primary" @click="reset">重置</el-button>
 					</el-form-item>
 				</el-form>
 			</div>
@@ -60,16 +60,21 @@
 						</el-table-column>
 						<el-table-column
 						label="角色编号"
+						type="roleId"
 						>
-						<template slot-scope="scope">{{ scope.row.date }}</template>
 						</el-table-column>
 						<el-table-column
-						prop="name"
+						label="角色名称"
+						type="roleName"
+						>
+						</el-table-column>
+						<el-table-column
+						prop="roleKey"
 						label="权限字符"
 						>
 						</el-table-column>
 						<el-table-column
-						prop="address"
+						prop="roleSort"
 						label="显示顺序"
 						show-overflow-tooltip>
 						</el-table-column>
@@ -79,12 +84,12 @@
                         >
 						<template slot-scope="scope">
 							<el-switch
-							v-model="value1">
+							v-model="scope.row.surStatus">
 							</el-switch>
 						</template>
 						</el-table-column>
 						<el-table-column
-						prop="address"
+						prop="createTime"
 						label="创建时间"
 						show-overflow-tooltip>
 						</el-table-column>
@@ -106,59 +111,21 @@
 	</div>
 </template>
 <script>
-import Search from '../layout/components/Search'
+import Search from '../layout/components/Search';
+import { getSysRoleList } from '@/api/app';
 export default {
   name: 'main',
   data() {
     return {
-		tableData: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普'
-		}, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普'
-		}],
+		tableData: [],
 		value1: true,
 		multipleSelection: [],
 		sizeForm: {
-			name: '',
-			region: '',
+			roleName: '',
+			roleKey: '',
 			date1: '',
 			date2: '',
-			delivery: false,
-			type: [],
-			resource: '',
-			desc: ''
+			status: '',
         }
     };
   },
@@ -166,7 +133,7 @@ export default {
 	  Search
   },
   created() {
-	  this.Sysuser();
+	  this.Sysrole();
   },
   methods: {
 	  handleClick(row) {
@@ -184,14 +151,26 @@ export default {
       handleSelectionChange(val) {
         this.multipleSelection = val;
 	  },
-	  Sysuser() {
-		//    this.$store.dispatch('getUserManagementList', {pageNum:1,pageSize:10}).then(res => {
-		// 	   console.log(res);
-		//    });
-	  },
+	  //搜索按钮
 	  onSubmit() {
 		console.log('submit!');
-	  }
+	  },
+	  //重置按钮
+	  reset() {
+		this.sizeForm.roleName = '';
+		this.sizeForm.roleKey = '';
+		this.sizeForm.date1 = '';
+		this.sizeForm.date2 = '';
+		this.sizeForm.status = '';
+	  },
+	  Sysrole() {
+		console.log("接口请求");
+		getSysRoleList({pageNum:1,pageSize:10}).then(res => {
+			console.log(res);
+			this.tableData = res.rows;
+			console.log(this.tableData);
+		});
+	  },
   }
 };
 
@@ -201,7 +180,10 @@ export default {
 		color: #fff;
 		height: 100%;
 		.tabs-search {
-			height: 187px;
+			height: 175px;
+			margin-bottom: 12px;
+			background:url(../../assets/images/tabs-search-bg.png);
+            background-size: 100% 100%;
 			.search {
 				width: 100%;
 				height: 150px;
@@ -219,6 +201,10 @@ export default {
 			.table-content {
 				width: 100%;
 				height: 100%;
+				background:url(../../assets/images/table-content-bg.png);
+				background-size: 100% 100%;
+				padding: 22px 34px;
+				box-sizing: border-box;
 				.tableHead {
 					height: 70px;
 					.button {
@@ -365,8 +351,7 @@ export default {
 		background-color: #fff;
 	}
 	.cell span {
-			margin: 10px;
-			cursor: pointer;
+		cursor: pointer;
 	}
 	.cell span:nth-child(1) {
 		color: #45EBA7;

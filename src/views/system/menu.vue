@@ -191,7 +191,10 @@ export default {
 		color: #fff;
 		height: 100%;
 		.tabs-search {
-			height: 187px;
+			height: 175px;
+			margin-bottom: 12px;
+			background:url(../../assets/images/tabs-search-bg.png);
+            background-size: 100% 100%;
 			.search {
 				width: 100%;
 				height: 150px;
@@ -209,6 +212,10 @@ export default {
 			.table-content {
 				width: 100%;
 				height: 100%;
+				background:url(../../assets/images/table-content-bg.png);
+				background-size: 100% 100%;
+				padding: 22px 34px;
+				box-sizing: border-box;
 				.tableHead {
 					height: 70px;
 					.button {
@@ -352,7 +359,6 @@ export default {
 		background-color: #fff;
 	}
 	.cell span {
-			margin: 10px;
 			cursor: pointer;
 	}
 	.cell span:nth-child(1) {
@@ -408,7 +414,7 @@ export default {
         color: #FFF;
     }
     .el-form-item--large {
-        width: 325px !important;
+        width: 450px !important;
     }
     .el-button {
         width: 120px;
@@ -418,7 +424,13 @@ export default {
         border:none;
 		color: #fff;
 		margin-left: 10px !important;
-    }
+	}
+	.el-button--primary:focus, .el-button--primary:hover {
+		border: none;
+		background-color: transparent;
+		background: url(../../assets/buttonbg.png);
+        background-size: 100% 100%;
+	}
     .el-input__inner {
         background-color: #05254B !important; 
         border: 1px solid #02439D !important;

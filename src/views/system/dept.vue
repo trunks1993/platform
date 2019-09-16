@@ -181,7 +181,10 @@ export default {
 		color: #fff;
 		height: 100%;
 		.tabs-search {
-			height: 187px;
+			height: 175px;
+			margin-bottom: 12px;
+			background:url(../../assets/images/tabs-search-bg.png);
+            background-size: 100% 100%;
 			.search {
 				width: 100%;
 				height: 150px;
@@ -199,6 +202,10 @@ export default {
 			.table-content {
 				width: 100%;
 				height: 100%;
+				background:url(../../assets/images/table-content-bg.png);
+				background-size: 100% 100%;
+				padding: 22px 34px;
+				box-sizing: border-box;
 				.tableHead {
 					height: 70px;
 					.button {
@@ -342,7 +349,6 @@ export default {
 		background-color: #fff;
 	}
 	.cell span {
-			margin: 10px;
 			cursor: pointer;
 	}
 	.cell span:nth-child(1) {
