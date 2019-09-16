@@ -169,6 +169,7 @@ export default {
          color: #FFFFFF;
          outline:none;
          cursor: pointer;
+         margin-left: 0;
       }
       .login-input /deep/ .inputfirst:before{
           content: '';

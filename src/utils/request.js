@@ -3,7 +3,7 @@ import store from '@/store';
 import { Message, MessageBox } from 'element-ui'
 
 // import { getToken } from '@/utils/auth';
-const baseURL = process.env.NODE_ENV === 'production' ? 'http://192.168.0.124:9091' : 'http://192.168.0.81:9091'
+const baseURL = process.env.NODE_ENV === 'production' ? 'http://192.168.0.124:9091' : 'http://192.168.0.105:9091'
 // 创建axios实例
 const service = axios.create({
   baseURL: `${baseURL}/uumsApi`, // api的base_url
@@ -23,9 +23,9 @@ service.interceptors.request.use((config) => {
 // respone拦截器
 service.interceptors.response.use(
   ({ data }) => {
-    if (data.code === '0') {
+    if (data.code == 0) {
       return data.data
-    } else if (data.code === 1) {
+    } else if (data.code == 1) {
       MessageBox.alert(data.msg, {
         confirmButtonText: '确定',
         callback: action => {
