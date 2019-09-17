@@ -234,7 +234,7 @@ export default {
         margin-left: 514px;
         width: 120px;
         height: 35px;
-        background: url(../../../assets/buttonbg.png);
+        /* background: url(../../../assets/buttonbg.png); */
         background-size: 100% 100%;
         border:none;
         color: #fff;

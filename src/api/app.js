@@ -37,3 +37,21 @@ export const deleteGwPage = params => request({
   method: 'delete',
   params,
 });
+// 导出岗位管理列表
+export const exportGwPage = params => request({
+  url: '/v1/manage/post/exportExcel',
+  method: 'get',
+  params,
+});
+// 编辑岗位管理列表
+export const editorGwPage = params => request({
+  url: '/v1/manage/post/update/{postCode}',
+  method: 'put',
+  params,
+});
+// 新增岗位管理列表
+export const addGwPage = params => request({
+  url: '/v1/manage/post/insert',
+  method: 'post',
+  params,
+});

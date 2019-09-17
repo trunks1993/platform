@@ -1,6 +1,6 @@
 <template>
     <div class="post-container">
-        <div class="tabs-search">
+        <div class="tabs-search" v-if="isSearch">
 			<div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="岗位编码">
@@ -17,7 +17,7 @@
 						</el-select>
 					</el-form-item>
 					<el-form-item size="large">
-						<el-button type="primary" @click="onSubmit">查询</el-button>
+						<el-button type="primary" @click="query">查询</el-button>
 					</el-form-item>
 				</el-form>
 			</div>
@@ -27,14 +27,14 @@
 			 <div class="table">
                 <!-- <div class="main-right"> -->
                     <div class="tableHead">
-                        <el-button><i class="iconComm add"></i>新增</el-button>
-                        <el-button><i class="iconComm delete"></i>删除</el-button>
-                        <el-button><i class="iconComm modify"></i>修改</el-button>
+                        <el-button @click="addInfo()"><i class="iconComm add"></i>新增</el-button>
+                        <el-button @click="batchDelete()"><i class="iconComm delete"></i>删除</el-button>
+                        <el-button @click="revise()"><i class="iconComm modify"></i>修改</el-button>
                         <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
-                        <el-button><i class="iconComm leading"></i>导出</el-button>
+                        <el-button @click="exported()"><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
-                            <div><span></span></div>
-                            <div><span></span></div>
+                            <div @click="toggle()"><span></span></div>
+                            <div @click="refresh()"><span></span></div>
                             <div><span></span></div>
                             <div><span></span></div>
                         </div>
@@ -58,124 +58,103 @@
                                     <!-- <el-switch
                                     v-model="scope.row.status">
                                     </el-switch> -->
-                                    <span :class="[scope.row.status == '正常' ? 'normal' : 'stop']">{{scope.row.status}}</span>
+                                    <span :class="[scope.row.state  ? 'normal' : 'stop']">{{scope.row.state  ? '正常' : '停用'}}</span>
                                     <!-- <span style="color:#CB3203;">停用</span> -->
                                 </template>
                             </el-table-column>
                             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
                             <el-table-column label="操作">
                                 <template slot-scope="scope">
-                                    <span class="editor" @click="handleClick(scope.row)">编辑</span>
-                                    <span class="editor" @click="deleted(scope.row)">删除</span>
+                                    <span class="editor" @click="editor(scope.row)">编辑</span>
+                                    <span class="editor" @click="deleted(scope.row.postId)">删除</span>
                                 </template>
                             </el-table-column>
                         </el-table>
                     </div>
-                    <el-pagination style="text-align:right;margin-top:3.5%;"
+                    <!-- <el-pagination style="text-align:right;margin-top:3.5%;"
                         background
                         layout="prev, pager, next"
                         :total="1000">
+                    </el-pagination> -->
+                    <el-pagination style="text-align: right;" v-show="pageShow"
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        :current-page="current"
+                        :page-sizes="[1, 5, 10, 20, 40]" 
+                        :page-size="pageSize"       
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="total">  
                     </el-pagination>
                 <!-- </div> -->
 			 </div>
 		</div>
+
+        <!-- 弹框 -->
+        <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
+		<!-- <div class="login-user">
+          <img src="../../assets/login-left.png" />
+          <span>基本信息</span>
+          <img src="../../assets/login-right.png" />
+        </div> -->
+            <el-form :model="form" style="height:308px;">
+                <el-form-item label="岗位名称" :label-width="formLabelWidth">
+                    <el-input v-model="form.postName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="岗位编码" :label-width="formLabelWidth">
+                    <el-input v-model="form.postCode" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="显示顺序" :label-width="formLabelWidth">
+                    <el-input v-model="form.postSort" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="岗位状态" :label-width="formLabelWidth" style="width: 325px;">
+                    <el-switch
+                        v-model="form.state">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="备注" :label-width="formLabelWidth" class="inputTextarea">
+                    <el-input v-model="form.remark" autocomplete="off" type="textarea" class="textarea"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="save()">保 存</el-button>
+                <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+            </div>
+		</el-dialog>
     </div>
 </template>
 <script>
-import { queryGwPage,deleteGwPage } from '@/api/app';
+import { queryGwPage,deleteGwPage,exportGwPage,editorGwPage,addGwPage } from '@/api/app';
+// import { getToken } from '@/utils/auth';
 import Search from "../layout/components/Search";
 export default {
   data() {
     return {
-        sizeForm: {
+        sizeForm: {//查询
 			code: '',
 			name:'',
 			region: '',
         },
-        tableData:[],
-        // tableData3: [{
-        //     logNumber: '2016-05-03',
-        //     sysModule: '王小虎',
-        //     operateType: '上海市普陀区金沙江路 1518 弄',
-        //     operator:'操作人员',
-        //     department:'XX部门',
-        //     mainHost:'主机',
-        //     operateAddress:'操作地点',
-        //     status:'操作状态',
-        //     time:'操作时间',
-        //     // operate:'操作'
-
-        // }, {
-        //    logNumber: '2016-05-03',
-        //     sysModule: '王小虎',
-        //     operateType: '上海市普陀区金沙江路 1518 弄',
-        //     operator:'操作人员',
-        //     department:'XX部门',
-        //     mainHost:'主机',
-        //     operateAddress:'操作地点',
-        //     status:'操作状态',
-        //     time:'操作时间',
-        //     // operate:'操作'
-        // }, {
-        //     logNumber: '2016-05-03',
-        //     sysModule: '王小虎',
-        //     operateType: '上海市普陀区金沙江路 1518 弄',
-        //     operator:'操作人员',
-        //     department:'XX部门',
-        //     mainHost:'主机',
-        //     operateAddress:'操作地点',
-        //     status:'操作状态',
-        //     time:'操作时间',
-        //     // operate:'操作'
-        // }, {
-        //     logNumber: '2016-05-03',
-        //     sysModule: '王小虎',
-        //     operateType: '上海市普陀区金沙江路 1518 弄',
-        //     operator:'操作人员',
-        //     department:'XX部门',
-        //     mainHost:'主机',
-        //     operateAddress:'操作地点',
-        //     status:'操作状态',
-        //     time:'操作时间',
-        //     // operate:'操作'
-        // }, {
-        //     logNumber: '2016-05-03',
-        //     sysModule: '王小虎',
-        //     operateType: '上海市普陀区金沙江路 1518 弄',
-        //     operator:'操作人员',
-        //     department:'XX部门',
-        //     mainHost:'主机',
-        //     operateAddress:'操作地点',
-        //     status:'操作状态',
-        //     time:'操作时间',
-        //     // operate:'操作'
-        // }, {
-        //    logNumber: '2016-05-03',
-        //     sysModule: '王小虎',
-        //     operateType: '上海市普陀区金沙江路 1518 弄',
-        //     operator:'操作人员',
-        //     department:'XX部门',
-        //     mainHost:'主机',
-        //     operateAddress:'操作地点',
-        //     status:'操作状态',
-        //     time:'操作时间',
-        //     // operate:'操作'
-        // }, {
-        //     logNumber: '2016-05-03',
-        //     sysModule: '王小虎',
-        //     operateType: '上海市普陀区金沙江路 1518 弄',
-        //     operator:'操作人员',
-        //     department:'XX部门',
-        //     mainHost:'主机',
-        //     operateAddress:'操作地点',
-        //     status:'操作状态',
-        //     time:'操作时间',
-        //     // operate:'操作'
-        // }],
+        tableData:[],//表格
+        current: 1,//当前页
+        total: 0,//当前页
+        pageSize:8,//每页条数  
+        pageShow:false,//没有数据时隐藏分页
+        dialogFormVisible: false,
+        form: {
+        //   postName: '',
+        //   postCode: '',
+        //   order:'',
+        //   state:true,
+        //   remark:''
+        },
+        formLabelWidth: '120px',
+        radio: '1',
+        obj:{},
+        isSearch:true,
     };
   },
   components: {
-	  Search
+	//   Search
   },
   computed: {
 
@@ -184,47 +163,132 @@ export default {
       this.queryDate();
   },
   methods: {
-    onSubmit() {
+    // 初始页currentPage、初始每页数据数pagesize和数据data
+    handleSizeChange: function(size) {//size为每页显示的条数
+        this.pageSize = size;
+        this.queryDate();
+    },
+    handleCurrentChange: function(current) {//当前页
+        this.current = current;
+        this.queryDate();
+    },
+    toggle(){//显示隐藏查询切换
+        this.isSearch = !this.isSearch;
+    },
+    refresh(){//刷新当前页面
+        // window.location.reload();
+        this.$router.go(0);
+    },
+    query() {//查询
 		this.queryDate();
-	},
-    handleSelectionChange(val) {
+    },
+    batchDelete(){//批量删除
+        let selectArr = [];
+        if(typeof(this.multipleSelection) == "undefined"){
+            this.$message({
+                message: '请选择需要删除的数据！',
+                type: 'warning'
+            });
+        }else{
+            this.multipleSelection.forEach((v,i) => {
+                selectArr.push(v.postId);
+            })
+            this.deleted(selectArr.join(','));
+        }
+    },
+    addInfo(){//新增
+        this.dialogFormVisible = true;
+        this.form = {};
+        this.obj = {};
+    },
+    editor(rows){//编辑
+        this.dialogFormVisible = true;
+        this.form = rows;
+        this.obj = rows;
+    },
+    save(){//编辑入参
+        if(JSON.stringify(this.obj) == '{}'){//新增
+            this.addAsk();
+        }else{//编辑
+            this.saveAsk();
+        }  
+    },
+    saveAsk(){//编辑保存
+        this.form.status = this.form.state ?  '0': '1';
+        editorGwPage(this.form).then(res => {
+            this.$message({
+                message: '修改成功！',
+                type: 'success'
+            });
+            this.dialogFormVisible = false;
+        });
+    },
+    addAsk(){//新增保存
+        this.form.status = this.form.state ?  '0': '1';
+        addGwPage(this.form).then(res => {
+            this.$message({
+                message: '新增成功！',
+                type: 'success'
+            });
+            this.dialogFormVisible = false;
+            this.queryDate();
+        });
+    },
+    handleSelectionChange(val) {//多选
         this.multipleSelection = val;
+    },
+    revise(){
+        if(typeof(this.multipleSelection) == "undefined"){
+            this.$message({
+                message: '请选择需要修改的数据！',
+                type: 'warning'
+            });
+        }else{
+            this.dialogFormVisible = true;
+            this.form = this.multipleSelection.pop();//获取最后一条
+            this.obj = this.multipleSelection.pop();
+        }
     },
     queryDate() {//查询
         queryGwPage({
             postCode:this.sizeForm.code,
             postName:this.sizeForm.name,
-            status:this.sizeForm.region
+            status:this.sizeForm.region,
+            pageNum:this.current,
+            pageSize:this.pageSize,
         }).then(res => {
             this.tableData = res.rows;
             this.tableData.forEach((v,i) =>{
-                v.status = v.status == 0 ? '正常' : '停用';
+                v.state = v.status == 0 ? true : false;
             });
-			console.log(this.tableData)
+            this.total=res.total*1;
+            if(this.total > 0) {
+                this.pageShow = true;
+            }
 		});
     },
-    handleClick(rows){
-        console.log(rows);
-    },
-    deleted(rows){//删除
+    deleted(ids){//删除
         this.$confirm('确认删除该数据?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-            deleteGwPage({str:rows.postId}).then(res => {
-                console.log(1);
-            });
-            this.$message({
-                type: 'success',
-                message: '删除成功!'
-            });
+            deleteGwPage({str:ids}).then(res => {
+                this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                });
+            });  
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
           });          
         });
+    },
+    exported(){//导出
+        window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel';
+        
     }
   }
 };
@@ -339,6 +403,88 @@ export default {
         color:#CB3203 !important;
     }
 }
+.el-dialog {
+		  .el-dialog__header {
+			text-align: center;
+			.el-dialog__title {
+			  text-align: center;
+			  color: #4BAEFD;
+			}
+			.el-dialog__title:before {
+				content:'';
+				display: inline-block;
+				background-image: url(../../assets/login-left.png);
+				background-size: 100% 100%;
+				width:91px;
+				height: 13px;
+				margin-right: 12px; 
+			}
+			.el-dialog__title:after {
+				content:'';
+				display: inline-block;
+				background-image: url(../../assets/login-right.png);
+				background-size: 100% 100%;
+				width:91px;
+				height: 13px;
+				margin-left: 12px; 
+			}
+			.el-dialog__headerbtn {
+				top: 80px;
+    			right: 80px;
+				.el-dialog__close {
+					color: #FFF;
+					font-size: 30px;
+				}
+			}
+		  }
+		  .el-dialog__body {
+				padding:10px 20px;
+				.el-form {
+					padding:  20px 0px 0px;
+					.el-radio {
+						color: #FFF;
+						margin-right: 50px; 
+					}
+				}
+		  }
+	  }
+	  .el-dialog__body::before {
+		  content: '基本信息'; 
+		  width: 100%;
+		  height: 34px;
+		  display: inline-block;
+		  border-bottom: 1px dashed rgba(75,174,253,1); 
+		  color: #63ACDF;
+		  font-size: 13px;
+	  }
+	  .dialog-footer {
+		  text-align: center;
+	  }
+	  .el-dialog__footer::before {
+		  content: '其他信息'; 
+		  width: 100%;
+		  height: 34px;
+		  display: inline-block;
+		  border-bottom: 1px dashed rgba(75,174,253,1); 
+		  color: #63ACDF;
+		  text-align: left;
+		  font-size: 13px;
+      }
+    .textarea {
+        width: 100%;
+        background:rgba(5,37,75,1);
+        // border:1px solid rgba(2,67,157,1);
+        // border-radius:2px;
+    }
+.post-container /deep/.el-textarea__inner{
+    background: #05254B;
+    border: 1px solid #02439D; 
+    border-radius:2px;
+}
+.post-container /deep/.inputTextarea{
+    width: 100%;
+    padding-right:150px;
+}
 .post-container /deep/.cell span.editor {
     padding: 10px;
     cursor: pointer;
@@ -361,14 +507,35 @@ export default {
 .post-container /deep/ .el-message-box__btns button:nth-child(2){
     background: transparent !important;
 }
-.post-container /deep/ .el-button--primary {
-    background: url(../../assets/buttonbg.png) !important;
+// .post-container /deep/ .el-button--primary {
+//     background: url(../../assets/buttonbg.png) !important;
+// }
+.el-message-box__btns .el-button--primary:focus, .el-button--primary:hover{
+    background: #022960;
 }
-
 </style>
 <style>
+.el-button--default{
+    background: #022960;
+}
 .el-message-box{
     background: #05254B !important;
     border: none;
+}
+.el-message-box__title,.el-message-box__message p{
+    color:#fff;
+}
+.el-message-box__btns .el-button{
+    margin-left: 0;
+}
+.el-message-box__btns .el-button--primary:focus, .el-button--primary:hover{
+    background: #022960;
+}
+.el-message-box__btns .el-button--primary:focus,.el-button--default:hover{
+    background: #022960;
+    color: #fff;
+}
+.el-pagination button:disabled,.el-dialog, .el-pager li,.el-pagination button:hover,.el-pagination .btn-prev, .el-pagination .btn-next{
+    background:#022960 !important;
 }
 </style>

@@ -21,43 +21,16 @@
                         </div>
                     </div>
                     <div class="tabled">
-                        <el-table border
-                            ref="multipleTable"
-                            :data="tableData3"
-                            tooltip-effect="dark"
-                            style="width: 100%"
-                            @selection-change="handleSelectionChange">
-                            <el-table-column
-                            type="selection">
+                        <el-table border ref="multipleTable" :data="tableData3" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
+                            <el-table-column type="selection"></el-table-column>
+                            <el-table-column label="字典主键">
+                                <template slot-scope="scope">{{ scope.row.logNumber }}</template>
                             </el-table-column>
-                            <el-table-column
-                            label="字典主键">
-                            <template slot-scope="scope">{{ scope.row.logNumber }}</template>
-                            </el-table-column>
-                            <el-table-column
-                            prop="sysModule"
-                            label="字典名称">
-                            </el-table-column>
-                            <el-table-column
-                            prop="operateType"
-                            label="字典类型"
-                            show-overflow-tooltip>
-                            </el-table-column>
-                            <el-table-column
-                            prop="operator"
-                            label="状态"
-                            show-overflow-tooltip>
-                            </el-table-column>
-                            <el-table-column
-                            prop="department"
-                            label="备注"
-                            show-overflow-tooltip>
-                            </el-table-column>
-                            <el-table-column
-                            prop="mainHost"
-                            label="创建时间"
-                            show-overflow-tooltip>
-                            </el-table-column>
+                            <el-table-column prop="sysModule" label="字典名称"></el-table-column>
+                            <el-table-column prop="operateType" label="字典类型" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="operator" label="状态" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="department" label="备注" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="mainHost" label="创建时间" show-overflow-tooltip></el-table-column>
                             <el-table-column property="status" label="操作状态">
                                 <template slot-scope="scope">
                                     <!-- <el-switch
