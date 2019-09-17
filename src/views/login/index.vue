@@ -52,8 +52,6 @@ export default {
 		var validatePass = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入账号'));
-        } else if(value != 'admin'){
-          callback(new Error('请输入正确账号'));
         } else {
           callback();
         }
@@ -62,8 +60,6 @@ export default {
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入密码'));
-        } else if (value != '123456'){
-        callback(new Error('密码错误'));	
         }else {
           callback();
         }
@@ -85,23 +81,15 @@ export default {
 	},
 	methods: {
 		login(ruleForm) {
+      let self = this;
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-          console.log(this.ruleForm);
           this.$store.dispatch('Login', this.ruleForm).then(res => {
             this.$router.push('/')
           })
 			  }
 			});
     },
-    doLogin(){
-       let self = this;
-      //  this.$router.push('/home')
-       this.$store.dispatch('Login',{'username':'admin', 'password':'hz1505'}).then(res => {
-         console.log(res);
-
-       })
-    }
 	}
 };
 </script>
@@ -110,17 +98,17 @@ export default {
    width: 100%;
 	 height: 100%;
 	 background: url(../../assets/login-Bg.png);
-	 background-size: 100% 100%;
+   background-size: 100% 100%;
     .login{
-	   width:566px;
-	   height:690px;
-	   text-align: center;
-	   position: absolute;
-     left: 0;
-	   top: 0;
-	   right: 0;
-     bottom: 0;
-	   margin: auto;
+      width:566px;
+      height:690px;
+      text-align: center;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
      .login-header{
         h3{
           text-align: center;
@@ -169,7 +157,7 @@ export default {
         border: none !important;
         height: 50px;
         position: relative;
-        padding-left: 70px;
+        padding-left: 50px;
         color: #5AC1FF;
         // margin-top: 40px;
       }
@@ -179,6 +167,9 @@ export default {
          border: none;
          height: 48px;
          color: #FFFFFF;
+         outline:none;
+         cursor: pointer;
+         margin-left: 0;
       }
       .login-input /deep/ .inputfirst:before{
           content: '';
@@ -202,10 +193,20 @@ export default {
           top: 28%;
           z-index: 999;
       }
+      .login-input /deep/ .el-form-item__error{
+        color: red;
+        font-size: 14px;
+        text-align: left;
+        text-indent: 5px;
+      }
+      .login-input /deep/ .el-input--suffix .el-input__suffix-inner{
+        display: none;
+      }
+      .login-input /deep/ .el-form-item{
+          margin-bottom: 0;
+      }
     }
-   }
-
+  }
  }
- 
  
 </style>

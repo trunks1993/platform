@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { getToken, setToken, removeToken } from '@/utils/auth';
 // eslint-disable-next-line import/no-cycle
-import { login, getUserInfo, getMenuTree } from '@/api/app';
+import { login, getUserInfo, getMenuTree } from '@/api';
 
 const _import = require(`@/router/_import_${process.env.NODE_ENV}`);
 
@@ -10,6 +10,7 @@ function getRouterMap(menuList) {
   menuList.filter((item) => {
     try {
       item.component = _import(item.component);
+      item.name = item.menuName;
     } catch (e) {
       console.warn(e);
       item.component = _import('/404');
