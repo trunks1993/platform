@@ -21,7 +21,7 @@
   </div>
 </template>
 <script>
-// import { getSidebar } from '@/api/app'
+// import { getSidebar } from '@/api'
 export default {
 	data() {
 		return {

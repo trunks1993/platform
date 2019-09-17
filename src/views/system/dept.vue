@@ -1,7 +1,6 @@
 <template>
 	<div class="dept">
 		<div class="tabs-search">
-			<Search></Search>
 			<div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="角色名称">
@@ -86,9 +85,7 @@
 	</div>
 </template>
 <script>
-import Search from '../layout/components/Search'
 export default {
-  name: 'main',
   data() {
     return {
 		tableData: [{
@@ -143,7 +140,6 @@ export default {
     };
   },
   components: {
-	  Search
   },
   created() {
 	  this.Sysuser();

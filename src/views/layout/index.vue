@@ -3,12 +3,15 @@
     <Header></Header>
     <div class="app-container-content">
       <Siderbar></Siderbar>
-      <AppMain></AppMain>
+      <div class="app-container-content-box">
+        <TagsView></TagsView>
+        <AppMain></AppMain>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import { Header, Siderbar, AppMain } from './components'
+import { Header, Siderbar, AppMain, TagsView } from './components'
 export default {
   data() {
     return {
@@ -18,7 +21,8 @@ export default {
   components: {
     Header,
     Siderbar,
-    AppMain
+    AppMain,
+    TagsView,
   },
   methods: {
 
@@ -37,6 +41,10 @@ export default {
     display: flex;
     height: calc(100% - 118px);
     padding: 20px;
+
+    &-box {
+      width: calc(100% - 284px);
+    }
   }
 }
 </style>

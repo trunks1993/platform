@@ -1,7 +1,6 @@
 <template>
 	<div class="user">
 		<div class="tabs-search">
-			<Search></Search>
 			<div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="登录名称">
@@ -187,8 +186,7 @@
 	</div>
 </template>
 <script>
-import Search from "../layout/components/Search";
-import { getSysUserList,getSysDeptTreeData } from '@/api/app';
+import { getSysUserList,getSysDeptTreeData } from '@/api';
 export default {
   data() {
     return {
@@ -226,18 +224,15 @@ export default {
     };
   },
   components: {
-    Search
   },
   created() {
 	  this.Sysuser();
 	  getSysDeptTreeData().then(res => {
-		console.log(res);
 		this.data = res;
 	  });
   },
   methods: {
 	  handleClick(row) {
-        console.log(row);
       },
 	  toggleSelection(rows) {
         if (rows) {
@@ -252,22 +247,16 @@ export default {
         this.multipleSelection = val;
 	  },
 	  Sysuser() {
-		console.log("接口请求");
 		this.sizeForm.pageNum=this.current;
 		this.sizeForm.pageSize=this.pageSize;
-		console.log(this.sizeForm)
 		getSysUserList(this.sizeForm).then(res => {
-			console.log(res);
 			this.tableData = res.rows;
-			console.log(this.tableData);
 		});
 	  },
 	  onSubmit() {
-		console.log(this.sizeForm);
 		this.Sysuser();
 	  },
 	  handleNodeClick(data) {
-        console.log(data);
 	  },
 	  handleSizeChange: function(size) {
 		this.pageSize = size;
