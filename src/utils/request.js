@@ -4,7 +4,7 @@ import { Message, MessageBox } from 'element-ui'
 
 // import { getToken } from '@/utils/auth';
 
-const baseURL = process.env.NODE_ENV === 'production' ? 'http://192.168.0.124:9091' : 'http://192.168.0.81:9091'
+const baseURL = process.env.NODE_ENV === 'production' ? 'http://192.168.0.124:9091' : 'http://192.168.0.105:9091';
 // 创建axios实例
 const service = axios.create({
   baseURL: `${baseURL}/uumsApi`, // api的base_url
