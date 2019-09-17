@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { getToken, setToken, removeToken } from '@/utils/auth';
 // eslint-disable-next-line import/no-cycle
-import { login, getUserInfo, getMenuTree } from '@/api/app';
+import { login, getUserInfo, getMenuTree, getSysUserList } from '@/api/app';
 
 const _import = require(`@/router/_import_${process.env.NODE_ENV}`);
 
