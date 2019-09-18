@@ -10,7 +10,7 @@
 						<el-input v-model="sizeForm.roleKey"></el-input>
 					</el-form-item>
 					<el-form-item label="角色状态">
-						<el-select v-model="sizeForm.status" placeholder="所有">
+						<el-select v-model="sizeForm.status" placeholder="所有"  style="width:245px;">
 						<el-option label="正常" value="0"></el-option>
 						<el-option label="禁用" value="1"></el-option>
 						</el-select>
@@ -34,10 +34,9 @@
 		<div class="dashboard-content">
 			 <div class="table-content">
 				 <div class="tableHead">
-					<div class="button">新增</div>
-					<div class="button">删除</div>
+					<div class="button" @click="dialogFormVisible = true">新增</div>
+					<div class="button"  @click="batchDelete()">删除</div>
 					<div class="button">修改</div>
-					<div class="button">导入</div>
 					<div class="button">导出</div>
 					<div class="operation">
 						<div><span></span></div>
@@ -59,12 +58,12 @@
 						</el-table-column>
 						<el-table-column
 						label="角色编号"
-						type="roleId"
+						prop="roleId"
 						>
 						</el-table-column>
 						<el-table-column
 						label="角色名称"
-						type="roleName"
+						prop="roleName"
 						>
 						</el-table-column>
 						<el-table-column
@@ -100,36 +99,109 @@
 							<span @click="handleClick(scope.row)">编辑</span>
 							<span>数据权限</span>
 							<span>分配用户</span>
-							<span>删除</span>
+							<span @click="deleted(scope.row.roleId)">删除</span>
 						</template>
 						</el-table-column>
 					</el-table>
 				</div>
+				<el-pagination style="text-align:right;margin-top:2%;"
+					background
+					v-show="pageShow"
+					layout="prev, pager, next, jumper,total"
+					@current-change="handleSizeChange"
+					:current-page="current"
+					:page-size="pageSize"
+					:total="total">
+				</el-pagination>
 			</div>
 		</div>
+		<el-dialog title="基本信息" :visible.sync="dialogFormVisible">
+			<el-form :model="form" style="height:308px;">
+				<el-form-item label="角色名称：" :label-width="formLabelWidth">
+					<el-input v-model="form.surLoginName" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="权限字符：" :label-width="formLabelWidth">
+					<el-input v-model="form.surDeptId" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="显示顺序：" :label-width="formLabelWidth">
+					<el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="状态：" :label-width="formLabelWidth">
+					<el-radio v-model="surSex" label="1">男</el-radio>
+					<el-radio v-model="surSex" label="2">女</el-radio>
+				</el-form-item>
+				<el-form-item label="备注：" :label-width="formLabelWidth">
+					<el-input v-model="form.surUserName" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="菜单权限" :label-width="formLabelWidth">
+					<el-input v-model="form.surPassword" autocomplete="off"></el-input>
+				</el-form-item>
+				
+				<el-form-item label="用户状态" :label-width="formLabelWidth">
+					<el-switch
+						v-model="form.value1">
+					</el-switch>
+				</el-form-item>
+				<el-form-item label="岗 位" :label-width="formLabelWidth">
+					<el-select v-model="form.region" placeholder="请选择岗位">
+						<el-option label="董事长" value="董事长"></el-option>
+						<el-option label="项目经理" value="项目经理"></el-option>
+						<el-option label="人力资源" value="人力资源"></el-option>
+						<el-option label="普通员工" value="普通员工"></el-option>
+					</el-select>
+				</el-form-item>
+				<!-- <el-form-item label="角色" :label-width="formLabelWidth">
+					<el-radio v-model="surStatus" label="1">操作员</el-radio>
+					<el-radio v-model="surStatus" label="2">管理员</el-radio>
+				</el-form-item> -->
+			</el-form>
+		<div slot="footer" class="dialog-footer">
+			<el-button  @click="preservation" type="primary">保 存</el-button>
+			<el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+		</div>
+		</el-dialog>
 	</div>
 </template>
 <script>
-import { getSysRoleList } from '@/api';
+import { getSysRoleList,deleteRoleGwPage } from '@/api';
 export default {
   data() {
     return {
 		tableData: [],
 		value1: true,
 		multipleSelection: [],
+		formLabelWidth: '120px',
+		dialogFormVisible:false,
 		sizeForm: {
 			roleName: '',
 			roleKey: '',
 			date1: '',
 			date2: '',
 			status: '',
-        }
+		},
+		form: {
+          region: '',
+          delivery: false,
+		  value1:true,
+		  surRemark:'',
+		  surUserName:'',
+		  surPhoneNumber:'',
+		  surRemark:'',
+		  surEmail:'',
+		  surLoginName:'',
+		  surPassword:'',
+		  surDeptId:'',
+        },
+		pageShow:true,
+		current:1,
+		pageSize:5,
+		total:10,
     };
   },
   components: {
   },
   created() {
-	  this.Sysrole();
+	  this.queryDate();
   },
   methods: {
 	  handleClick(row) {
@@ -159,19 +231,82 @@ export default {
 		this.sizeForm.date2 = '';
 		this.sizeForm.status = '';
 	  },
-	  Sysrole() {
-		console.log("接口请求");
-		getSysRoleList({pageNum:1,pageSize:10}).then(res => {
-			console.log(res);
+	  queryDate() {
+		this.sizeForm.pageNum=this.current;
+		this.sizeForm.pageSize=this.pageSize;
+		getSysRoleList(this.sizeForm).then(res => {
 			this.tableData = res.rows;
-			console.log(this.tableData);
+			this.total = parseInt(res.total);
 		});
+	  },
+	  exported(){//导出
+		window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel';
+	  },
+	  batchDelete(){//批量删除
+	  console.log(this.multipleSelection)
+        let selectArr = [];
+        if(typeof(this.multipleSelection) == "undefined"){
+            this.$message({
+                message: '请选择需要删除的数据！',
+                type: 'warning'
+            });
+        }else{
+            this.multipleSelection.forEach((v,i) => {
+                selectArr.push(v.roleId);
+            })
+            this.deleted(selectArr.join(','));
+        }
+	  },
+	  revise(){
+			if(typeof(this.multipleSelection) == "undefined"){
+				this.$message({
+					message: '请选择需要修改的数据！',
+					type: 'warning'
+				});
+			}else{
+				this.dialogFormVisible = true;
+				this.form = this.multipleSelection.pop();//获取最后一条
+				this.obj = this.multipleSelection.pop();
+			}
+	  },
+	  deleted(ids){//删除
+			this.$confirm('确认删除该数据?', '提示', {
+			confirmButtonText: '确定',
+			cancelButtonText: '取消',
+			type: 'warning'
+			}).then(() => {
+				deleteRoleGwPage({roleId:ids}).then(res => {
+					this.$message({
+						type: 'success',
+						message: '删除成功!'
+					});
+					this.queryDate();
+				});  
+			}).catch(() => {
+			this.$message({
+				type: 'info',
+				message: '已取消删除'
+			});          
+			});
+	  },
+	  preservation(){ 新增保存
+
+	  },
+	  handleSizeChange: function(current) {
+		console.log(current)
+		this.current = current;
+		this.queryDate();
+	  },
+	  editor(rows){//编辑
+		this.dialogFormVisible = true;
+		this.form = rows;
+		this.obj = rows;
 	  },
   }
 };
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 	.role {
 		color: #fff;
 		height: 100%;
@@ -291,6 +426,89 @@ export default {
 			}
 		}
 	}
+.login-user{
+		margin-bottom: 20px;
+		text-align: center;
+        span{
+          text-align: center;
+          font-size:18px;
+          color:#63ACDF;
+          margin: 0 5%;
+        }
+        img{
+          vertical-align: bottom;
+        }
+	  }
+	 .role /deep/ .el-dialog {
+		  .el-dialog__header {
+			text-align: center;
+			.el-dialog__title {
+			  text-align: center;
+			  color: #4BAEFD;
+			}
+			.el-dialog__title:before {
+				content:'';
+				display: inline-block;
+				background-image: url(../../assets/login-left.png);
+				background-size: 100% 100%;
+				width:91px;
+				height: 13px;
+				margin-right: 12px; 
+			}
+			.el-dialog__title:after {
+				content:'';
+				display: inline-block;
+				background-image: url(../../assets/login-right.png);
+				background-size: 100% 100%;
+				width:91px;
+				height: 13px;
+				margin-left: 12px; 
+			}
+			.el-dialog__headerbtn {
+				top: 80px;
+    			right: 80px;
+				.el-dialog__close {
+					color: #FFF;
+					font-size: 30px;
+				}
+			}
+		  }
+		  .el-dialog__body {
+				padding:10px 20px;
+				.el-form {
+					padding:  20px 0px 0px;
+					.el-radio {
+						color: #FFF;
+						margin-right: 50px; 
+					}
+				}
+		  }
+		   .el-dialog__body::before {
+				content: '基本信息'; 
+				width: 100%;
+				height: 34px;
+				display: inline-block;
+				border-bottom: 1px dashed rgba(75,174,253,1); 
+				color: #63ACDF;
+				font-size: 13px;
+			}
+	  }
+	 
+	 .role /deep/ .dialog-footer {
+		  text-align: center;
+	  }
+.role /deep/.cell span:nth-child(1) {
+	color: #45EBA7;
+}
+.role /deep/.cell span:nth-child(2) {
+	color: #E6BF06;
+}
+.role /deep/.cell span:nth-child(3) {
+	color: #21b9bb;
+}
+.role /deep/.cell span:nth-child(4) {
+	color: #CB3203;
+}
 </style>
 <style>
 	.el-switch {
@@ -349,16 +567,7 @@ export default {
 	.cell span {
 		cursor: pointer;
 	}
-	.cell span:nth-child(1) {
-		color: #45EBA7;
-	}
-	.cell span:nth-child(2) {
-		color: #CB3203;
-	}
-	.cell span:nth-child(3) {
-		color: #E6BF06;
-	}
-
+	
 	*::-webkit-scrollbar {
 		width: 16px;
 	}
@@ -376,7 +585,6 @@ export default {
         width: 325px;
         color: #fff;
         float: left;
-        margin-right: 112px;
         height: 60px;
     }
     .el-form-item:nth-child(4) {
