@@ -46,7 +46,7 @@
         <div class="table">
           <el-table
             ref="multipleTable"
-            :data="tableData"
+            :data="tableDataList"
             tooltip-effect="dark"
             style="width: 100%"
             @selection-change="handleSelectionChange"
@@ -76,8 +76,8 @@
           style="text-align:right;margin-top:2%;"
           background
           layout="prev, pager, next"
-          @size-change="handleSizeChange($event, getSysUserList)"
-		  @current-change="handleCurrentChange($event, getSysUserList)"
+          @size-change="handleSizeChange($event, query)"
+          @current-change="handleCurrentChange($event, query)"
           :current-page="queryList.pageNum"
           :page-size="queryList.pageSize"
           :total="total"
@@ -191,7 +191,6 @@ export default {
       //     surEndTime: ""
       //   },
 
-      
       //   queryList: {
       // 	current: 1,
       // 	pageSize: 10,
@@ -220,8 +219,13 @@ export default {
   components: {
     FilterQueryForm
   },
+  computed: {
+    query() {
+      return this.doQuery.bind(this, getSysUserList);
+    }
+  },
   created() {
-    this.getSysUserList();
+    this.query();
     getSysDeptTreeData().then(res => {
       this.data = res;
     });
@@ -230,12 +234,6 @@ export default {
     handleClick(row) {},
     handleSelectionChange(val) {
       this.multipleSelection = val;
-    },
-    getSysUserList() {
-      getSysUserList(this.queryList).then(res => {
-		this.total = +res.total;
-        this.tableData = res.rows;
-      });
     },
     handleNodeClick(data) {}
   }
@@ -249,8 +247,8 @@ export default {
   .dashboard-content {
     height: calc(100% - 174px);
     width: 100%;
-	display: flex;
-	margin-top: 15px;
+    display: flex;
+    margin-top: 15px;
     .organization {
       width: 223px;
       height: 100%;

@@ -7,10 +7,17 @@ const mixin = {
         pageNum: 1,
         pageSize: 6,
       },
+      tableDataList: [],
     };
   },
   methods: {
-    handleFilter(queryFilter, afterHandler) {
+    doQuery(queryApi) {
+      queryApi(this.queryList).then(({ rows, total }) => {
+        this.tableDataList = rows;
+        this.total = +total;
+      });
+    },
+    handleFilter(queryFilter) {
       Object.assign(this.queryList, queryFilter);
       afterHandler && afterHandler();
     },
