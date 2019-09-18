@@ -17,7 +17,7 @@ const mixin = {
         this.total = +total;
       });
     },
-    handleFilter(queryFilter) {
+    handleFilter(queryFilter, afterHandler) {
       Object.assign(this.queryList, queryFilter);
       afterHandler && afterHandler();
     },
@@ -29,6 +29,7 @@ const mixin = {
       this.queryList.pageNum = current;
       afterHandler && afterHandler();
     },
+    handleExport() {}
   },
 };
 
