@@ -48,7 +48,7 @@ export default {
     this.initTags();
     this.addTags();
   },
-  methods: {
+  methods: { 
     isActive(route) {
       return route.path === this.$route.path;
     },

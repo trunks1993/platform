@@ -1,13 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 // import Login from '@/views/login';
-<<<<<<< HEAD
-const _import = require('./_import_' + process.env.NODE_ENV)
-=======
-import Layout from '@/views/layout';
-
-const _import = require(`./_import_${  process.env.NODE_ENV}`);
->>>>>>> 3b5aa5f8307e4c2e5e54c470bd71cc5b0bd5fcad
+const _import = require('./_import_' + process.env.NODE_ENV);
 
 Vue.use(Router);
 

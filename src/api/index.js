@@ -54,12 +54,6 @@ export const deleteGwPage = params => request({
   method: 'delete',
   params,
 });
-// 导出岗位管理列表
-export const exportGwPage = params => request({
-  url: '/v1/manage/post/exportExcel',
-  method: 'get',
-  params,
-});
 // 编辑岗位管理列表
 export const editorGwPage = params => request({
   url: '/v1/manage/post/update/{postCode}',
@@ -72,9 +66,63 @@ export const addGwPage = params => request({
   method: 'post',
   params,
 });
-//查询字典管理列表
+// 查询字典管理列表
 export const queryDictPage = params => request({
-  url: '/v1/manage/post/insert',
+  url: '/v1/dictionaries/dictType/queryByPage',
+  method: 'get',
+  params,
+});
+// 编辑字典管理列表
+export const editorDictPage = params => request({
+  url: '/v1/dictionaries/dictType/update/{dictId}',
+  method: 'put',
+  params,
+});
+// 新增字典管理列表
+export const addDictPage = params => request({
+  url: '/v1/dictionaries/dictType/insert',
+  method: 'post',
+  params,
+});
+// 删除字典管理列表
+export const deleteDictPage = params => request({
+  url: '/v1/dictionaries/dictType/delete',
+  method: 'delete',
+  params,
+});
+// 查询操作日志列表
+export const queryOperLPage = params => request({
+  url: '/v1/operLog/list',
+  method: 'get',
+  params,
+});
+// 删除操作日志列表
+export const deleteOperLPage = params => request({
+  url: '/v1/operLog/remove',
+  method: 'delete',
+  params,
+});
+// 清空操作日志列表
+export const clearOperLPage = params => request({
+  url: '/v1/operLog/clean',
+  method: 'post',
+  params,
+});
+// 查询登录日志列表
+export const queryLoginPage = params => request({
+  url: '/v1/logininfor/list',
+  method: 'get',
+  params,
+});
+// 删除登录日志列表
+export const deleteLoginPage = params => request({
+  url: '/v1/logininfor/remove',
+  method: 'delete',
+  params,
+});
+// 清空登录日志列表
+export const clearLoginPage = params => request({
+  url: '/v1/logininfor/clean',
   method: 'post',
   params,
 });

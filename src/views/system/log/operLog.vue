@@ -1,31 +1,45 @@
 <template>
-    <div class="dict-container">
-        <div class="tabs-search" v-if="isSearch">
+    <div class="operlog-container">
+        <div class="tabs-search">
 			<div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-					<el-form-item label="字典名称">
+					<el-form-item label="系统模块">
+						<el-input v-model="sizeForm.module"></el-input>
+					</el-form-item>
+					<el-form-item label="操作人员">
 						<el-input v-model="sizeForm.name"></el-input>
 					</el-form-item>
-					<el-form-item label="字典类型">
-						<el-input v-model="sizeForm.type"></el-input>
-					</el-form-item>
-					<el-form-item label="字典状态">
-						<el-select v-model="sizeForm.status" placeholder="所有">
-						<el-option label="正常" value="0"></el-option>
-						<el-option label="停用" value="1"></el-option>
+					<el-form-item label="操作类型">
+						<el-select v-model="sizeForm.type" placeholder="请选择">
+                            <el-option label="新增" value="0"></el-option>
+                            <el-option label="修改" value="1"></el-option>
+                            <el-option label="删除" value="0"></el-option>
+                            <el-option label="授权" value="1"></el-option>
+                            <el-option label="导出" value="0"></el-option>
+                            <el-option label="导入" value="1"></el-option>
+                            <el-option label="强退" value="0"></el-option>
+                            <el-option label="生成代码" value="1"></el-option>
+                            <el-option label="清空数据" value="0"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="创建时间">
+                    <el-form-item label="操作状态">
+						<el-select v-model="sizeForm.status" placeholder="所有">
+						    <el-option label="所有" value=""></el-option>
+                            <el-option label="成功" value="0"></el-option>
+                            <el-option label="失败" value="1"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item label="操作时间">
 						<el-col :span="11">
-						    <el-date-picker type="beginTime" placeholder="开始时间" v-model="sizeForm.beginTime" style="width: 100%;"></el-date-picker>
+						<el-date-picker type="beginTime" placeholder="开始时间" v-model="sizeForm.beginTime" style="width: 100%;"></el-date-picker>
 						</el-col>
 						<el-col class="line" :span="2">-</el-col>
 						<el-col :span="11">
-						    <el-date-picker type="endTime" placeholder="结束时间" v-model="sizeForm.endTime" style="width: 100%;"></el-date-picker>
+						<el-date-picker type="endTime" placeholder="结束时间" v-model="sizeForm.endTime" style="width: 100%;"></el-date-picker>
 						</el-col>
 					</el-form-item>
 					<el-form-item size="large" class="query">
-						<el-button type="primary" @click="queryDate()">查询</el-button>
+						<el-button type="primary" @click="query()">查询</el-button>
 					</el-form-item>
 				</el-form>
 			</div>
@@ -35,14 +49,14 @@
 			 <div class="table">
                 <!-- <div class="main-right"> -->
                     <div class="tableHead">
-                        <el-button @click="addInfo()"><i class="iconComm add"></i>新增</el-button>
+                        <!-- <el-button><i class="iconComm add"></i>新增</el-button> -->
                         <el-button @click="batchDelete()"><i class="iconComm delete"></i>删除</el-button>
-                        <el-button @click="revise()"><i class="iconComm modify"></i>修改</el-button>
+                        <el-button @click="clearLog()"><i class="iconComm modify"></i>清空</el-button>
                         <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
                         <el-button @click="exported()"><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
-                            <div @click="toggle()"><span></span></div>
-                            <div @click="refresh()"><span></span></div>
+                            <div><span></span></div>
+                            <div><span></span></div>
                             <div><span></span></div>
                             <div><span></span></div>
                         </div>
@@ -50,29 +64,22 @@
                     <div class="tabled">
                         <el-table border ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
                             <el-table-column type="selection"></el-table-column>
-                             <el-table-column prop="dictId" label="字典主键"></el-table-column>
-                            <el-table-column prop="dictName" label="字典名称"></el-table-column>
-                            <el-table-column prop="" label="字典类型" show-overflow-tooltip>
-                                 <template slot-scope="scope">
-									<span class="type">{{ scope.row.dictType }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="状态" show-overflow-tooltip>
+                            <el-table-column prop="operId" label="日志编号"></el-table-column>
+                            <el-table-column prop="title" label="系统模块"> </el-table-column>
+                            <el-table-column prop="operatorType" label="操作类型" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="operName" label="操作人员" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="deptName" label="部门名称" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="operIp" label="主机" show-overflow-tooltip> </el-table-column>
+                            <el-table-column prop="operLocation" label="操作地点" show-overflow-tooltip></el-table-column>
+                            <el-table-column property="status" label="操作状态">
                                 <template slot-scope="scope">
-                                    <!-- <el-switch
-                                    v-model="scope.row.status">
-                                    </el-switch> -->
-                                    <span :class="[scope.row.state  ? 'normal' : 'stop']">{{scope.row.state  ? '正常' : '停用'}}</span>
-                                    <!-- <span style="color:#CB3203;">停用</span> -->
+                                    <span :class="[scope.row.state  ? 'normal' : 'stop']">{{scope.row.state  ? '成功' : '失败'}}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="time" label="操作时间" show-overflow-tooltip></el-table-column>
                             <el-table-column label="操作">
                                 <template slot-scope="scope">
-                                    <span class="editor" @click="editor(scope.row)">编辑</span>
-									<span class="editor" @click="deleted(scope.row.dictId)">删除</span>
-                                    <span class="editor">列表</span>
+                                    <span @click="lookUp(scope.row)" style="color:#E6BF06;cursor: pointer;">详细</span>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -92,50 +99,52 @@
         <!-- 弹框 -->
         <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
             <el-form :model="form" style="height:308px;">
-                <el-form-item label="字典名称" :label-width="formLabelWidth">
-                    <el-input v-model="form.dictName" autocomplete="off"></el-input>
+                <el-form-item label="操作模块" :label-width="formLabelWidth">
+                    <el-input v-model="form.title" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="字典类型" :label-width="formLabelWidth">
-                    <el-input v-model="form.dictType" autocomplete="off"></el-input>
+                <el-form-item label="登录信息" :label-width="formLabelWidth">
+                    <el-input v-model="form.loginInfo" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="请求地址" :label-width="formLabelWidth">
+                    <el-input v-model="form.operLocation" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="操作方法" :label-width="formLabelWidth">
+                    <el-input v-model="form.operLocation" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" style="width: 325px;">
-                    <el-switch
-                        v-model="form.state">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item label="备注" :label-width="formLabelWidth" class="inputTextarea">
-                    <el-input v-model="form.remark" autocomplete="off" type="textarea" class="textarea"></el-input>
+                    <template slot-scope="scope">
+                        <span :class="[scope.row.state  ? 'normal' : 'stop']">{{scope.row.state  ? '成功' : '失败'}}</span>
+                    </template>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="save()">保 存</el-button>
+                <!-- <el-button type="primary" @click="save()">保 存</el-button> -->
                 <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
             </div>
 		</el-dialog>
     </div>
 </template>
 <script>
-import { queryDictPage, deleteDictPage, editorDictPage, addDictPage } from '@/api';
+import { queryOperLPage, deleteOperLPage, clearOperLPage } from '@/api';
 export default {
     data() {
         return {
-            value: true,
             sizeForm: {
+                module:'',
                 name: '',
                 type:'',
                 status: '',
                 beginTime: '',
                 endTime: '',
             },
-            tableData:[],//表格
+            value: true,
+            tableData: [],
             current: 1,//当前页
             total: 0,//总页
             pageSize:5,//每页条数  
             pageShow:false,//没有数据时隐藏分页
-            tableData: [],
-            form:{},
-            isSearch:true,
             dialogFormVisible: false,
+            form:{},
             obj:{},
             formLabelWidth: '120px',
         };
@@ -144,35 +153,29 @@ export default {
         //   Search
     },
     created() {
-        this.queryDate();
+        this.query();
     },
     methods: {
-        toggle(){//显示隐藏查询切换
-            this.isSearch = !this.isSearch;
-        },
-        refresh(){//刷新当前页面
-            // window.location.reload();
-            this.$router.go(0);
+        handleCurrentChange: function(current) {//当前页
+            this.current = current;
+            this.query();
         },
         handleSelectionChange(val) {
             this.multipleSelection = val;
         },
-        handleCurrentChange: function(current) {//当前页
-            this.current = current;
-            this.queryDate();
-        },
         change (data) {
             console.log(data)
         },
-        queryDate(){//查询
-            queryDictPage({
-                // postCode:this.sizeForm.name,
-                dictName:this.sizeForm.name,
-                dictType:this.sizeForm.type,
+        query(){
+            queryOperLPage({
+                title:this.sizeForm.module,
+                operName:this.sizeForm.name,
+                operatorType:this.sizeForm.type,
                 status:this.sizeForm.status,
                 pageNum:this.current,
                 pageSize:this.pageSize,
             }).then(res => {
+                console.log(res);
                 this.tableData = res.rows;
                 this.tableData.forEach((v,i) =>{
                     v.state = v.status == 0 ? true : false;
@@ -182,9 +185,6 @@ export default {
                     this.pageShow = true;
                 }
             });
-        },
-        exported(){//导出
-            window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/dictionaries/dictType/exportExcel?dictName='+this.sizeForm.name+'&dictType='+this.sizeForm.type+'&status='+this.sizeForm.status;
         },
         batchDelete(){//批量删除
             let selectArr = [];
@@ -206,12 +206,12 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                deleteDictPage({str:ids}).then(res => {
+                deleteOperLPage({str:ids}).then(res => {
                     this.$message({
                         type: 'success',
                         message: '删除成功!'
                     });
-                    this.queryDate();
+                    this.query();
                 });  
             }).catch(() => {
                 this.$message({
@@ -220,69 +220,41 @@ export default {
                 });          
             });
         },
-        revise(){//批量修改
-            if(typeof(this.multipleSelection) == "undefined"){
-                this.$message({
-                    message: '请选择需要修改的数据！',
-                    type: 'warning'
+        exported(){//导出
+            window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/operLog/exportExcel';
+        },
+        clearLog(){//清空日志
+            this.$confirm('确认清除数据?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                clearOperLPage({}).then(res => {
+                    this.$message({
+                        type: 'success',
+                        message: '清除成功!'
+                    });
+                    this.query();
                 });
-            }else{
-                this.dialogFormVisible = true;
-                this.form = this.multipleSelection.pop();//获取最后一条
-                this.obj = this.multipleSelection.pop();
-            }
-        },
-        addInfo(){//新增
-            this.dialogFormVisible = true;
-            this.form = {};
-            this.obj = {};
-        },
-        editor(rows){//编辑
-            this.dialogFormVisible = true;
-            this.form = rows;
-            this.obj = rows;
-        },
-        save(){//编辑入参
-            if(JSON.stringify(this.obj) == '{}'){//新增
-                this.addAsk();
-            }else{//编辑
-                this.saveAsk();
-            }  
-        },
-        saveAsk(){//编辑保存
-            this.form.status = this.form.state ?  '0': '1';
-            editorDictPage(this.form).then(res => {
+            }).catch(() => {
                 this.$message({
-                    message: '修改成功！',
-                    type: 'success'
-                });
-                this.dialogFormVisible = false;
+                    type: 'info',
+                    message: '已取消清除'
+                });          
             });
         },
-        addAsk(){//新增保存
-            this.form.status = this.form.state ?  '0': '1';
-            addDictPage(this.form).then(res => {
-                this.$message({
-                    message: '新增成功！',
-                    type: 'success'
-                });
-                this.dialogFormVisible = false;
-                this.queryDate();
-            });
-        },
+        lookUp(){
+
+        }
     }
 };
 </script>
 <style lang="scss" scoped>
-.dict-container {
+.operlog-container {
     color: #fff;
     height: 100%;
     .tabs-search {
         height: 187px;
-        .query{
-            margin: 0 !important;
-            width: 0 !important;
-        }
     }
     .dashboard-content {
         height: calc(100% - 187px);
@@ -290,7 +262,7 @@ export default {
         .table {
             width: 100%;
             height: 100%;
-            background:url(../../assets/mainTreeR.png)no-repeat;
+            background:url(../../../assets/mainTreeR.png)no-repeat;
             background-size: 100% 100%;
             padding: 1.5%;
             .el-button{
@@ -309,7 +281,7 @@ export default {
                     width: 14px;
                     height: 14px;
                     margin-right: 6px;
-                    background:url(../../assets/icon.png);
+                    background:url(../../../assets/icon.png);
                 }
                 .add{
                     background-position: -57px 792px;
@@ -344,7 +316,7 @@ export default {
                         width: 14px;
                         height: 14px;
                         display: inline-block;
-                        background-image: url(../../assets/icon.png);
+                        background-image: url(../../../assets/icon.png);
                         background-position: -57px 422px;
                         position: absolute;
                         left: 50%;
@@ -386,81 +358,7 @@ export default {
         color:#CB3203 !important;
     }
 }
-.dict-container /deep/.el-dialog {
-    .el-dialog__header {
-        text-align: center;
-    .el-dialog__title {
-        text-align: center;
-        color: #4BAEFD;
-    }
-    .el-dialog__title:before {
-        content:'';
-        display: inline-block;
-        background-image: url(../../assets/login-left.png);
-        background-size: 100% 100%;
-        width:91px;
-        height: 13px;
-        margin-right: 12px; 
-    }
-    .el-dialog__title:after {
-        content:'';
-        display: inline-block;
-        background-image: url(../../assets/login-right.png);
-        background-size: 100% 100%;
-        width:91px;
-        height: 13px;
-        margin-left: 12px; 
-    }
-    .el-dialog__headerbtn {
-        top: 80px;
-        right: 80px;
-        .el-dialog__close {
-            color: #FFF;
-            font-size: 30px;
-        }
-    }
-    }
-    .el-dialog__body {
-        padding:10px 20px;
-        .el-form {
-            padding:  20px 0px 0px;
-            .el-radio {
-                color: #FFF;
-                margin-right: 50px; 
-            }
-        }
-    }
-}
-.el-dialog__body::before {
-    content: '基本信息'; 
-    width: 100%;
-    height: 34px;
-    display: inline-block;
-    border-bottom: 1px dashed rgba(75,174,253,1); 
-    color: #63ACDF;
-    font-size: 13px;
-}
-.dialog-footer {
-    text-align: center;
-    margin-top: 4%;
-}
-.el-dialog__footer::before {
-    border-bottom: none !important; 
-}
-.textarea {
-    width: 100%;
-    background:rgba(5,37,75,1);
-}
-.dict-container /deep/.el-textarea__inner{
-    background: #05254B;
-    border: 1px solid #02439D; 
-    border-radius:2px;
-}
-.dict-container /deep/.inputTextarea{
-    width: 650px;
-    padding-right:150px;
-}
-.dict-container /deep/ .el-switch {
+.operlog-container /deep/ .el-switch {
     display: inline-flex;
     align-items: center;
     position: relative;
@@ -469,21 +367,21 @@ export default {
     height: 24px;
     vertical-align: middle;
 }
-.dict-container /deep/.el-switch__input {
+.operlog-container /deep/.el-switch__input {
     position: absolute;
     width: 0;
     height: 0;
     opacity: 0;
     margin: 0;
 }
-.dict-container /deep/.el-switch.is-checked .el-switch__core {
+.operlog-container /deep/.el-switch.is-checked .el-switch__core {
     border-color: #4BAEFD;
     background-color: #4BAEFD;
 }
-.dict-container /deep/.el-switch.is-disabled .el-switch__core, .el-switch.is-disabled .el-switch__label {
+.operlog-container /deep/.el-switch.is-disabled .el-switch__core, .el-switch.is-disabled .el-switch__label {
     cursor: not-allowed;
 }
-.dict-container /deep/.el-switch__core {
+.operlog-container /deep/.el-switch__core {
     margin: 0;
     display: inline-block;
     position: relative;
@@ -498,11 +396,11 @@ export default {
     transition: border-color .3s,background-color .3s;
     vertical-align: middle;
 }
-.dict-container /deep/.el-switch.is-checked .el-switch__core:after {
+.operlog-container /deep/.el-switch.is-checked .el-switch__core:after {
     left: 88%;
     margin-left: -17px;
 }
-.dict-container /deep/.el-switch__core:after {
+.operlog-container /deep/.el-switch__core:after {
     content: "";
     position: absolute;
     top: 0px;
@@ -513,24 +411,15 @@ export default {
     height: 23px;
     background-color: #fff;
 }
-.dict-container /deep/.cell span.type{
-    color:#4baefd !important;
-}
-.dict-container /deep/.cell span.editor {
-    padding: 10px;
-    cursor: pointer;
-}
-.dict-container /deep/.cell span:nth-child(1) {
-    color: #45EBA7;
-}
-.dict-container /deep/.cell span:nth-child(2) {
-    color: #CB3203;
-}
-.dict-container /deep/.cell span:nth-child(3) {
-    color: #E6BF06;
-}
-.dict-container /deep/ .el-pagination .el-input__inner{
+// .operlog-container /deep/.el-checkbox__input.is-disabled .el-checkbox__inner{
+//     background: transparent;
+//     border: 1px solid #0284a1;
+// }
+.operlog-container /deep/ .el-pagination .el-input__inner{
     background: none !important;
     border: none !important;
+}
+.operlog-container /deep/ .el-form-item:nth-child(4) .el-form-item__content div:nth-child(1){
+    width: 100%;
 }
 </style>

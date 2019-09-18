@@ -76,12 +76,14 @@
                         layout="prev, pager, next"
                         :total="1000">
                     </el-pagination> -->
-                    <el-pagination style="text-align: right;" v-show="pageShow"
+                    <el-pagination style="text-align:right;margin-top:2%;"
+                        background
+                        v-show="pageShow"
                         @current-change="handleCurrentChange"
                         :current-page="current"
                         :page-size="pageSize"       
                         layout="prev, pager, next, jumper,total"
-                        :total="total">  
+                        :total="total">
                     </el-pagination>
                 <!-- </div> -->
 			 </div>
@@ -89,11 +91,6 @@
 
         <!-- 弹框 -->
         <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-		<!-- <div class="login-user">
-          <img src="../../assets/login-left.png" />
-          <span>基本信息</span>
-          <img src="../../assets/login-right.png" />
-        </div> -->
             <el-form :model="form" style="height:308px;">
                 <el-form-item label="岗位名称" :label-width="formLabelWidth">
                     <el-input v-model="form.postName" autocomplete="off"></el-input>
@@ -123,173 +120,160 @@
 <script>
 import { queryGwPage,deleteGwPage,exportGwPage,editorGwPage,addGwPage } from '@/api';
 // import { getToken } from '@/utils/auth';
-import Search from "../layout/components/Search";
 export default {
-  data() {
-    return {
-        sizeForm: {//查询
-			code: '',
-			name:'',
-			region: '',
-        },
-        tableData:[],//表格
-        current: 1,//当前页
-        total: 0,//当前页
-        pageSize:5,//每页条数  
-        pageShow:false,//没有数据时隐藏分页
-        dialogFormVisible: false,
-        form: {
-        //   postName: '',
-        //   postCode: '',
-        //   order:'',
-        //   state:true,
-        //   remark:''
-        },
-        formLabelWidth: '120px',
-        radio: '1',
-        obj:{},
-        isSearch:true,
-    };
-  },
-  components: {
-	//   Search
-  },
-  computed: {
+    data() {
+        return {
+            sizeForm: {//查询
+                code: '',
+                name:'',
+                region: '',
+            },
+            tableData:[],//表格
+            current: 1,//当前页
+            total: 0,//总页
+            pageSize:5,//每页条数  
+            pageShow:false,//没有数据时隐藏分页
+            dialogFormVisible: false,
+            form: {},//新增修改页面的对象
+            formLabelWidth: '120px',
+            radio: '1',
+            obj:{},
+            isSearch:true,
+        };
+    },
+    components: {
+    },
+    computed: {
 
-  },
-  created() {
-      this.queryDate();
-  },
-  methods: {
-    // 初始页currentPage、初始每页数据数pagesize和数据data
-    // handleSizeChange: function(size) {//size为每页显示的条数
-    //     this.pageSize = size;
-    //     this.queryDate();
-    // },
-    handleCurrentChange: function(current) {//当前页
-        this.current = current;
+    },
+    created() {
         this.queryDate();
     },
-    toggle(){//显示隐藏查询切换
-        this.isSearch = !this.isSearch;
-    },
-    refresh(){//刷新当前页面
-        // window.location.reload();
-        this.$router.go(0);
-    },
-    query() {//查询
-		this.queryDate();
-    },
-    batchDelete(){//批量删除
-        let selectArr = [];
-        if(typeof(this.multipleSelection) == "undefined"){
-            this.$message({
-                message: '请选择需要删除的数据！',
-                type: 'warning'
-            });
-        }else{
-            this.multipleSelection.forEach((v,i) => {
-                selectArr.push(v.postId);
-            })
-            this.deleted(selectArr.join(','));
-        }
-    },
-    addInfo(){//新增
-        this.dialogFormVisible = true;
-        this.form = {};
-        this.obj = {};
-    },
-    editor(rows){//编辑
-        this.dialogFormVisible = true;
-        this.form = rows;
-        this.obj = rows;
-    },
-    save(){//编辑入参
-        if(JSON.stringify(this.obj) == '{}'){//新增
-            this.addAsk();
-        }else{//编辑
-            this.saveAsk();
-        }  
-    },
-    saveAsk(){//编辑保存
-        this.form.status = this.form.state ?  '0': '1';
-        editorGwPage(this.form).then(res => {
-            this.$message({
-                message: '修改成功！',
-                type: 'success'
-            });
-            this.dialogFormVisible = false;
-        });
-    },
-    addAsk(){//新增保存
-        this.form.status = this.form.state ?  '0': '1';
-        addGwPage(this.form).then(res => {
-            this.$message({
-                message: '新增成功！',
-                type: 'success'
-            });
-            this.dialogFormVisible = false;
+    methods: {
+        handleCurrentChange: function(current) {//当前页
+            this.current = current;
             this.queryDate();
-        });
-    },
-    handleSelectionChange(val) {//多选
-        this.multipleSelection = val;
-    },
-    revise(){
-        if(typeof(this.multipleSelection) == "undefined"){
-            this.$message({
-                message: '请选择需要修改的数据！',
-                type: 'warning'
-            });
-        }else{
-            this.dialogFormVisible = true;
-            this.form = this.multipleSelection.pop();//获取最后一条
-            this.obj = this.multipleSelection.pop();
-        }
-    },
-    queryDate() {//查询
-        queryGwPage({
-            postCode:this.sizeForm.code,
-            postName:this.sizeForm.name,
-            status:this.sizeForm.region,
-            pageNum:this.current,
-            pageSize:this.pageSize,
-        }).then(res => {
-            this.tableData = res.rows;
-            this.tableData.forEach((v,i) =>{
-                v.state = v.status == 0 ? true : false;
-            });
-            this.total=res.total*1;
-            if(this.total > 0) {
-                this.pageShow = true;
-            }
-		});
-    },
-    deleted(ids){//删除
-        this.$confirm('确认删除该数据?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-            deleteGwPage({str:ids}).then(res => {
+        },
+        toggle(){//显示隐藏查询切换
+            this.isSearch = !this.isSearch;
+        },
+        refresh(){//刷新当前页面
+            // window.location.reload();
+            this.$router.go(0);
+        },
+        query() {//查询
+            this.queryDate();
+        },
+        batchDelete(){//批量删除
+            let selectArr = [];
+            if(typeof(this.multipleSelection) == "undefined"){
                 this.$message({
-                    type: 'success',
-                    message: '删除成功!'
+                    message: '请选择需要删除的数据！',
+                    type: 'warning'
                 });
+            }else{
+                this.multipleSelection.forEach((v,i) => {
+                    selectArr.push(v.postId);
+                })
+                this.deleted(selectArr.join(','));
+            }
+        },
+        addInfo(){//新增
+            this.dialogFormVisible = true;
+            this.form = {};
+            this.obj = {};
+        },
+        editor(rows){//编辑
+            this.dialogFormVisible = true;
+            this.form = rows;
+            this.obj = rows;
+        },
+        save(){//编辑入参
+            if(JSON.stringify(this.obj) == '{}'){//新增
+                this.addAsk();
+            }else{//编辑
+                this.saveAsk();
+            }  
+        },
+        saveAsk(){//编辑保存
+            this.form.status = this.form.state ?  '0': '1';
+            editorGwPage(this.form).then(res => {
+                this.$message({
+                    message: '修改成功！',
+                    type: 'success'
+                });
+                this.dialogFormVisible = false;
+            });
+        },
+        addAsk(){//新增保存
+            this.form.status = this.form.state ?  '0': '1';
+            addGwPage(this.form).then(res => {
+                this.$message({
+                    message: '新增成功！',
+                    type: 'success'
+                });
+                this.dialogFormVisible = false;
                 this.queryDate();
-            });  
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-    },
-    exported(){//导出
-        window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel';
-        
+            });
+        },
+        handleSelectionChange(val) {//多选
+            this.multipleSelection = val;
+        },
+        revise(){//批量修改
+            if(typeof(this.multipleSelection) == "undefined"){
+                this.$message({
+                    message: '请选择需要修改的数据！',
+                    type: 'warning'
+                });
+            }else{
+                this.dialogFormVisible = true;
+                this.form = this.multipleSelection.pop();//获取最后一条
+                this.obj = this.multipleSelection.pop();
+            }
+        },
+        queryDate() {//查询
+            queryGwPage({
+                postCode:this.sizeForm.code,
+                postName:this.sizeForm.name,
+                status:this.sizeForm.region,
+                pageNum:this.current,
+                pageSize:this.pageSize,
+            }).then(res => {
+                this.tableData = res.rows;
+                this.tableData.forEach((v,i) =>{
+                    v.state = v.status == 0 ? true : false;
+                });
+                this.total = res.total*1;
+                if(this.total > 0) {
+                    this.pageShow = true;
+                }
+            });
+        },
+        deleted(ids){//删除
+            this.$confirm('确认删除该数据?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                deleteGwPage({str:ids}).then(res => {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                    this.queryDate();
+                });  
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });          
+            });
+        },
+        exported(){//导出
+            window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel?postCode='+this.sizeForm.code+'&postName='+this.sizeForm.name+'&status='+this.sizeForm.region;
+            
+        }
     }
-  }
 };
 </script>
 <style lang="scss" scoped>
@@ -461,20 +445,11 @@ export default {
     margin-top: 4%;
 }
 .el-dialog__footer::before {
-//   content: '其他信息'; 
-//   width: 100%;
-//   height: 34px;
-//   display: inline-block;
     border-bottom: none !important; 
-//   color: #63ACDF;
-//   text-align: left;
-//   font-size: 13px;
 }
 .textarea {
     width: 100%;
     background:rgba(5,37,75,1);
-    // border:1px solid rgba(2,67,157,1);
-    // border-radius:2px;
 }
 .post-container /deep/.el-textarea__inner{
     background: #05254B;
