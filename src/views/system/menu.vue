@@ -7,9 +7,9 @@
 						<el-input v-model="sizeForm.name"></el-input>
 					</el-form-item>
 					<el-form-item label="角色状态">
-						<el-select v-model="sizeForm.region" placeholder="所有">
-						<el-option label="区域一" value="shanghai"></el-option>
-						<el-option label="区域二" value="beijing"></el-option>
+						<el-select v-model="sizeForm.region" placeholder="所有"  style="width:245px;">
+						<el-option label="显示" value="0"></el-option>
+						<el-option label="隐藏" value="1"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item size="large">
@@ -34,58 +34,25 @@
 				</div>
 				<div class="table">
 					<el-table
-						ref="multipleTable"
-						:data="tableData"
-						tooltip-effect="dark"
-						style="width: 100%"
-						@selection-change="handleSelectionChange">
-						<el-table-column
-						type="selection"
-						width="55">
-						</el-table-column>
-						<el-table-column
-						label="菜单名称"
+							:data="tableData"
+							style="width: 100%;margin-bottom: 20px;"
+							row-key="menuId"
+							:tree-props="{children: 'children', hasChildren: 'hasChildren'}"
 						>
-						<template slot-scope="scope">{{ scope.row.date }}</template>
+					<el-table-column
+						type="selection">
 						</el-table-column>
 						<el-table-column
-						prop="name"
-						label="排序"
-						>
-						</el-table-column>
-						<el-table-column
-						prop="address"
-						label="请求地址"
-						show-overflow-tooltip>
-						</el-table-column>
-						<el-table-column
-						prop="address"
-						label="类型"
-						show-overflow-tooltip>
-						</el-table-column>
-						<el-table-column
-						label="可见"
-						width="120"
-                        >
+						v-for="(item,index) in tableList"
+						:key="index"
+						:label="item.label"
+						:prop="item.prop"
+						></el-table-column>
+						<el-table-column label="操作">
 						<template slot-scope="scope">
-							<el-switch
-							v-model="value1">
-							</el-switch>
-						</template>
-						</el-table-column>
-						<el-table-column
-						prop="address"
-						label="	权限标识"
-						show-overflow-tooltip>
-						</el-table-column>
-						<el-table-column
-						label="操作"
-						width="220"
-                        >
-						<template slot-scope="scope">
-							<span @click="handleClick(scope.row)">编辑</span>
-							<span>新增</span>
-							<span>删除</span>
+							<span @click="handleClick(scope.row)">查看</span>
+							<span>编辑</span>
+							<span>重置</span>
 						</template>
 						</el-table-column>
 					</el-table>
@@ -95,64 +62,49 @@
 	</div>
 </template>
 <script>
+import { getMenuTree } from '@/api';
 export default {
   data() {
     return {
-		tableData: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普'
-		}, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普'
-		}],
+		tableList: [
+        {
+          label: "菜单名称",
+          prop: "menuName"
+        },
+        {
+          label: "排序",
+          prop: "name"
+        },
+        {
+          label: "请求地址",
+          prop: "path"
+        },
+        {
+          label: "类型",
+          prop: "operator"
+        },
+        {
+          label: "可见",
+          prop: "state"
+        },
+        {
+          label: "权限标识",
+          prop: "state"
+        }
+      ],
+		tableData: [],
 		value1: true,
 		multipleSelection: [],
 		sizeForm: {
 			name: '',
 			region: '',
-			date1: '',
-			date2: '',
-			delivery: false,
-			type: [],
-			resource: '',
-			desc: ''
         }
     };
   },
   components: {
   },
   created() {
-	  this.Sysuser();
+	  this.queryDate();
   },
   methods: {
 	  handleClick(row) {
@@ -170,19 +122,20 @@ export default {
       handleSelectionChange(val) {
         this.multipleSelection = val;
 	  },
-	  Sysuser() {
-		//    this.$store.dispatch('getUserManagementList', {pageNum:1,pageSize:10}).then(res => {
-		// 	   console.log(res);
-		//    });
+	  queryDate() {
+		   getMenuTree(this.sizeForm).then(res => {
+			   console.log(res)
+				this.tableData = res;
+		   });
 	  },
 	  onSubmit() {
-		console.log('submit!');
+		this.queryDate();
 	  }
   }
 };
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 	.menu {
 		color: #fff;
 		height: 100%;
@@ -366,7 +319,9 @@ export default {
 	.cell span:nth-child(3) {
 		color: #E6BF06;
 	}
+	.el-table_1_column_5 .cell {
 
+	}
 	*::-webkit-scrollbar {
 		width: 16px;
 	}
@@ -384,7 +339,6 @@ export default {
         width: 325px;
         color: #fff;
         float: left;
-        margin-right: 112px;
         height: 60px;
     }
     .el-form-item:nth-child(4) {
