@@ -1,5 +1,5 @@
 <template>
-    <div class="dict-container">
+    <div class="operlog-container">
         <div class="tabs-search">
 			<!-- <Search></Search> -->
 		</div>
@@ -8,9 +8,9 @@
 			 <div class="table">
                 <!-- <div class="main-right"> -->
                     <div class="tableHead">
-                        <el-button><i class="iconComm add"></i>新增</el-button>
+                        <!-- <el-button><i class="iconComm add"></i>新增</el-button> -->
                         <el-button><i class="iconComm delete"></i>删除</el-button>
-                        <el-button><i class="iconComm modify"></i>修改</el-button>
+                        <el-button><i class="iconComm modify"></i>清空</el-button>
                         <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
                         <el-button><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
@@ -21,16 +21,48 @@
                         </div>
                     </div>
                     <div class="tabled">
-                        <el-table border ref="multipleTable" :data="tableData3" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
-                            <el-table-column type="selection"></el-table-column>
-                            <el-table-column label="字典主键">
-                                <template slot-scope="scope">{{ scope.row.logNumber }}</template>
+                        <el-table border
+                            ref="multipleTable"
+                            :data="tableData3"
+                            tooltip-effect="dark"
+                            style="width: 100%"
+                            @selection-change="handleSelectionChange">
+                            <el-table-column
+                            type="selection">
                             </el-table-column>
-                            <el-table-column prop="sysModule" label="字典名称"></el-table-column>
-                            <el-table-column prop="operateType" label="字典类型" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="operator" label="状态" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="department" label="备注" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="mainHost" label="创建时间" show-overflow-tooltip></el-table-column>
+                            <el-table-column
+                            label="日志编号">
+                            <template slot-scope="scope">{{ scope.row.logNumber }}</template>
+                            </el-table-column>
+                            <el-table-column
+                            prop="sysModule"
+                            label="系统模块">
+                            </el-table-column>
+                            <el-table-column
+                            prop="operateType"
+                            label="操作类型"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                            prop="operator"
+                            label="操作人员"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                            prop="department"
+                            label="部门名称"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                            prop="mainHost"
+                            label="主机"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                            prop="operateAddress"
+                            label="操作地点"
+                            show-overflow-tooltip>
+                            </el-table-column>
                             <el-table-column property="status" label="操作状态">
                                 <template slot-scope="scope">
                                     <!-- <el-switch
@@ -47,9 +79,7 @@
                             </el-table-column>
                             <el-table-column label="操作">
                                 <template slot-scope="scope">
-                                    <span class="editor">编辑</span>
-									<span class="editor">删除</span>
-                                    <span class="editor">列表</span>
+                                    <span style="color:#E6BF06;cursor: pointer;">详细</span>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -165,7 +195,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.dict-container {
+.operlog-container {
     color: #fff;
     height: 100%;
     .tabs-search {
@@ -177,7 +207,7 @@ export default {
         .table {
             width: 100%;
             height: 100%;
-            background:url(../../assets/mainTreeR.png)no-repeat;
+            background:url(../../../assets/mainTreeR.png)no-repeat;
             background-size: 100% 100%;
             padding: 1.5%;
             .el-button{
@@ -196,7 +226,7 @@ export default {
                     width: 14px;
                     height: 14px;
                     margin-right: 6px;
-                    background:url(../../assets/icon.png);
+                    background:url(../../../assets/icon.png);
                 }
                 .add{
                     background-position: -57px 792px;
@@ -231,7 +261,7 @@ export default {
                         width: 14px;
                         height: 14px;
                         display: inline-block;
-                        background-image: url(../../assets/icon.png);
+                        background-image: url(../../../assets/icon.png);
                         background-position: -57px 422px;
                         position: absolute;
                         left: 50%;
@@ -267,7 +297,7 @@ export default {
         }
     }
 }
-.dict-container /deep/ .el-switch {
+.operlog-container /deep/ .el-switch {
     display: inline-flex;
     align-items: center;
     position: relative;
@@ -276,21 +306,21 @@ export default {
     height: 24px;
     vertical-align: middle;
 }
-.dict-container /deep/.el-switch__input {
+.operlog-container /deep/.el-switch__input {
     position: absolute;
     width: 0;
     height: 0;
     opacity: 0;
     margin: 0;
 }
-.dict-container /deep/.el-switch.is-checked .el-switch__core {
+.operlog-container /deep/.el-switch.is-checked .el-switch__core {
     border-color: #4BAEFD;
     background-color: #4BAEFD;
 }
-.dict-container /deep/.el-switch.is-disabled .el-switch__core, .el-switch.is-disabled .el-switch__label {
+.operlog-container /deep/.el-switch.is-disabled .el-switch__core, .el-switch.is-disabled .el-switch__label {
     cursor: not-allowed;
 }
-.dict-container /deep/.el-switch__core {
+.operlog-container /deep/.el-switch__core {
     margin: 0;
     display: inline-block;
     position: relative;
@@ -305,11 +335,11 @@ export default {
     transition: border-color .3s,background-color .3s;
     vertical-align: middle;
 }
-.dict-container /deep/.el-switch.is-checked .el-switch__core:after {
+.operlog-container /deep/.el-switch.is-checked .el-switch__core:after {
     left: 88%;
     margin-left: -17px;
 }
-.dict-container /deep/.el-switch__core:after {
+.operlog-container /deep/.el-switch__core:after {
     content: "";
     position: absolute;
     top: 0px;
@@ -320,17 +350,19 @@ export default {
     height: 23px;
     background-color: #fff;
 }
-.dict-container /deep/.cell span.editor {
-    padding: 10px;
-    cursor: pointer;
-}
-.dict-container /deep/.cell span:nth-child(1) {
-    color: #45EBA7;
-}
-.dict-container /deep/.cell span:nth-child(2) {
-    color: #CB3203;
-}
-.dict-container /deep/.cell span:nth-child(3) {
-    color: #E6BF06;
-}
+
+</style>
+<style>
+
+	/* *::-webkit-scrollbar {
+		width: 16px;
+	}
+	*::-webkit-scrollbar-track {
+		background-color: #05254B;
+		border:1px solid #02439D;
+	}
+
+	*::-webkit-scrollbar-thumb {
+		background-color: #0154C7;
+	} */
 </style>

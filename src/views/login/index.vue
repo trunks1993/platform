@@ -66,8 +66,8 @@ export default {
     };
 		return {
 			ruleForm: {
-				username: 'admin',
-				password: '123456'
+				username: '',
+				password: ''
 			},
 			rules: {
 				  username: [
@@ -152,24 +152,24 @@ export default {
         }
       }
       .login-input /deep/ .el-input__inner {
-        background: url(../../assets/login-input.png);
-        background-size: 100% 100%;
+        background: url(../../assets/login-input.png) !important;
+        background-size: 100% 100% !important;
         border: none !important;
-        height: 50px;
+        height: 50px !important;
         position: relative;
         padding-left: 50px;
         color: #5AC1FF;
         // margin-top: 40px;
       }
       .login-input /deep/ .el-button{
-         background: url(../../assets/login.png);
+         background: url(../../assets/login.png) !important;
          background-size: 100% 100%;
          border: none;
          height: 48px;
          color: #FFFFFF;
          outline:none;
          cursor: pointer;
-         margin-left: 0;
+         margin-left: 0 !important;
       }
       .login-input /deep/ .inputfirst:before{
           content: '';

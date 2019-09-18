@@ -1,5 +1,5 @@
 <template>
-    <div class="dict-container">
+    <div class="logininfor-container">
         <div class="tabs-search">
 			<!-- <Search></Search> -->
 		</div>
@@ -8,9 +8,9 @@
 			 <div class="table">
                 <!-- <div class="main-right"> -->
                     <div class="tableHead">
-                        <el-button><i class="iconComm add"></i>新增</el-button>
+                       <!-- <el-button><i class="iconComm add"></i>新增</el-button> -->
                         <el-button><i class="iconComm delete"></i>删除</el-button>
-                        <el-button><i class="iconComm modify"></i>修改</el-button>
+                        <el-button><i class="iconComm modify"></i>清空</el-button>
                         <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
                         <el-button><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
@@ -21,17 +21,47 @@
                         </div>
                     </div>
                     <div class="tabled">
-                        <el-table border ref="multipleTable" :data="tableData3" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
-                            <el-table-column type="selection"></el-table-column>
-                            <el-table-column label="字典主键">
-                                <template slot-scope="scope">{{ scope.row.logNumber }}</template>
+                        <el-table border
+                            ref="multipleTable"
+                            :data="tableData3"
+                            tooltip-effect="dark"
+                            style="width: 100%"
+                            @selection-change="handleSelectionChange">
+                            <el-table-column
+                            type="selection">
                             </el-table-column>
-                            <el-table-column prop="sysModule" label="字典名称"></el-table-column>
-                            <el-table-column prop="operateType" label="字典类型" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="operator" label="状态" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="department" label="备注" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="mainHost" label="创建时间" show-overflow-tooltip></el-table-column>
-                            <el-table-column property="status" label="操作状态">
+                            <el-table-column
+                            label="访问编码">
+                            <template slot-scope="scope">{{ scope.row.logNumber }}</template>
+                            </el-table-column>
+                            <el-table-column
+                            prop="sysModule"
+                            label="登录名称">
+                            </el-table-column>
+                            <el-table-column
+                            prop="operateType"
+                            label="登录地址"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                            prop="operator"
+                            label="登录地点"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                            prop="department"
+                            label="浏览器"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                            prop="mainHost"
+                            label="操作系统"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column
+                            prop="mainHost"
+                            label="登录状态"
+                            show-overflow-tooltip>
                                 <template slot-scope="scope">
                                     <!-- <el-switch
                                     v-model="scope.row.status">
@@ -41,17 +71,21 @@
                                 </template>
                             </el-table-column>
                             <el-table-column
-                            prop="time"
-                            label="操作时间"
+                            prop="mainHost"
+                            label="操作信息"
                             show-overflow-tooltip>
                             </el-table-column>
-                            <el-table-column label="操作">
+                            <el-table-column
+                            prop="mainHost"
+                            label="登录时间"
+                            show-overflow-tooltip>
+                            </el-table-column>
+                            <!-- <el-table-column label="操作">
                                 <template slot-scope="scope">
                                     <span class="editor">编辑</span>
-									<span class="editor">删除</span>
-                                    <span class="editor">列表</span>
+                                    <span class="editor">删除</span>
                                 </template>
-                            </el-table-column>
+                            </el-table-column> -->
                         </el-table>
                     </div>
                     <el-pagination style="text-align:right;margin-top:2%;"
@@ -65,11 +99,10 @@
     </div>
 </template>
 <script>
-// import Search from '../layout/components/Search'
+import { queryGwPage } from '@/api';
 export default {
   data() {
     return {
-         value: true,
          tableData3: [{
             logNumber: '2016-05-03',
             sysModule: '王小虎',
@@ -78,7 +111,7 @@ export default {
             department:'XX部门',
             mainHost:'主机',
             operateAddress:'操作地点',
-            status:true,
+            status:'操作状态',
             time:'操作时间',
             // operate:'操作'
 
@@ -90,7 +123,7 @@ export default {
             department:'XX部门',
             mainHost:'主机',
             operateAddress:'操作地点',
-            status:true,
+            status:'操作状态',
             time:'操作时间',
             // operate:'操作'
         }, {
@@ -101,7 +134,7 @@ export default {
             department:'XX部门',
             mainHost:'主机',
             operateAddress:'操作地点',
-            status:true,
+            status:'操作状态',
             time:'操作时间',
             // operate:'操作'
         }, {
@@ -112,7 +145,7 @@ export default {
             department:'XX部门',
             mainHost:'主机',
             operateAddress:'操作地点',
-            status:true,
+            status:'操作状态',
             time:'操作时间',
             // operate:'操作'
         }, {
@@ -123,7 +156,7 @@ export default {
             department:'XX部门',
             mainHost:'主机',
             operateAddress:'操作地点',
-            status:true,
+            status:'操作状态',
             time:'操作时间',
             // operate:'操作'
         }, {
@@ -134,7 +167,7 @@ export default {
             department:'XX部门',
             mainHost:'主机',
             operateAddress:'操作地点',
-            status:true,
+            status:'操作状态',
             time:'操作时间',
             // operate:'操作'
         }, {
@@ -145,7 +178,7 @@ export default {
             department:'XX部门',
             mainHost:'主机',
             operateAddress:'操作地点',
-            status:true,
+            status:'操作状态',
             time:'操作时间',
             // operate:'操作'
         }],
@@ -154,18 +187,33 @@ export default {
   components: {
 	//   Search
   },
+  computed: {
+
+  },
+  created() {
+      this.queryDate();
+  },
   methods: {
     handleSelectionChange(val) {
         this.multipleSelection = val;
     },
-    change (data) {
-      console.log(data)
+    queryDate() {
+        // console.log(getToken());
+        let params = {
+            postCode:'',
+            postName:'',
+            status:''
+        };
+        queryGwPage(params).then((res) =>{
+            debugger;
+            console.log(res);
+        });
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-.dict-container {
+.logininfor-container {
     color: #fff;
     height: 100%;
     .tabs-search {
@@ -177,7 +225,7 @@ export default {
         .table {
             width: 100%;
             height: 100%;
-            background:url(../../assets/mainTreeR.png)no-repeat;
+            background:url(../../../assets/mainTreeR.png)no-repeat;
             background-size: 100% 100%;
             padding: 1.5%;
             .el-button{
@@ -196,7 +244,7 @@ export default {
                     width: 14px;
                     height: 14px;
                     margin-right: 6px;
-                    background:url(../../assets/icon.png);
+                    background:url(../../../assets/icon.png);
                 }
                 .add{
                     background-position: -57px 792px;
@@ -231,7 +279,7 @@ export default {
                         width: 14px;
                         height: 14px;
                         display: inline-block;
-                        background-image: url(../../assets/icon.png);
+                        background-image: url(../../../assets/icon.png);
                         background-position: -57px 422px;
                         position: absolute;
                         left: 50%;
@@ -267,70 +315,17 @@ export default {
         }
     }
 }
-.dict-container /deep/ .el-switch {
-    display: inline-flex;
-    align-items: center;
-    position: relative;
-    font-size: 14px;
-    line-height: 24px;
-    height: 24px;
-    vertical-align: middle;
-}
-.dict-container /deep/.el-switch__input {
-    position: absolute;
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0;
-}
-.dict-container /deep/.el-switch.is-checked .el-switch__core {
-    border-color: #4BAEFD;
-    background-color: #4BAEFD;
-}
-.dict-container /deep/.el-switch.is-disabled .el-switch__core, .el-switch.is-disabled .el-switch__label {
-    cursor: not-allowed;
-}
-.dict-container /deep/.el-switch__core {
-    margin: 0;
-    display: inline-block;
-    position: relative;
-    width: 50px !important;
-    height: 24px;
-    border: 1px solid #dcdfe6;
-    outline: none;
-    border-radius: 25px;
-    box-sizing: border-box;
-    background: #dcdfe6;
-    cursor: pointer;
-    transition: border-color .3s,background-color .3s;
-    vertical-align: middle;
-}
-.dict-container /deep/.el-switch.is-checked .el-switch__core:after {
-    left: 88%;
-    margin-left: -17px;
-}
-.dict-container /deep/.el-switch__core:after {
-    content: "";
-    position: absolute;
-    top: 0px;
-    left: 1px;
-    border-radius: 100%;
-    transition: all .3s;
-    width: 23px;
-    height: 23px;
-    background-color: #fff;
-}
-.dict-container /deep/.cell span.editor {
+.logininfor-container /deep/.cell span.editor {
     padding: 10px;
     cursor: pointer;
 }
-.dict-container /deep/.cell span:nth-child(1) {
+.logininfor-container /deep/.cell span:nth-child(1) {
     color: #45EBA7;
 }
-.dict-container /deep/.cell span:nth-child(2) {
+.logininfor-container /deep/.cell span:nth-child(2) {
     color: #CB3203;
 }
-.dict-container /deep/.cell span:nth-child(3) {
+.logininfor-container /deep/.cell span:nth-child(3) {
     color: #E6BF06;
 }
 </style>
