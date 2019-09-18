@@ -48,6 +48,12 @@ export const deleteUserGwPage = params => request({
   method: 'delete',
   params,
 });
+// 修改用户管理列表
+export const putUserEdit = params => request({
+  url: '/v1/api/user/SysUser/edit',
+  method: 'put',
+  params,
+});
 // 重置用户管理密码
 export const postresetPwd = params => request({
   url: '/v1/api/user/SysUser/resetPwd',

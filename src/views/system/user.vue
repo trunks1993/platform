@@ -25,7 +25,7 @@
       </div>
       <div class="table-content">
         <div class="tableHead">
-          <div class="button" @click="dialogFormVisible = true">新增</div>
+          <div class="button" @click="dialog">新增</div>
           <div class="button" @click="batchDelete">删除</div>
           <div class="button" @click="revise">修改</div>
           <div class="button">导入</div>
@@ -131,7 +131,7 @@
           <span>活动形式</span>
           <input type="textarea" v-model="form.surRemark" />
         </div>
-        <el-button type="primary" @click="preservation">保 存</el-button>
+        <el-button type="primary" @click="preservation(type)">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
     </el-dialog>
@@ -157,7 +157,8 @@ import {
   getSysDeptTreeData,
   deleteUserGwPage,
   postresetPwd,
-  getSysUserAdd
+  getSysUserAdd,
+  putUserEdit
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -165,6 +166,7 @@ export default {
   mixins: [mixin],
   data() {
     return {
+      type:0,
       fqForm: [
         {
           fiAttr: {
@@ -268,15 +270,32 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    preservation() {
+    preservation(type) {
       this.dialogFormVisible = false;
-      console.log(this.form);
-      getSysUserAdd(this.form).then(res => {
-        this.$message({
-          type: "success",
-          message: "新增成功!"
+      if(type == 0){
+        getSysUserAdd(this.form).then(res => {
+          this.$message({
+            type: "success",
+            message: "新增成功!"
+          });
         });
-      });
+      }else {
+        let obj = {
+          surLoginName:this.form.surUserName,
+          surDeptId:this.form.surDeptId,
+          surEmail:this.form.surEmail,
+          surPhoneNumber:this.form.surPhoneNumber,
+          surSex:this.form.surSex,
+          surRemark:this.form.surRemark,
+          surPassword:this.form.surPassword,
+        }
+        putUserEdit(obj).then(res => {
+          this.$message({
+            type: "success",
+            message: "修改成功!"
+          });
+        });
+      }
     },
     exported() {
       //导出
@@ -319,6 +338,7 @@ export default {
       });
     },
     revise() {
+      this.type = 1;
       if (typeof this.multipleSelection == "undefined") {
         this.$message({
           message: "请选择需要修改的数据！",
@@ -329,6 +349,10 @@ export default {
         this.form = this.multipleSelection.pop(); //获取最后一条
         this.obj = this.multipleSelection.pop();
       }
+    },
+    dialog(){ //新增
+      this.type = 0;
+      this.dialogFormVisible = true;
     },
     deleted(ids) {
       //删除

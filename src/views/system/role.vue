@@ -48,18 +48,12 @@
 				<div class="table">
 					<el-table
 						ref="multipleTable"
-						:data="tableData"
+						:data="tableDataList"
 						tooltip-effect="dark"
 						style="width: 100%"
 						@selection-change="handleSelectionChange">
-						<el-table-column
-						type="selection"
-						width="55">
-						</el-table-column>
-						<el-table-column
-						label="角色编号"
-						prop="roleId"
-						>
+						<el-table-column type="selection"></el-table-column>
+						<el-table-column label="角色编号" prop="roleId" >
 						</el-table-column>
 						<el-table-column
 						label="角色名称"
@@ -104,15 +98,16 @@
 						</el-table-column>
 					</el-table>
 				</div>
-				<el-pagination style="text-align:right;margin-top:2%;"
+				 <el-pagination
+					style="text-align:right;margin-top:2%;"
 					background
-					v-show="pageShow"
 					layout="prev, pager, next, jumper,total"
-					@current-change="handleSizeChange"
-					:current-page="current"
-					:page-size="pageSize"
-					:total="total">
-				</el-pagination>
+					@size-change="handleSizeChange($event, query)"
+					@current-change="handleCurrentChange($event, query)"
+					:current-page="queryList.pageNum"
+					:page-size="queryList.pageSize"
+					:total="total"
+				 ></el-pagination>
 			</div>
 		</div>
 		<el-dialog title="基本信息" :visible.sync="dialogFormVisible">
@@ -127,8 +122,8 @@
 					<el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="状态：" :label-width="formLabelWidth">
-					<el-radio v-model="surSex" label="1">男</el-radio>
-					<el-radio v-model="surSex" label="2">女</el-radio>
+					<el-radio v-model="form.surSex" label="1">男</el-radio>
+					<el-radio v-model="form.surSex" label="2">女</el-radio>
 				</el-form-item>
 				<el-form-item label="备注：" :label-width="formLabelWidth">
 					<el-input v-model="form.surUserName" autocomplete="off"></el-input>
@@ -235,7 +230,7 @@ export default {
 		this.sizeForm.pageNum=this.current;
 		this.sizeForm.pageSize=this.pageSize;
 		getSysRoleList(this.sizeForm).then(res => {
-			this.tableData = res.rows;
+			this.tableDataList = res.rows;
 			this.total = parseInt(res.total);
 		});
 	  },
