@@ -21,7 +21,7 @@
                         <el-button @click="handleExport(baseExpApi)"><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
                             <div @click="toggle"><span></span></div>
-                            <div @click="queryDate"><span></span></div>
+                            <div @click="query"><span></span></div>
                             <div><span></span></div>
                             <div><span></span></div>
                         </div>
