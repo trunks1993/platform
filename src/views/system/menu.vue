@@ -8,8 +8,8 @@
 					</el-form-item>
 					<el-form-item label="角色状态">
 						<el-select v-model="sizeForm.region" placeholder="所有"  style="width:245px;">
-						<el-option label="区域一" value="shanghai"></el-option>
-						<el-option label="区域二" value="beijing"></el-option>
+						<el-option label="显示" value="0"></el-option>
+						<el-option label="隐藏" value="1"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item size="large">
@@ -92,82 +92,19 @@ export default {
           prop: "state"
         }
       ],
-		tableData: [
-        {
-          id: 1,
-          date: "个人",
-          name: "第二根半价套餐",
-          address: "是兄弟就来割",
-		  operator: "铁手",
-		  type:'目录',
-		  solo:'显示',
-          state: "无痛",
-          children: [
-            {
-              id: 11,
-              date: "用户管理",
-              name: "第二根半价套餐",
-              alias: "是兄弟就来割",
-              operator: "铁手",
-              state: "无痛",
-              children: [
-                {
-                  id: 12,
-                  date: "角色管理",
-                  name: "第二根半价套餐",
-                  alias: "是兄弟就来割",
-                  operator: "铁手",
-                  state: "无痛"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 3,
-		  date: "全院",
-		  name: "第二根半价套餐",
-		  alias: "是兄弟就来割",
-		  operator: "铁手",
-		  state: "无痛",
-          children: [
-            {
-			  id: 31,
-			  date: "全院社团",
-              name: "第二根半价套餐",
-              alias: "是兄弟就来割",
-              operator: "铁手",
-              state: "无痛"
-            },
-            {
-			  id: 41,
-			  date: "全院管理",
-              name: "第二根半价套餐",
-              alias: "是兄弟就来割",
-              operator: "铁手",
-              state: "无痛"
-            }
-          ]
-        }
-      ],
+		tableData: [],
 		value1: true,
 		multipleSelection: [],
 		sizeForm: {
 			name: '',
 			region: '',
-			date1: '',
-			date2: '',
-			delivery: false,
-			type: [],
-			resource: '',
-			desc: ''
         }
     };
   },
   components: {
   },
   created() {
-	  this.Sysuser();
+	  this.queryDate();
   },
   methods: {
 	  handleClick(row) {
@@ -185,14 +122,14 @@ export default {
       handleSelectionChange(val) {
         this.multipleSelection = val;
 	  },
-	  Sysuser() {
-		   getMenuTree().then(res => {
+	  queryDate() {
+		   getMenuTree(this.sizeForm).then(res => {
 			   console.log(res)
 				this.tableData = res;
 		   });
 	  },
 	  onSubmit() {
-		console.log('submit!');
+		this.queryDate();
 	  }
   }
 };

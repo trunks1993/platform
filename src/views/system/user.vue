@@ -1,6 +1,6 @@
 <template>
 	<div class="user">
-		<div class="tabs-search">
+		<div class="tabs-search"  v-if="isSearch">
 			<div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="登录名称">
@@ -35,9 +35,9 @@
 				 <div class="zzBox">
 					<span>组织结构</span>
 					<div class="revise">
-						<i class="comm revised"></i>
+						<router-link to="/system/dept"><i class="comm revised"></i></router-link>
 						<i class="comm refresh"></i>
-						<i class="comm select"></i>
+						<i class="comm select" @click="dataRefresh"></i>
 					</div>
 				</div>
 				 <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
@@ -45,12 +45,12 @@
 			 <div class="table-content">
 				 <div class="tableHead">
 					<div class="button" @click="dialogFormVisible = true">新增</div>
-					<div class="button">删除</div>
-					<div class="button">修改</div>
+					<div class="button" @click="batchDelete()">删除</div>
+					<div class="button" @click="revise()">修改</div>
 					<div class="button">导入</div>
-					<div class="button">导出</div>
+					<div class="button"  @click="exported()">导出</div>
 					<div class="operation">
-						<div><span></span></div>
+						<div @click="toggle()"><span></span></div>
 						<div @click="refresh"><span></span></div>
 						<div><span></span></div>
 						<div><span></span></div>
@@ -112,17 +112,18 @@
 						width="220"
                         >
 						<template slot-scope="scope">
-							<span @click="handleClick(scope.row)">查看</span>
-							<span>编辑</span>
-							<span>重置</span>
+							<span @click="editor(scope.row)">编辑</span>
+							<span @click="deleted(scope.row.surUserId)">删除</span>
+							<span @click="resetPassword(scope.row)">重置</span>
 						</template>
 						</el-table-column>
 					</el-table>
 				</div>
 				<el-pagination style="text-align:right;margin-top:2%;"
                         background
-                        layout="prev, pager, next"
-						@size-change="handleSizeChange"
+						v-show="pageShow"
+                        layout="prev, pager, next, jumper,total"
+						@current-change="handleSizeChange"
 						:current-page="current"
 						:page-size="pageSize"
                         :total="total">
@@ -130,52 +131,43 @@
 			</div>
 		</div>
 		<el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-		<!-- <div class="login-user">
-          <img src="../../assets/login-left.png" />
-          <span>基本信息</span>
-          <img src="../../assets/login-right.png" />
-        </div> -->
-		<el-form :model="form" style="height:308px;">
-			<el-form-item label="用户名称" :label-width="formLabelWidth">
-				<el-input v-model="form.surLoginName" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="部门编号" :label-width="formLabelWidth">
-				<el-input v-model="form.surDeptId" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="手机号码" :label-width="formLabelWidth">
-				<el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="邮 箱" :label-width="formLabelWidth">
-				<el-input v-model="form.surEmail" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="登录帐号" :label-width="formLabelWidth">
-				<el-input v-model="form.surUserName" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="登录密码" :label-width="formLabelWidth">
-				<el-input v-model="form.surPassword" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="用户性别" :label-width="formLabelWidth">
-				<el-radio v-model="surSex" label="1">男</el-radio>
-  				<el-radio v-model="surSex" label="2">女</el-radio>
-			</el-form-item>
-			<el-form-item label="用户状态" :label-width="formLabelWidth">
-				<el-switch
-					v-model="form.value1">
-				</el-switch>
-			</el-form-item>
-			<el-form-item label="岗 位" :label-width="formLabelWidth">
-				<el-select v-model="form.region" placeholder="请选择岗位">
-					<el-option label="董事长" value="董事长"></el-option>
-					<el-option label="项目经理" value="项目经理"></el-option>
-					<el-option label="人力资源" value="人力资源"></el-option>
-					<el-option label="普通员工" value="普通员工"></el-option>
-				</el-select>
-			</el-form-item>
-			<!-- <el-form-item label="角色" :label-width="formLabelWidth">
-				<el-radio v-model="surStatus" label="1">操作员</el-radio>
-  				<el-radio v-model="surStatus" label="2">管理员</el-radio>
-			</el-form-item> -->
-		</el-form>
+			<el-form :model="form" style="height:308px;">
+				<el-form-item label="用户名称" :label-width="formLabelWidth">
+					<el-input v-model="form.surLoginName" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="部门编号" :label-width="formLabelWidth">
+					<el-input v-model="form.surDeptId" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="手机号码" :label-width="formLabelWidth">
+					<el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="邮 箱" :label-width="formLabelWidth">
+					<el-input v-model="form.surEmail" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="登录帐号" :label-width="formLabelWidth">
+					<el-input v-model="form.surUserName" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="登录密码" :label-width="formLabelWidth">
+					<el-input v-model="form.surPassword" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="用户性别" :label-width="formLabelWidth">
+					<el-radio v-model="surSex" label="1">男</el-radio>
+					<el-radio v-model="surSex" label="2">女</el-radio>
+				</el-form-item>
+				<el-form-item label="用户状态" :label-width="formLabelWidth">
+					<el-switch
+						v-model="form.value1">
+					</el-switch>
+				</el-form-item>
+				<el-form-item label="岗 位" :label-width="formLabelWidth">
+					<el-select v-model="form.region" placeholder="请选择岗位">
+						<el-option label="董事长" value="董事长"></el-option>
+						<el-option label="项目经理" value="项目经理"></el-option>
+						<el-option label="人力资源" value="人力资源"></el-option>
+						<el-option label="普通员工" value="普通员工"></el-option>
+					</el-select>
+				</el-form-item>
+			</el-form>
 		<div slot="footer" class="dialog-footer">
 			<div class="textarea">
 				<span>活动形式</span>
@@ -185,10 +177,24 @@
 			<el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
 		</div>
 		</el-dialog>
+		<el-dialog title="重置密码" :visible.sync="dialogFormVisiblePassword">
+			<el-form :model="passWordForm" style="height:308px;">
+				<el-form-item label="登录名称" :label-width="formLabelWidth">
+					<el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="输入密码" :label-width="formLabelWidth">
+					<el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
+				</el-form-item>
+			</el-form>
+		<div slot="footer" class="dialog-footer">
+			<el-button  @click="preservationpassWord" type="primary">保 存</el-button>
+			<el-button type="primary" @click="dialogFormVisiblePassword = false">关 闭</el-button>
+		</div>
+		</el-dialog>
 	</div>
 </template>
 <script>
-import { getSysUserList,getSysDeptTreeData,getSysUserAdd } from '@/api';
+import { getSysUserList,getSysDeptTreeData,getSysUserAdd,deleteUserGwPage,postresetPwd } from '@/api';
 export default {
   data() {
     return {
@@ -202,13 +208,20 @@ export default {
 			surBeginTime: '',
 			surEndTime: '',
 		},
+		passWordForm:{
+			surUserId:'',
+			surPassword:'',
+		},
 		current: 1,
-		total: 0,
-		pageSize:10,
+		total: 10,
+		pageSize:5,
 		surSex: '1',
 		surStatus: '1',
 		dialogFormVisible: false,
+		dialogFormVisiblePassword:false,
 		formLabelWidth: '120px',
+		isSearch:true,
+		pageShow:true,
 		data: [],
 		form: {
           region: '',
@@ -232,40 +245,38 @@ export default {
   components: {
   },
   created() {
-	  this.Sysuser();
-	  getSysDeptTreeData().then(res => {
-		this.data = res;
-	  });
+	  this.queryDate();
+	  this.dataRefresh();
   },
   methods: {
 	  handleClick(row) {
       },
-	  toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
+	 
       handleSelectionChange(val) {
         this.multipleSelection = val;
 	  },
-	  Sysuser() {
+	  queryDate() {
 		this.sizeForm.pageNum=this.current;
 		this.sizeForm.pageSize=this.pageSize;
 		getSysUserList(this.sizeForm).then(res => {
 			this.tableData = res.rows;
+			this.total = parseInt(res.total);
+		});
+	  },
+	  dataRefresh(){
+ 		getSysDeptTreeData().then(res => {
+			this.data = res;
 		});
 	  },
 	  onSubmit() {
-		this.Sysuser();
+		this.queryDate();
 	  },
 	  handleNodeClick(data) {
 	  },
-	  handleSizeChange: function(size) {
-		this.pageSize = size;
+	  handleSizeChange: function(current) {
+		console.log(current)
+		this.current = current;
+		this.queryDate();
 	  },
 	  preservation(){
 		  this.dialogFormVisible = false;
@@ -274,9 +285,82 @@ export default {
 			  console.log(res)
 		  })
 	  },
-	//   刷新数据
+	  exported(){//导出
+		window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel';
+	  },
+	  batchDelete(){//批量删除
+	  console.log(this.multipleSelection)
+        let selectArr = [];
+        if(typeof(this.multipleSelection) == "undefined"){
+            this.$message({
+                message: '请选择需要删除的数据！',
+                type: 'warning'
+            });
+        }else{
+            this.multipleSelection.forEach((v,i) => {
+                selectArr.push(v.surUserId);
+            })
+            this.deleted(selectArr.join(','));
+        }
+	  },
+	  resetPassword(row){ //重置
+	  console.log(row)
+			this.dialogFormVisiblePassword = true;
+			this.passWordForm = row;
+	  },
+	  preservationpassWord(){
+		  console.log(this.passWordForm.surPassword)
+		  console.log(this.passWordForm.surUserId)
+		  postresetPwd({password:this.passWordForm.surPassword,surUserId:this.passWordForm.surUserId}).then(res => {
+			  this.$message({
+				type: 'success',
+				message: '重置成功!'
+			 });
+		  })
+	  },
+	  revise(){
+			if(typeof(this.multipleSelection) == "undefined"){
+				this.$message({
+					message: '请选择需要修改的数据！',
+					type: 'warning'
+				});
+			}else{
+				this.dialogFormVisible = true;
+				this.form = this.multipleSelection.pop();//获取最后一条
+				this.obj = this.multipleSelection.pop();
+			}
+	  },
+	  deleted(ids){//删除
+			this.$confirm('确认删除该数据?', '提示', {
+			confirmButtonText: '确定',
+			cancelButtonText: '取消',
+			type: 'warning'
+			}).then(() => {
+				deleteUserGwPage({ids:ids}).then(res => {
+					this.$message({
+						type: 'success',
+						message: '删除成功!'
+					});
+					this.queryDate();
+				});  
+			}).catch(() => {
+			this.$message({
+				type: 'info',
+				message: '已取消删除'
+			});          
+			});
+	  },
+	  editor(rows){//编辑
+		this.dialogFormVisible = true;
+		this.form = rows;
+		this.obj = rows;
+	  },
+	  toggle(){//显示隐藏查询切换
+		this.isSearch = !this.isSearch;
+	  },
+	  //  刷新数据
 	  refresh(){
-		  this.Sysuser();
+		  this.queryDate();
 	  }
   }
 };
@@ -322,17 +406,17 @@ export default {
                         display: inline-block;
                         width: 18px;
                         height: 18px;
-                        background:url(../../assets/images/revise.png);
+                        background:url(../../assets/images/select.png);
                         background-size: 100% 100%;
                         vertical-align: middle;
                         margin-right: 10%;
                         cursor: pointer;
                     }
                     .revised{
-                        background:url(../../assets/images/refresh.png);
+                        background:url(../../assets/images/revise.png);
                     }
                     .select{
-                        background:url(../../assets/images/select.png);
+						background:url(../../assets/images/refresh.png);
                     }
                 }
             }
@@ -448,7 +532,7 @@ export default {
           vertical-align: bottom;
         }
 	  }
-	  .el-dialog {
+	 .user /deep/ .el-dialog {
 		  .el-dialog__header {
 			text-align: center;
 			.el-dialog__title {
@@ -492,17 +576,18 @@ export default {
 					}
 				}
 		  }
+		   .el-dialog__body::before {
+				content: '基本信息'; 
+				width: 100%;
+				height: 34px;
+				display: inline-block;
+				border-bottom: 1px dashed rgba(75,174,253,1); 
+				color: #63ACDF;
+				font-size: 13px;
+			}
 	  }
-	  .el-dialog__body::before {
-		  content: '基本信息'; 
-		  width: 100%;
-		  height: 34px;
-		  display: inline-block;
-		  border-bottom: 1px dashed rgba(75,174,253,1); 
-		  color: #63ACDF;
-		  font-size: 13px;
-	  }
-	  .dialog-footer {
+	 
+	 .user /deep/ .dialog-footer {
 		  text-align: center;
 		  .textarea {
 			  text-align: left;
@@ -519,7 +604,7 @@ export default {
 			  }
 		  }
 	  }
-	  .el-dialog__footer::before {
+	 .user /deep/ .el-dialog__footer::before {
 		  content: '其他信息'; 
 		  width: 100%;
 		  height: 34px;
@@ -529,7 +614,10 @@ export default {
 		  text-align: left;
 		  font-size: 13px;
 	  }
-	 
+	 .dict-container /deep/ .el-pagination .el-input__inner{
+		 background: none !important;
+		 border: none;
+	}
 </style>
 <style>
 	.el-switch {
