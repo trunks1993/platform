@@ -188,13 +188,13 @@ export default {
     routers: [],
     token: getToken(),
   },
-  mutations: {
-    SET_TOKEN: (state, token) => {
-      // eslint-disable-next-line semi
-      state.token = token
+  mutations: {
+    SET_TOKEN: (state, token) => {
+      // eslint-disable-next-line semi
+      state.token = token
     },
-    SET_USERINFO: (state, userInfo) => {
-      state.userInfo = userInfo;
+    SET_USERINFO: (state, userInfo) => {
+      state.userInfo = userInfo;
     },
     SET_ROUTERS: (state, routers) => {
       state.routers = routers;
