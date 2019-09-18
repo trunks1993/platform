@@ -12,7 +12,11 @@
       @click.middle.native="closeSelectedTag(tag)"
     >
       {{ tag.title }}
-      <span v-if="!tag.affix" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
+      <span
+        v-if="!tag.meta.affix"
+        class="el-icon-close"
+        @click.prevent.stop="closeSelectedTag(tag)"
+      />
     </router-link>
     <!-- </scroll-pane> -->
   </div>
@@ -37,11 +41,11 @@ export default {
   watch: {
     $route() {
       this.addTags();
-    //   this.moveToCurrentTag();
+      //   this.moveToCurrentTag();
     }
   },
   mounted() {
-    // this.initTags();
+    this.initTags();
     this.addTags();
   },
   methods: {
@@ -51,10 +55,13 @@ export default {
     filterAffixTags(routes) {
       let tags = [];
       routes.forEach(route => {
-        tags.push({
-          path: route.path,
-          name: route.menuName
-        });
+        if (route.meta && route.meta.affix) {
+          tags.push({
+            path: route.path,
+            name: route.menuName,
+            meta: route.meta,
+          });
+        }
         if (route.children) {
           const tempTags = this.filterAffixTags(route.children);
           if (tempTags.length >= 1) {
@@ -66,7 +73,7 @@ export default {
     },
     initTags() {
       const affixTags = (this.affixTags = this.filterAffixTags(this.routes));
-
+      console.log(this.routes, affixTags)
       for (const tag of affixTags) {
         // Must have tag name
         if (tag.name) {
