@@ -14,9 +14,11 @@
         <div class="zzBox">
           <span>组织结构</span>
           <div class="revise">
-            <router-link to="/system/dept"><i class="comm revised"></i></router-link>
-			<i class="comm refresh"></i>
-			<i class="comm select"></i>
+            <router-link to="/system/dept">
+              <i class="comm revised"></i>
+            </router-link>
+            <i class="comm refresh"></i>
+            <i class="comm select"></i>
           </div>
         </div>
         <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
@@ -46,7 +48,7 @@
         <div class="table">
           <el-table
             ref="multipleTable"
-            :data="tableData"
+            :data="tableDataList"
             tooltip-effect="dark"
             style="width: 100%"
             @selection-change="handleSelectionChange"
@@ -66,8 +68,8 @@
             <el-table-column label="操作" width="220">
               <template slot-scope="scope">
                 <span @click="editor(scope.row)">编辑</span>
-				<span @click="deleted(scope.row.surUserId)">删除</span>
-				<span @click="resetPassword(scope.row)">重置</span>
+                <span @click="deleted(scope.row.surUserId)">删除</span>
+                <span @click="resetPassword(scope.row)">重置</span>
               </template>
             </el-table-column>
           </el-table>
@@ -76,8 +78,8 @@
           style="text-align:right;margin-top:2%;"
           background
           layout="prev, pager, next, jumper,total"
-          @size-change="handleSizeChange($event, getSysUserList)"
-		  @current-change="handleCurrentChange($event, getSysUserList)"
+          @size-change="handleSizeChange($event, query)"
+          @current-change="handleCurrentChange($event, query)"
           :current-page="queryList.pageNum"
           :page-size="queryList.pageSize"
           :total="total"
@@ -105,20 +107,20 @@
           <el-input v-model="form.surPassword" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户性别" :label-width="formLabelWidth">
-          <el-radio v-model="surSex" label="1">男</el-radio>
-          <el-radio v-model="surSex" label="2">女</el-radio>
+          <el-radio v-model="form.surSex" label="1">男</el-radio>
+          <el-radio v-model="form.surSex" label="2">女</el-radio>
         </el-form-item>
         <el-form-item label="用户状态" :label-width="formLabelWidth">
           <el-switch v-model="value1"></el-switch>
         </el-form-item>
         <el-form-item label="岗 位" :label-width="formLabelWidth">
-			<el-select v-model="form.region" placeholder="请选择岗位">
-				<el-option label="董事长" value="董事长"></el-option>
-				<el-option label="项目经理" value="项目经理"></el-option>
-				<el-option label="人力资源" value="人力资源"></el-option>
-				<el-option label="普通员工" value="普通员工"></el-option>
-			</el-select>
-		</el-form-item>
+          <el-select v-model="form.region" placeholder="请选择岗位">
+            <el-option label="董事长" value="董事长"></el-option>
+            <el-option label="项目经理" value="项目经理"></el-option>
+            <el-option label="人力资源" value="人力资源"></el-option>
+            <el-option label="普通员工" value="普通员工"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="角 色" :label-width="formLabelWidth">
           <el-radio v-model="radio" label="1">操作员</el-radio>
           <el-radio v-model="radio" label="2">管理员</el-radio>
@@ -127,37 +129,42 @@
       <div slot="footer" class="dialog-footer">
         <div class="textarea">
           <span>活动形式</span>
-          <input type="textarea"  v-model="form.surRemark" />
+          <input type="textarea" v-model="form.surRemark" />
         </div>
         <el-button type="primary" @click="preservation">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
-	</el-dialog>
-	<el-dialog title="重置密码" :visible.sync="dialogFormVisiblePassword">
-		<el-form :model="passWordForm" style="height:308px;">
-			<el-form-item label="登录名称" :label-width="formLabelWidth">
-				<el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="输入密码" :label-width="formLabelWidth">
-				<el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
-			</el-form-item>
-		</el-form>
-		<div slot="footer" class="dialog-footer">
-			<el-button  @click="preservationpassWord" type="primary">保 存</el-button>
-			<el-button type="primary" @click="dialogFormVisiblePassword = false">关 闭</el-button>
-		</div>
-	</el-dialog>
+    </el-dialog>
+    <el-dialog title="重置密码" :visible.sync="dialogFormVisiblePassword">
+      <el-form :model="passWordForm" style="height:308px;">
+        <el-form-item label="登录名称" :label-width="formLabelWidth">
+          <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="输入密码" :label-width="formLabelWidth">
+          <el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="preservationpassWord" type="primary">保 存</el-button>
+        <el-button type="primary" @click="dialogFormVisiblePassword = false">关 闭</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { getSysUserList, getSysDeptTreeData,deleteUserGwPage,postresetPwd,getSysUserAdd } from "@/api";
+import {
+  getSysUserList,
+  getSysDeptTreeData,
+  deleteUserGwPage,
+  postresetPwd,
+  getSysUserAdd
+} from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
 export default {
   mixins: [mixin],
   data() {
     return {
-
       fqForm: [
         {
           fiAttr: {
@@ -208,34 +215,33 @@ export default {
       //     surEndTime: ""
       //   },
 
-      
       //   queryList: {
       // 	current: 1,
       // 	pageSize: 10,
       //   },
-	  passWordForm:{
-		surUserId:'',
-		surPassword:'',
-	  },
+      passWordForm: {
+        surUserId: "",
+        surPassword: ""
+      },
       radio: "1",
-      surSex: '1',
-	  surStatus: '1',
-	  dialogFormVisible: false,
-	  dialogFormVisiblePassword:false,
-	  formLabelWidth: "120px",
-	  isSearch:true,
-	  pageShow:true,
+      surSex: "1",
+      surStatus: "1",
+      dialogFormVisible: false,
+      dialogFormVisiblePassword: false,
+      formLabelWidth: "120px",
+      isSearch: true,
+      pageShow: true,
       data: [],
       form: {
-        surDeptId:'',
-        surLoginName:'',
-        surUserName:'',
-        surEmail:'',
-        surPhoneNumber:'',
-        surSex:'',
-        surPassword:'',
-        surRemark:'',
-        surSex:'1'
+        surDeptId: "",
+        surLoginName: "",
+        surUserName: "",
+        surEmail: "",
+        surPhoneNumber: "",
+        surSex: "",
+        surPassword: "",
+        surRemark: "",
+        surSex: "1"
       },
       defaultProps: {
         children: "children",
@@ -246,9 +252,13 @@ export default {
   components: {
     FilterQueryForm
   },
+  computed: {
+    query() {
+      return this.doQuery.bind(this, getSysUserList);
+    }
+  },
   created() {
-
-    this.getSysUserList();
+    this.query();
     getSysDeptTreeData().then(res => {
       this.data = res;
     });
@@ -258,95 +268,107 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-	preservation(){
-		this.dialogFormVisible = false;
-		console.log(this.form);
-		getSysUserAdd(this.form).then(res => {
-      this.$message({
-        type: 'success',
-        message: '新增成功!'
+    preservation() {
+      this.dialogFormVisible = false;
+      console.log(this.form);
+      getSysUserAdd(this.form).then(res => {
+        this.$message({
+          type: "success",
+          message: "新增成功!"
+        });
       });
-		})
-	},
-	exported(){//导出
-		window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel';
-	},
-	batchDelete(){//批量删除
-	console.log(this.multipleSelection)
-	let selectArr = [];
-	if(typeof(this.multipleSelection) == "undefined"){
-		this.$message({
-			message: '请选择需要删除的数据！',
-			type: 'warning'
-		});
-	}else{
-		this.multipleSelection.forEach((v,i) => {
-			selectArr.push(v.surUserId);
-		})
-		this.deleted(selectArr.join(','));
-	}
-	},
-	resetPassword(row){ //重置
-	console.log(row)
-		this.dialogFormVisiblePassword = true;
-		this.passWordForm = row;
-	},
-	preservationpassWord(){
-		console.log(this.passWordForm.surPassword)
-		console.log(this.passWordForm.surUserId)
-		postresetPwd({password:this.passWordForm.surPassword,surUserId:this.passWordForm.surUserId}).then(res => {
-			this.$message({
-			type: 'success',
-			message: '重置成功!'
-			});
-		})
-	},
-	revise(){
-		if(typeof(this.multipleSelection) == "undefined"){
-			this.$message({
-				message: '请选择需要修改的数据！',
-				type: 'warning'
-			});
-		}else{
-			this.dialogFormVisible = true;
-			this.form = this.multipleSelection.pop();//获取最后一条
-			this.obj = this.multipleSelection.pop();
-		}
-	},
-	deleted(ids){//删除
-		this.$confirm('确认删除该数据?', '提示', {
-		confirmButtonText: '确定',
-		cancelButtonText: '取消',
-		type: 'warning'
-		}).then(() => {
-			deleteUserGwPage({ids:ids}).then(res => {
-				this.$message({
-					type: 'success',
-					message: '删除成功!'
-				});
-				this.queryDate();
-			});  
-		}).catch(() => {
-		this.$message({
-			type: 'info',
-			message: '已取消删除'
-		});          
-		});
-	},
-	editor(rows){//编辑
-	this.dialogFormVisible = true;
-	this.form = rows;
-	this.obj = rows;
-	},
+    },
+    exported() {
+      //导出
+      window.location.href =
+        "http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel";
+    },
+    batchDelete() {
+      //批量删除
+      console.log(this.multipleSelection);
+      let selectArr = [];
+      if (typeof this.multipleSelection == "undefined") {
+        this.$message({
+          message: "请选择需要删除的数据！",
+          type: "warning"
+        });
+      } else {
+        this.multipleSelection.forEach((v, i) => {
+          selectArr.push(v.surUserId);
+        });
+        this.deleted(selectArr.join(","));
+      }
+    },
+    resetPassword(row) {
+      //重置
+      console.log(row);
+      this.dialogFormVisiblePassword = true;
+      this.passWordForm = row;
+    },
+    preservationpassWord() {
+      console.log(this.passWordForm.surPassword);
+      console.log(this.passWordForm.surUserId);
+      postresetPwd({
+        password: this.passWordForm.surPassword,
+        surUserId: this.passWordForm.surUserId
+      }).then(res => {
+        this.$message({
+          type: "success",
+          message: "重置成功!"
+        });
+      });
+    },
+    revise() {
+      if (typeof this.multipleSelection == "undefined") {
+        this.$message({
+          message: "请选择需要修改的数据！",
+          type: "warning"
+        });
+      } else {
+        this.dialogFormVisible = true;
+        this.form = this.multipleSelection.pop(); //获取最后一条
+        this.obj = this.multipleSelection.pop();
+      }
+    },
+    deleted(ids) {
+      //删除
+      this.$confirm("确认删除该数据?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deleteUserGwPage({ ids: ids }).then(res => {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            this.queryDate();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    editor(rows) {
+      //编辑
+      this.dialogFormVisible = true;
+      this.form = rows;
+      this.obj = rows;
+    },
     getSysUserList() {
       getSysUserList(this.queryList).then(res => {
-		this.total = +res.total;
+        this.total = +res.total;
         this.tableData = res.rows;
       });
     },
-	toggle(){//显示隐藏查询切换
-	  this.isSearch = !this.isSearch;
-	},
+    toggle() {
+      //显示隐藏查询切换
+      this.isSearch = !this.isSearch;
+    },
     handleNodeClick(data) {}
   }
 };
@@ -358,8 +380,8 @@ export default {
   .dashboard-content {
     height: calc(100% - 174px);
     width: 100%;
-	display: flex;
-	margin-top: 15px;
+    display: flex;
+    margin-top: 15px;
     .organization {
       width: 223px;
       height: 100%;
