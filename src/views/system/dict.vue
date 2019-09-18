@@ -1,7 +1,7 @@
 <template>
     <div class="dict-container">
         <div class="tabs-search" v-if="isSearch">
-			<div class="search">
+			<!-- <div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="字典名称">
 						<el-input v-model="sizeForm.name"></el-input>
@@ -28,7 +28,14 @@
 						<el-button type="primary" @click="queryDate()">查询</el-button>
 					</el-form-item>
 				</el-form>
-			</div>
+			</div> -->
+            <FilterQueryForm
+                :fAttr="{'label-width': '80px'}"
+                :resetBtnVisible="false"
+                :searchBtnVisible="true"
+                :model="fqForm"
+                @afterFilter="handleFilter($event, queryDate)"
+            ></FilterQueryForm>
 		</div>
 		<div class="dashboard-content">
 			 <!-- <div class="organization"></div> -->
@@ -42,7 +49,7 @@
                         <el-button @click="exported()"><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
                             <div @click="toggle()"><span></span></div>
-                            <div @click="refresh()"><span></span></div>
+                            <div @click="queryDate()"><span></span></div>
                             <div><span></span></div>
                             <div><span></span></div>
                         </div>
@@ -59,11 +66,7 @@
                             </el-table-column>
                             <el-table-column label="状态" show-overflow-tooltip>
                                 <template slot-scope="scope">
-                                    <!-- <el-switch
-                                    v-model="scope.row.status">
-                                    </el-switch> -->
-                                    <span :class="[scope.row.state  ? 'normal' : 'stop']">{{scope.row.state  ? '正常' : '停用'}}</span>
-                                    <!-- <span style="color:#CB3203;">停用</span> -->
+                                    <span :class="[scope.row.status == '0'  ? 'normal' : 'stop']">{{scope.row.status == '0' ? '正常' : '停用'}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
@@ -77,15 +80,16 @@
                             </el-table-column>
                         </el-table>
                     </div>
-                    <el-pagination style="text-align:right;margin-top:2%;"
+                    <el-pagination
+                        style="text-align:right;margin-top:2%;"
                         background
-                        v-show="pageShow"
-                        @current-change="handleCurrentChange"
-                        :current-page="current"
-                        :page-size="pageSize"       
-                        layout="prev, pager, next, jumper,total"
-                        :total="total">
-                    </el-pagination>
+                        layout="prev, pager, next"
+                        @size-change="handleSizeChange($event, queryDate)"
+                        @current-change="handleCurrentChange($event, queryDate)"
+                        :current-page="queryList.pageNum"
+                        :page-size="queryList.pageSize"
+                        :total="total"
+                    ></el-pagination>
                 <!-- </div> -->
 			 </div>
 		</div>
@@ -116,23 +120,52 @@
 </template>
 <script>
 import { queryDictPage, deleteDictPage, editorDictPage, addDictPage } from '@/api';
+import FilterQueryForm from "@/components/FilterQueryForm";
+import { mixin } from "@/mixins";
 export default {
+    mixins: [mixin],
     data() {
         return {
+            fqForm: [
+                {
+                fiAttr: {
+                    label: "字典名称"
+                },
+                el: "input",
+                elAttr: {
+                    type: "text"
+                },
+                bindKey: "dictName"
+                },
+                {
+                fiAttr: {
+                    label: "字典类型"
+                },
+                el: "input",
+                elAttr: {
+                    type: "number"
+                },
+                bindKey: "dictType"
+                },
+                {
+                fiAttr: {
+                    label: "字典状态"
+                },
+                el: "select",
+                elAttr: {},
+                bindKey: "status",
+                option: [{ label: "所有", value: '' },{ label: "正常", value: 0 }, { label: "停用", value: 1 }]
+                }
+                // {
+                //   fiAttr: {
+                //     label: "创建时间"
+                //   },
+                //   el: "date-picker",
+                //   bindkey: "surStatus"
+                // }
+            ],
             value: true,
-            sizeForm: {
-                name: '',
-                type:'',
-                status: '',
-                beginTime: '',
-                endTime: '',
-            },
             tableData:[],//表格
-            current: 1,//当前页
-            total: 0,//总页
-            pageSize:5,//每页条数  
-            pageShow:false,//没有数据时隐藏分页
-            tableData: [],
             form:{},
             isSearch:true,
             dialogFormVisible: false,
@@ -141,7 +174,7 @@ export default {
         };
     },
     components: {
-        //   Search
+        FilterQueryForm
     },
     created() {
         this.queryDate();
@@ -149,10 +182,6 @@ export default {
     methods: {
         toggle(){//显示隐藏查询切换
             this.isSearch = !this.isSearch;
-        },
-        refresh(){//刷新当前页面
-            // window.location.reload();
-            this.$router.go(0);
         },
         handleSelectionChange(val) {
             this.multipleSelection = val;
@@ -165,22 +194,9 @@ export default {
             console.log(data)
         },
         queryDate(){//查询
-            queryDictPage({
-                // postCode:this.sizeForm.name,
-                dictName:this.sizeForm.name,
-                dictType:this.sizeForm.type,
-                status:this.sizeForm.status,
-                pageNum:this.current,
-                pageSize:this.pageSize,
-            }).then(res => {
+            queryDictPage(this.queryList).then(res => {
                 this.tableData = res.rows;
-                this.tableData.forEach((v,i) =>{
-                    v.state = v.status == 0 ? true : false;
-                });
-                this.total = res.total*1;
-                if(this.total > 0) {
-                    this.pageShow = true;
-                }
+                this.total = +res.total;
             });
         },
         exported(){//导出

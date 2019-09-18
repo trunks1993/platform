@@ -1,7 +1,7 @@
 <template>
     <div class="operlog-container">
         <div class="tabs-search">
-			<div class="search">
+			<!-- <div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="系统模块">
 						<el-input v-model="sizeForm.module"></el-input>
@@ -13,13 +13,13 @@
 						<el-select v-model="sizeForm.type" placeholder="请选择">
                             <el-option label="新增" value="0"></el-option>
                             <el-option label="修改" value="1"></el-option>
-                            <el-option label="删除" value="0"></el-option>
-                            <el-option label="授权" value="1"></el-option>
-                            <el-option label="导出" value="0"></el-option>
-                            <el-option label="导入" value="1"></el-option>
-                            <el-option label="强退" value="0"></el-option>
-                            <el-option label="生成代码" value="1"></el-option>
-                            <el-option label="清空数据" value="0"></el-option>
+                            <el-option label="删除" value="2"></el-option>
+                            <el-option label="授权" value="3"></el-option>
+                            <el-option label="导出" value="4"></el-option>
+                            <el-option label="导入" value="5"></el-option>
+                            <el-option label="强退" value="6"></el-option>
+                            <el-option label="生成代码" value="7"></el-option>
+                            <el-option label="清空数据" value="8"></el-option>
 						</el-select>
 					</el-form-item>
                     <el-form-item label="操作状态">
@@ -42,7 +42,14 @@
 						<el-button type="primary" @click="query()">查询</el-button>
 					</el-form-item>
 				</el-form>
-			</div>
+			</div> -->
+            <FilterQueryForm
+                :fAttr="{'label-width': '80px'}"
+                :resetBtnVisible="false"
+                :searchBtnVisible="true"
+                :model="fqForm"
+                @afterFilter="handleFilter($event, queryDate)"
+            ></FilterQueryForm>
 		</div>
 		<div class="dashboard-content">
 			 <!-- <div class="organization"></div> -->
@@ -126,39 +133,76 @@
 </template>
 <script>
 import { queryOperLPage, deleteOperLPage, clearOperLPage } from '@/api';
+import FilterQueryForm from "@/components/FilterQueryForm";
+import { mixin } from "@/mixins";
 export default {
+    mixins: [mixin],
     data() {
         return {
-            sizeForm: {
-                module:'',
-                name: '',
-                type:'',
-                status: '',
-                beginTime: '',
-                endTime: '',
-            },
+            fqForm: [
+                {
+                fiAttr: {
+                    label: "系统模块"
+                },
+                el: "input",
+                elAttr: {
+                    type: "text"
+                },
+                bindKey: "title"
+                },
+                {
+                fiAttr: {
+                    label: "操作人员"
+                },
+                el: "input",
+                elAttr: {
+                    type: "number"
+                },
+                bindKey: "dictType"
+                },
+                {
+                fiAttr: {
+                    label: "操作类型"
+                },
+                el: "select",
+                elAttr: {},
+                bindKey: "status",
+                option: [{ label: "所有", value: '' },{ label: "正常", value: 0 }, { label: "停用", value: 1 }]
+                },
+                {
+                fiAttr: {
+                    label: "操作状态"
+                },
+                el: "select",
+                elAttr: {},
+                bindKey: "status",
+                option: [{ label: "所有", value: '' },{ label: "成功", value: 0 }, { label: "失败", value: 1 }]
+                }
+                // {
+                //   fiAttr: {
+                //     label: "创建时间"
+                //   },
+                //   el: "date-picker",
+                //   bindkey: "surStatus"
+                // }
+            ],
             value: true,
             tableData: [],
-            current: 1,//当前页
-            total: 0,//总页
-            pageSize:5,//每页条数  
-            pageShow:false,//没有数据时隐藏分页
-            dialogFormVisible: false,
             form:{},
             obj:{},
             formLabelWidth: '120px',
         };
     },
     components: {
-        //   Search
+        FilterQueryForm
     },
     created() {
-        this.query();
+        this.queryDate();
     },
     methods: {
         handleCurrentChange: function(current) {//当前页
             this.current = current;
-            this.query();
+            this.queryDate();
         },
         handleSelectionChange(val) {
             this.multipleSelection = val;
@@ -166,7 +210,7 @@ export default {
         change (data) {
             console.log(data)
         },
-        query(){
+        queryDate(){
             queryOperLPage({
                 title:this.sizeForm.module,
                 operName:this.sizeForm.name,
@@ -211,7 +255,7 @@ export default {
                         type: 'success',
                         message: '删除成功!'
                     });
-                    this.query();
+                    this.queryDate();
                 });  
             }).catch(() => {
                 this.$message({
@@ -234,7 +278,7 @@ export default {
                         type: 'success',
                         message: '清除成功!'
                     });
-                    this.query();
+                    this.queryDate();
                 });
             }).catch(() => {
                 this.$message({
@@ -243,7 +287,7 @@ export default {
                 });          
             });
         },
-        lookUp(){
+        lookUp(){//详情
 
         }
     }

@@ -1,26 +1,13 @@
 <template>
     <div class="post-container">
         <div class="tabs-search" v-if="isSearch">
-			<div class="search">
-				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-					<el-form-item label="岗位编码">
-						<el-input v-model="sizeForm.code"></el-input>
-					</el-form-item>
-					<el-form-item label="岗位名称">
-						<el-input v-model="sizeForm.name"></el-input>
-					</el-form-item>
-					<el-form-item label="岗位状态">
-						<el-select v-model="sizeForm.region" placeholder="全部">
-                            <el-option label="所有" value=""></el-option>
-                            <el-option label="正常" value="0"></el-option>
-                            <el-option label="停用" value="1"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item size="large">
-						<el-button type="primary" @click="query">查询</el-button>
-					</el-form-item>
-				</el-form>
-			</div>
+            <FilterQueryForm
+                :fAttr="{'label-width': '80px'}"
+                :resetBtnVisible="false"
+                :searchBtnVisible="true"
+                :model="fqForm"
+                @afterFilter="handleFilter($event, queryDate)"
+            ></FilterQueryForm>
 		</div>
 		<div class="dashboard-content">
 			 <!-- <div class="organization"></div> -->
@@ -34,7 +21,7 @@
                         <el-button @click="exported()"><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
                             <div @click="toggle()"><span></span></div>
-                            <div @click="refresh()"><span></span></div>
+                            <div @click="queryDate()"><span></span></div>
                             <div><span></span></div>
                             <div><span></span></div>
                         </div>
@@ -55,11 +42,7 @@
                             <el-table-column prop="postSort" label="显示顺序" show-overflow-tooltip></el-table-column>
                             <el-table-column label="状态" show-overflow-tooltip>
                                 <template slot-scope="scope">
-                                    <!-- <el-switch
-                                    v-model="scope.row.status">
-                                    </el-switch> -->
-                                    <span :class="[scope.row.state  ? 'normal' : 'stop']">{{scope.row.state  ? '正常' : '停用'}}</span>
-                                    <!-- <span style="color:#CB3203;">停用</span> -->
+                                    <span :class="[scope.row.status == '0'  ? 'normal' : 'stop']">{{scope.row.status == '0' ? '正常' : '停用'}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
@@ -76,15 +59,16 @@
                         layout="prev, pager, next"
                         :total="1000">
                     </el-pagination> -->
-                    <el-pagination style="text-align:right;margin-top:2%;"
+                    <el-pagination
+                        style="text-align:right;margin-top:2%;"
                         background
-                        v-show="pageShow"
-                        @current-change="handleCurrentChange"
-                        :current-page="current"
-                        :page-size="pageSize"       
-                        layout="prev, pager, next, jumper,total"
-                        :total="total">
-                    </el-pagination>
+                        layout="prev, pager, next"
+                        @size-change="handleSizeChange($event, queryDate)"
+                        @current-change="handleCurrentChange($event, queryDate)"
+                        :current-page="queryList.pageNum"
+                        :page-size="queryList.pageSize"
+                        :total="total"
+                    ></el-pagination>
                 <!-- </div> -->
 			 </div>
 		</div>
@@ -119,20 +103,51 @@
 </template>
 <script>
 import { queryGwPage,deleteGwPage,exportGwPage,editorGwPage,addGwPage } from '@/api';
-// import { getToken } from '@/utils/auth';
+import FilterQueryForm from "@/components/FilterQueryForm";
+import { mixin } from "@/mixins";
 export default {
+    mixins: [mixin],
     data() {
         return {
-            sizeForm: {//查询
-                code: '',
-                name:'',
-                region: '',
-            },
+            fqForm: [
+                {
+                fiAttr: {
+                    label: "岗位编码"
+                },
+                el: "input",
+                elAttr: {
+                    type: "text"
+                },
+                bindKey: "postCode"
+                },
+                {
+                fiAttr: {
+                    label: "岗位名称"
+                },
+                el: "input",
+                elAttr: {
+                    type: "number"
+                },
+                bindKey: "postName"
+                },
+                {
+                fiAttr: {
+                    label: "岗位状态"
+                },
+                el: "select",
+                elAttr: {},
+                bindKey: "status",
+                option: [{ label: "所有", value: '' },{ label: "正常", value: 0 }, { label: "停用", value: 1 }]
+                }
+                // {
+                //   fiAttr: {
+                //     label: "创建时间"
+                //   },
+                //   el: "date-picker",
+                //   bindkey: "surStatus"
+                // }
+            ],
             tableData:[],//表格
-            current: 1,//当前页
-            total: 0,//总页
-            pageSize:5,//每页条数  
-            pageShow:false,//没有数据时隐藏分页
             dialogFormVisible: false,
             form: {},//新增修改页面的对象
             formLabelWidth: '120px',
@@ -140,8 +155,10 @@ export default {
             obj:{},
             isSearch:true,
         };
+
     },
     components: {
+        FilterQueryForm
     },
     computed: {
 
@@ -150,19 +167,11 @@ export default {
         this.queryDate();
     },
     methods: {
-        handleCurrentChange: function(current) {//当前页
-            this.current = current;
-            this.queryDate();
-        },
         toggle(){//显示隐藏查询切换
             this.isSearch = !this.isSearch;
         },
-        refresh(){//刷新当前页面
-            // window.location.reload();
-            this.$router.go(0);
-        },
-        query() {//查询
-            this.queryDate();
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
         },
         batchDelete(){//批量删除
             let selectArr = [];
@@ -232,21 +241,9 @@ export default {
             }
         },
         queryDate() {//查询
-            queryGwPage({
-                postCode:this.sizeForm.code,
-                postName:this.sizeForm.name,
-                status:this.sizeForm.region,
-                pageNum:this.current,
-                pageSize:this.pageSize,
-            }).then(res => {
+            queryGwPage(this.queryList).then(res => {
                 this.tableData = res.rows;
-                this.tableData.forEach((v,i) =>{
-                    v.state = v.status == 0 ? true : false;
-                });
-                this.total = res.total*1;
-                if(this.total > 0) {
-                    this.pageShow = true;
-                }
+                this.total = +res.total;
             });
         },
         deleted(ids){//删除
@@ -270,8 +267,7 @@ export default {
             });
         },
         exported(){//导出
-            window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel?postCode='+this.sizeForm.code+'&postName='+this.sizeForm.name+'&status='+this.sizeForm.region;
-            
+           // window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel?postCode='+this.sizeForm.code+'&postName='+this.sizeForm.name+'&status='+this.sizeForm.region; 
         }
     }
 };
