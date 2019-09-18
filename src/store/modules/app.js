@@ -9,6 +9,7 @@ const _import = require(`@/router/_import_${process.env.NODE_ENV}`);
 function getRouterMap(menuList) {
   menuList.filter((item) => {
     try {
+      debugger
       item.component = _import(item.component);
       item.name = item.menuName;
     } catch (e) {

@@ -123,7 +123,6 @@
 <script>
 import { queryGwPage,deleteGwPage,exportGwPage,editorGwPage,addGwPage } from '@/api';
 // import { getToken } from '@/utils/auth';
-import Search from "../layout/components/Search";
 export default {
   data() {
     return {
@@ -152,7 +151,6 @@ export default {
     };
   },
   components: {
-	//   Search
   },
   computed: {
 
