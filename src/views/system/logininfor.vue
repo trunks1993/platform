@@ -99,7 +99,7 @@
     </div>
 </template>
 <script>
-import { queryGwPage } from '@/api/app';
+import { queryGwPage } from '@/api';
 export default {
   data() {
     return {

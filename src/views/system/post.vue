@@ -77,12 +77,10 @@
                         :total="1000">
                     </el-pagination> -->
                     <el-pagination style="text-align: right;" v-show="pageShow"
-                        @size-change="handleSizeChange"
                         @current-change="handleCurrentChange"
                         :current-page="current"
-                        :page-sizes="[1, 5, 10, 20, 40]" 
                         :page-size="pageSize"       
-                        layout="total, sizes, prev, pager, next, jumper"
+                        layout="prev, pager, next, jumper,total"
                         :total="total">  
                     </el-pagination>
                 <!-- </div> -->
@@ -123,7 +121,7 @@
     </div>
 </template>
 <script>
-import { queryGwPage,deleteGwPage,exportGwPage,editorGwPage,addGwPage } from '@/api/app';
+import { queryGwPage,deleteGwPage,exportGwPage,editorGwPage,addGwPage } from '@/api';
 // import { getToken } from '@/utils/auth';
 import Search from "../layout/components/Search";
 export default {
@@ -137,7 +135,7 @@ export default {
         tableData:[],//表格
         current: 1,//当前页
         total: 0,//当前页
-        pageSize:8,//每页条数  
+        pageSize:5,//每页条数  
         pageShow:false,//没有数据时隐藏分页
         dialogFormVisible: false,
         form: {
@@ -164,10 +162,10 @@ export default {
   },
   methods: {
     // 初始页currentPage、初始每页数据数pagesize和数据data
-    handleSizeChange: function(size) {//size为每页显示的条数
-        this.pageSize = size;
-        this.queryDate();
-    },
+    // handleSizeChange: function(size) {//size为每页显示的条数
+    //     this.pageSize = size;
+    //     this.queryDate();
+    // },
     handleCurrentChange: function(current) {//当前页
         this.current = current;
         this.queryDate();
@@ -278,6 +276,7 @@ export default {
                     type: 'success',
                     message: '删除成功!'
                 });
+                this.queryDate();
             });  
         }).catch(() => {
           this.$message({
@@ -513,6 +512,14 @@ export default {
 .el-message-box__btns .el-button--primary:focus, .el-button--primary:hover{
     background: #022960;
 }
+.post-container /deep/ .el-pagination .el-input__inner{
+    background: none !important;
+    border: none !important;
+}
+.post-container /deep/.el-pagination span:not([class*=suffix]), .el-pagination button{
+    margin-left: 10px;
+    margin-right: 0;
+}
 </style>
 <style>
 .el-button--default{
@@ -527,6 +534,7 @@ export default {
 }
 .el-message-box__btns .el-button{
     margin-left: 0;
+    background:#022960 !important;
 }
 .el-message-box__btns .el-button--primary:focus, .el-button--primary:hover{
     background: #022960;
