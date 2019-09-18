@@ -24,7 +24,7 @@ export default {
 <style lang="scss" scoped>
     .app-main {
         width: 100%;
-        height: calc(100% - 34px);
+        height: calc(100% - 26px);
         margin-left: 15px;
     }
 </style>
