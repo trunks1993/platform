@@ -6,7 +6,7 @@
                 :resetBtnVisible="false"
                 :searchBtnVisible="true"
                 :model="fqForm"
-                @afterFilter="handleFilter($event, queryDate)"
+                @afterFilter="handleFilter($event, query)"
             ></FilterQueryForm>
 		</div>
 		<div class="dashboard-content">
@@ -14,14 +14,14 @@
 			 <div class="table">
                 <!-- <div class="main-right"> -->
                     <div class="tableHead">
-                        <el-button @click="addInfo()"><i class="iconComm add"></i>新增</el-button>
-                        <el-button @click="batchDelete()"><i class="iconComm delete"></i>删除</el-button>
-                        <el-button @click="revise()"><i class="iconComm modify"></i>修改</el-button>
+                        <el-button @click="addInfo"><i class="iconComm add"></i>新增</el-button>
+                        <el-button @click="batchDelete"><i class="iconComm delete"></i>删除</el-button>
+                        <el-button @click="revise"><i class="iconComm modify"></i>修改</el-button>
                         <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
-                        <el-button @click="exported()"><i class="iconComm leading"></i>导出</el-button>
+                        <el-button @click="handleExport(baseExpApi)"><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
-                            <div @click="toggle()"><span></span></div>
-                            <div @click="queryDate()"><span></span></div>
+                            <div @click="toggle"><span></span></div>
+                            <div @click="queryDate"><span></span></div>
                             <div><span></span></div>
                             <div><span></span></div>
                         </div>
@@ -29,7 +29,7 @@
                     <div class="tabled">
                         <el-table border
                             ref="multipleTable"
-                            :data="tableData"
+                            :data="tableDataList"
                             tooltip-effect="dark"
                             style="width: 100%"
                             @selection-change="handleSelectionChange">
@@ -63,8 +63,8 @@
                         style="text-align:right;margin-top:2%;"
                         background
                         layout="prev, pager, next"
-                        @size-change="handleSizeChange($event, queryDate)"
-                        @current-change="handleCurrentChange($event, queryDate)"
+                        @size-change="handleSizeChange($event, query)"
+                        @current-change="handleCurrentChange($event, query)"
                         :current-page="queryList.pageNum"
                         :page-size="queryList.pageSize"
                         :total="total"
@@ -95,7 +95,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="save()">保 存</el-button>
+                <el-button type="primary" @click="save">保 存</el-button>
                 <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
             </div>
 		</el-dialog>
@@ -109,6 +109,7 @@ export default {
     mixins: [mixin],
     data() {
         return {
+            baseExpApi: 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel',
             fqForm: [
                 {
                 fiAttr: {
@@ -147,7 +148,6 @@ export default {
                 //   bindkey: "surStatus"
                 // }
             ],
-            tableData:[],//表格
             dialogFormVisible: false,
             form: {},//新增修改页面的对象
             formLabelWidth: '120px',
@@ -161,10 +161,12 @@ export default {
         FilterQueryForm
     },
     computed: {
-
+        query() {
+        return this.doQuery.bind(this, queryGwPage);
+        }
     },
     created() {
-        this.queryDate();
+        this.query();
     },
     methods: {
         toggle(){//显示隐藏查询切换
@@ -240,12 +242,6 @@ export default {
                 this.obj = this.multipleSelection.pop();
             }
         },
-        queryDate() {//查询
-            queryGwPage(this.queryList).then(res => {
-                this.tableData = res.rows;
-                this.total = +res.total;
-            });
-        },
         deleted(ids){//删除
             this.$confirm('确认删除该数据?', '提示', {
                 confirmButtonText: '确定',
@@ -265,9 +261,6 @@ export default {
                     message: '已取消删除'
                 });          
             });
-        },
-        exported(){//导出
-           // window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel?postCode='+this.sizeForm.code+'&postName='+this.sizeForm.name+'&status='+this.sizeForm.region; 
         }
     }
 };

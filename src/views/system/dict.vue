@@ -1,40 +1,12 @@
 <template>
     <div class="dict-container">
         <div class="tabs-search" v-if="isSearch">
-			<!-- <div class="search">
-				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-					<el-form-item label="字典名称">
-						<el-input v-model="sizeForm.name"></el-input>
-					</el-form-item>
-					<el-form-item label="字典类型">
-						<el-input v-model="sizeForm.type"></el-input>
-					</el-form-item>
-					<el-form-item label="字典状态">
-						<el-select v-model="sizeForm.status" placeholder="所有">
-						<el-option label="正常" value="0"></el-option>
-						<el-option label="停用" value="1"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item label="创建时间">
-						<el-col :span="11">
-						    <el-date-picker type="beginTime" placeholder="开始时间" v-model="sizeForm.beginTime" style="width: 100%;"></el-date-picker>
-						</el-col>
-						<el-col class="line" :span="2">-</el-col>
-						<el-col :span="11">
-						    <el-date-picker type="endTime" placeholder="结束时间" v-model="sizeForm.endTime" style="width: 100%;"></el-date-picker>
-						</el-col>
-					</el-form-item>
-					<el-form-item size="large" class="query">
-						<el-button type="primary" @click="queryDate()">查询</el-button>
-					</el-form-item>
-				</el-form>
-			</div> -->
             <FilterQueryForm
                 :fAttr="{'label-width': '80px'}"
                 :resetBtnVisible="false"
                 :searchBtnVisible="true"
                 :model="fqForm"
-                @afterFilter="handleFilter($event, queryDate)"
+                @afterFilter="handleFilter($event, query)"
             ></FilterQueryForm>
 		</div>
 		<div class="dashboard-content">
@@ -46,16 +18,16 @@
                         <el-button @click="batchDelete()"><i class="iconComm delete"></i>删除</el-button>
                         <el-button @click="revise()"><i class="iconComm modify"></i>修改</el-button>
                         <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
-                        <el-button @click="exported()"><i class="iconComm leading"></i>导出</el-button>
+                        <el-button @click="handleExport(baseExpApi)"><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
                             <div @click="toggle()"><span></span></div>
-                            <div @click="queryDate()"><span></span></div>
+                            <div @click="query()"><span></span></div>
                             <div><span></span></div>
                             <div><span></span></div>
                         </div>
                     </div>
                     <div class="tabled">
-                        <el-table border ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
+                        <el-table border ref="multipleTable" :data="tableDataList" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
                             <el-table-column type="selection"></el-table-column>
                              <el-table-column prop="dictId" label="字典主键"></el-table-column>
                             <el-table-column prop="dictName" label="字典名称"></el-table-column>
@@ -84,8 +56,8 @@
                         style="text-align:right;margin-top:2%;"
                         background
                         layout="prev, pager, next"
-                        @size-change="handleSizeChange($event, queryDate)"
-                        @current-change="handleCurrentChange($event, queryDate)"
+                        @size-change="handleSizeChange($event, query)"
+                        @current-change="handleCurrentChange($event, query)"
                         :current-page="queryList.pageNum"
                         :page-size="queryList.pageSize"
                         :total="total"
@@ -126,6 +98,7 @@ export default {
     mixins: [mixin],
     data() {
         return {
+            baseExpApi:'http://192.168.0.105:9091/uumsApi/v1/dictionaries/dictType/exportExcel',
             fqForm: [
                 {
                 fiAttr: {
@@ -165,7 +138,6 @@ export default {
                 // }
             ],
             value: true,
-            tableData:[],//表格
             form:{},
             isSearch:true,
             dialogFormVisible: false,
@@ -177,7 +149,12 @@ export default {
         FilterQueryForm
     },
     created() {
-        this.queryDate();
+        this.query();
+    },
+    computed: {
+        query() {
+            return this.doQuery.bind(this, queryDictPage);
+        }
     },
     methods: {
         toggle(){//显示隐藏查询切换
@@ -186,22 +163,12 @@ export default {
         handleSelectionChange(val) {
             this.multipleSelection = val;
         },
-        handleCurrentChange: function(current) {//当前页
-            this.current = current;
-            this.queryDate();
-        },
         change (data) {
             console.log(data)
         },
-        queryDate(){//查询
-            queryDictPage(this.queryList).then(res => {
-                this.tableData = res.rows;
-                this.total = +res.total;
-            });
-        },
-        exported(){//导出
-            window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/dictionaries/dictType/exportExcel?dictName='+this.sizeForm.name+'&dictType='+this.sizeForm.type+'&status='+this.sizeForm.status;
-        },
+        // exported(){//导出
+        //     window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/dictionaries/dictType/exportExcel?dictName='+this.sizeForm.name+'&dictType='+this.sizeForm.type+'&status='+this.sizeForm.status;
+        // },
         batchDelete(){//批量删除
             let selectArr = [];
             if(typeof(this.multipleSelection) == "undefined"){
@@ -227,7 +194,7 @@ export default {
                         type: 'success',
                         message: '删除成功!'
                     });
-                    this.queryDate();
+                    this.query();
                 });  
             }).catch(() => {
                 this.$message({
@@ -283,7 +250,7 @@ export default {
                     type: 'success'
                 });
                 this.dialogFormVisible = false;
-                this.queryDate();
+                this.query();
             });
         },
     }
