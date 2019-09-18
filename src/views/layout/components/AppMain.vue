@@ -23,8 +23,8 @@ export default {
 </script>
 <style lang="scss" scoped>
     .app-main {
-        width: calc(100% - 284px);
-        height: 100%;
+        width: 100%;
+        height: calc(100% - 34px);
         margin-left: 15px;
     }
 </style>
