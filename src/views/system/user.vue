@@ -373,6 +373,7 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .user {
   color: #fff;

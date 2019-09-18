@@ -1,40 +1,27 @@
 <template>
     <div class="post-container">
         <div class="tabs-search" v-if="isSearch">
-			<div class="search">
-				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-					<el-form-item label="岗位编码">
-						<el-input v-model="sizeForm.code"></el-input>
-					</el-form-item>
-					<el-form-item label="岗位名称">
-						<el-input v-model="sizeForm.name"></el-input>
-					</el-form-item>
-					<el-form-item label="岗位状态">
-						<el-select v-model="sizeForm.region" placeholder="全部">
-                            <el-option label="所有" value=""></el-option>
-                            <el-option label="正常" value="0"></el-option>
-                            <el-option label="停用" value="1"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item size="large">
-						<el-button type="primary" @click="query">查询</el-button>
-					</el-form-item>
-				</el-form>
-			</div>
+            <FilterQueryForm
+                :fAttr="{'label-width': '80px'}"
+                :resetBtnVisible="false"
+                :searchBtnVisible="true"
+                :model="fqForm"
+                @afterFilter="handleFilter($event, query)"
+            ></FilterQueryForm>
 		</div>
 		<div class="dashboard-content">
 			 <!-- <div class="organization"></div> -->
 			 <div class="table">
                 <!-- <div class="main-right"> -->
                     <div class="tableHead">
-                        <el-button @click="addInfo()"><i class="iconComm add"></i>新增</el-button>
-                        <el-button @click="batchDelete()"><i class="iconComm delete"></i>删除</el-button>
-                        <el-button @click="revise()"><i class="iconComm modify"></i>修改</el-button>
+                        <el-button @click="addInfo"><i class="iconComm add"></i>新增</el-button>
+                        <el-button @click="batchDelete"><i class="iconComm delete"></i>删除</el-button>
+                        <el-button @click="revise"><i class="iconComm modify"></i>修改</el-button>
                         <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
-                        <el-button @click="exported()"><i class="iconComm leading"></i>导出</el-button>
+                        <el-button @click="handleExport(baseExpApi)"><i class="iconComm leading"></i>导出</el-button>
                         <div class="operation">
-                            <div @click="toggle()"><span></span></div>
-                            <div @click="refresh()"><span></span></div>
+                            <div @click="toggle"><span></span></div>
+                            <div @click="queryDate"><span></span></div>
                             <div><span></span></div>
                             <div><span></span></div>
                         </div>
@@ -42,7 +29,7 @@
                     <div class="tabled">
                         <el-table border
                             ref="multipleTable"
-                            :data="tableData"
+                            :data="tableDataList"
                             tooltip-effect="dark"
                             style="width: 100%"
                             @selection-change="handleSelectionChange">
@@ -55,11 +42,7 @@
                             <el-table-column prop="postSort" label="显示顺序" show-overflow-tooltip></el-table-column>
                             <el-table-column label="状态" show-overflow-tooltip>
                                 <template slot-scope="scope">
-                                    <!-- <el-switch
-                                    v-model="scope.row.status">
-                                    </el-switch> -->
-                                    <span :class="[scope.row.state  ? 'normal' : 'stop']">{{scope.row.state  ? '正常' : '停用'}}</span>
-                                    <!-- <span style="color:#CB3203;">停用</span> -->
+                                    <span :class="[scope.row.status == '0'  ? 'normal' : 'stop']">{{scope.row.status == '0' ? '正常' : '停用'}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
@@ -76,24 +59,22 @@
                         layout="prev, pager, next"
                         :total="1000">
                     </el-pagination> -->
-                    <el-pagination style="text-align: right;" v-show="pageShow"
-                        @current-change="handleCurrentChange"
-                        :current-page="current"
-                        :page-size="pageSize"       
-                        layout="prev, pager, next, jumper,total"
-                        :total="total">  
-                    </el-pagination>
+                    <el-pagination
+                        style="text-align:right;margin-top:2%;"
+                        background
+                        layout="prev, pager, next"
+                        @size-change="handleSizeChange($event, query)"
+                        @current-change="handleCurrentChange($event, query)"
+                        :current-page="queryList.pageNum"
+                        :page-size="queryList.pageSize"
+                        :total="total"
+                    ></el-pagination>
                 <!-- </div> -->
 			 </div>
 		</div>
 
         <!-- 弹框 -->
         <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-		<!-- <div class="login-user">
-          <img src="../../assets/login-left.png" />
-          <span>基本信息</span>
-          <img src="../../assets/login-right.png" />
-        </div> -->
             <el-form :model="form" style="height:308px;">
                 <el-form-item label="岗位名称" :label-width="formLabelWidth">
                     <el-input v-model="form.postName" autocomplete="off"></el-input>
@@ -114,7 +95,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="save()">保 存</el-button>
+                <el-button type="primary" @click="save">保 存</el-button>
                 <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
             </div>
 		</el-dialog>
@@ -122,172 +103,166 @@
 </template>
 <script>
 import { queryGwPage,deleteGwPage,exportGwPage,editorGwPage,addGwPage } from '@/api';
-// import { getToken } from '@/utils/auth';
+import FilterQueryForm from "@/components/FilterQueryForm";
+import { mixin } from "@/mixins";
 export default {
-  data() {
-    return {
-        sizeForm: {//查询
-			code: '',
-			name:'',
-			region: '',
-        },
-        tableData:[],//表格
-        current: 1,//当前页
-        total: 0,//当前页
-        pageSize:5,//每页条数  
-        pageShow:false,//没有数据时隐藏分页
-        dialogFormVisible: false,
-        form: {
-        //   postName: '',
-        //   postCode: '',
-        //   order:'',
-        //   state:true,
-        //   remark:''
-        },
-        formLabelWidth: '120px',
-        radio: '1',
-        obj:{},
-        isSearch:true,
-    };
-  },
-  components: {
-  },
-  computed: {
+    mixins: [mixin],
+    data() {
+        return {
+            baseExpApi: 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel',
+            fqForm: [
+                {
+                fiAttr: {
+                    label: "岗位编码"
+                },
+                el: "input",
+                elAttr: {
+                    type: "text"
+                },
+                bindKey: "postCode"
+                },
+                {
+                fiAttr: {
+                    label: "岗位名称"
+                },
+                el: "input",
+                elAttr: {
+                    type: "number"
+                },
+                bindKey: "postName"
+                },
+                {
+                fiAttr: {
+                    label: "岗位状态"
+                },
+                el: "select",
+                elAttr: {},
+                bindKey: "status",
+                option: [{ label: "所有", value: '' },{ label: "正常", value: 0 }, { label: "停用", value: 1 }]
+                }
+                // {
+                //   fiAttr: {
+                //     label: "创建时间"
+                //   },
+                //   el: "date-picker",
+                //   bindkey: "surStatus"
+                // }
+            ],
+            dialogFormVisible: false,
+            form: {},//新增修改页面的对象
+            formLabelWidth: '120px',
+            radio: '1',
+            obj:{},
+            isSearch:true,
+        };
 
-  },
-  created() {
-      this.queryDate();
-  },
-  methods: {
-    // 初始页currentPage、初始每页数据数pagesize和数据data
-    // handleSizeChange: function(size) {//size为每页显示的条数
-    //     this.pageSize = size;
-    //     this.queryDate();
-    // },
-    handleCurrentChange: function(current) {//当前页
-        this.current = current;
-        this.queryDate();
     },
-    toggle(){//显示隐藏查询切换
-        this.isSearch = !this.isSearch;
+    components: {
+        FilterQueryForm
     },
-    refresh(){//刷新当前页面
-        // window.location.reload();
-        this.$router.go(0);
-    },
-    query() {//查询
-		this.queryDate();
-    },
-    batchDelete(){//批量删除
-        let selectArr = [];
-        if(typeof(this.multipleSelection) == "undefined"){
-            this.$message({
-                message: '请选择需要删除的数据！',
-                type: 'warning'
-            });
-        }else{
-            this.multipleSelection.forEach((v,i) => {
-                selectArr.push(v.postId);
-            })
-            this.deleted(selectArr.join(','));
+    computed: {
+        query() {
+        return this.doQuery.bind(this, queryGwPage);
         }
     },
-    addInfo(){//新增
-        this.dialogFormVisible = true;
-        this.form = {};
-        this.obj = {};
+    created() {
+        this.query();
     },
-    editor(rows){//编辑
-        this.dialogFormVisible = true;
-        this.form = rows;
-        this.obj = rows;
-    },
-    save(){//编辑入参
-        if(JSON.stringify(this.obj) == '{}'){//新增
-            this.addAsk();
-        }else{//编辑
-            this.saveAsk();
-        }  
-    },
-    saveAsk(){//编辑保存
-        this.form.status = this.form.state ?  '0': '1';
-        editorGwPage(this.form).then(res => {
-            this.$message({
-                message: '修改成功！',
-                type: 'success'
-            });
-            this.dialogFormVisible = false;
-        });
-    },
-    addAsk(){//新增保存
-        this.form.status = this.form.state ?  '0': '1';
-        addGwPage(this.form).then(res => {
-            this.$message({
-                message: '新增成功！',
-                type: 'success'
-            });
-            this.dialogFormVisible = false;
-            this.queryDate();
-        });
-    },
-    handleSelectionChange(val) {//多选
-        this.multipleSelection = val;
-    },
-    revise(){
-        if(typeof(this.multipleSelection) == "undefined"){
-            this.$message({
-                message: '请选择需要修改的数据！',
-                type: 'warning'
-            });
-        }else{
-            this.dialogFormVisible = true;
-            this.form = this.multipleSelection.pop();//获取最后一条
-            this.obj = this.multipleSelection.pop();
-        }
-    },
-    queryDate() {//查询
-        queryGwPage({
-            postCode:this.sizeForm.code,
-            postName:this.sizeForm.name,
-            status:this.sizeForm.region,
-            pageNum:this.current,
-            pageSize:this.pageSize,
-        }).then(res => {
-            this.tableData = res.rows;
-            this.tableData.forEach((v,i) =>{
-                v.state = v.status == 0 ? true : false;
-            });
-            this.total=res.total*1;
-            if(this.total > 0) {
-                this.pageShow = true;
-            }
-		});
-    },
-    deleted(ids){//删除
-        this.$confirm('确认删除该数据?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-            deleteGwPage({str:ids}).then(res => {
+    methods: {
+        toggle(){//显示隐藏查询切换
+            this.isSearch = !this.isSearch;
+        },
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
+        },
+        batchDelete(){//批量删除
+            let selectArr = [];
+            if(typeof(this.multipleSelection) == "undefined"){
                 this.$message({
-                    type: 'success',
-                    message: '删除成功!'
+                    message: '请选择需要删除的数据！',
+                    type: 'warning'
                 });
+            }else{
+                this.multipleSelection.forEach((v,i) => {
+                    selectArr.push(v.postId);
+                })
+                this.deleted(selectArr.join(','));
+            }
+        },
+        addInfo(){//新增
+            this.dialogFormVisible = true;
+            this.form = {};
+            this.obj = {};
+        },
+        editor(rows){//编辑
+            this.dialogFormVisible = true;
+            this.form = rows;
+            this.obj = rows;
+        },
+        save(){//编辑入参
+            if(JSON.stringify(this.obj) == '{}'){//新增
+                this.addAsk();
+            }else{//编辑
+                this.saveAsk();
+            }  
+        },
+        saveAsk(){//编辑保存
+            this.form.status = this.form.state ?  '0': '1';
+            editorGwPage(this.form).then(res => {
+                this.$message({
+                    message: '修改成功！',
+                    type: 'success'
+                });
+                this.dialogFormVisible = false;
+            });
+        },
+        addAsk(){//新增保存
+            this.form.status = this.form.state ?  '0': '1';
+            addGwPage(this.form).then(res => {
+                this.$message({
+                    message: '新增成功！',
+                    type: 'success'
+                });
+                this.dialogFormVisible = false;
                 this.queryDate();
-            });  
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-    },
-    exported(){//导出
-        window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel';
-        
+            });
+        },
+        handleSelectionChange(val) {//多选
+            this.multipleSelection = val;
+        },
+        revise(){//批量修改
+            if(typeof(this.multipleSelection) == "undefined"){
+                this.$message({
+                    message: '请选择需要修改的数据！',
+                    type: 'warning'
+                });
+            }else{
+                this.dialogFormVisible = true;
+                this.form = this.multipleSelection.pop();//获取最后一条
+                this.obj = this.multipleSelection.pop();
+            }
+        },
+        deleted(ids){//删除
+            this.$confirm('确认删除该数据?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                deleteGwPage({str:ids}).then(res => {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                    this.queryDate();
+                });  
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });          
+            });
+        }
     }
-  }
 };
 </script>
 <style lang="scss" scoped>
@@ -400,79 +375,71 @@ export default {
         color:#CB3203 !important;
     }
 }
-.el-dialog {
-		  .el-dialog__header {
-			text-align: center;
-			.el-dialog__title {
-			  text-align: center;
-			  color: #4BAEFD;
-			}
-			.el-dialog__title:before {
-				content:'';
-				display: inline-block;
-				background-image: url(../../assets/login-left.png);
-				background-size: 100% 100%;
-				width:91px;
-				height: 13px;
-				margin-right: 12px; 
-			}
-			.el-dialog__title:after {
-				content:'';
-				display: inline-block;
-				background-image: url(../../assets/login-right.png);
-				background-size: 100% 100%;
-				width:91px;
-				height: 13px;
-				margin-left: 12px; 
-			}
-			.el-dialog__headerbtn {
-				top: 80px;
-    			right: 80px;
-				.el-dialog__close {
-					color: #FFF;
-					font-size: 30px;
-				}
-			}
-		  }
-		  .el-dialog__body {
-				padding:10px 20px;
-				.el-form {
-					padding:  20px 0px 0px;
-					.el-radio {
-						color: #FFF;
-						margin-right: 50px; 
-					}
-				}
-		  }
-	  }
-	  .el-dialog__body::before {
-		  content: '基本信息'; 
-		  width: 100%;
-		  height: 34px;
-		  display: inline-block;
-		  border-bottom: 1px dashed rgba(75,174,253,1); 
-		  color: #63ACDF;
-		  font-size: 13px;
-	  }
-	  .dialog-footer {
-		  text-align: center;
-	  }
-	  .el-dialog__footer::before {
-		  content: '其他信息'; 
-		  width: 100%;
-		  height: 34px;
-		  display: inline-block;
-		  border-bottom: 1px dashed rgba(75,174,253,1); 
-		  color: #63ACDF;
-		  text-align: left;
-		  font-size: 13px;
-      }
-    .textarea {
-        width: 100%;
-        background:rgba(5,37,75,1);
-        // border:1px solid rgba(2,67,157,1);
-        // border-radius:2px;
+.post-container /deep/.el-dialog {
+    .el-dialog__header {
+        text-align: center;
+    .el-dialog__title {
+        text-align: center;
+        color: #4BAEFD;
     }
+    .el-dialog__title:before {
+        content:'';
+        display: inline-block;
+        background-image: url(../../assets/login-left.png);
+        background-size: 100% 100%;
+        width:91px;
+        height: 13px;
+        margin-right: 12px; 
+    }
+    .el-dialog__title:after {
+        content:'';
+        display: inline-block;
+        background-image: url(../../assets/login-right.png);
+        background-size: 100% 100%;
+        width:91px;
+        height: 13px;
+        margin-left: 12px; 
+    }
+    .el-dialog__headerbtn {
+        top: 80px;
+        right: 80px;
+        .el-dialog__close {
+            color: #FFF;
+            font-size: 30px;
+        }
+    }
+    }
+    .el-dialog__body {
+        padding:10px 20px;
+        .el-form {
+            padding:  20px 0px 0px;
+            .el-radio {
+                color: #FFF;
+                margin-right: 50px; 
+            }
+        }
+    }
+}
+.el-dialog__body::before {
+    content: '基本信息'; 
+    width: 100%;
+    height: 34px;
+    display: inline-block;
+    border-bottom: 1px dashed rgba(75,174,253,1); 
+    color: #63ACDF;
+    font-size: 13px;
+}
+.dialog-footer {
+    text-align: center;
+    margin-top: 4%;
+}
+.el-dialog__footer::before {
+    border-bottom: none !important; 
+}
+.textarea {
+    width: 100%;
+    background:rgba(5,37,75,1);
+}
 .post-container /deep/.el-textarea__inner{
     background: #05254B;
     border: 1px solid #02439D; 
