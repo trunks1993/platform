@@ -402,79 +402,80 @@ export default {
         color:#CB3203 !important;
     }
 }
-.el-dialog {
-		  .el-dialog__header {
-			text-align: center;
-			.el-dialog__title {
-			  text-align: center;
-			  color: #4BAEFD;
-			}
-			.el-dialog__title:before {
-				content:'';
-				display: inline-block;
-				background-image: url(../../assets/login-left.png);
-				background-size: 100% 100%;
-				width:91px;
-				height: 13px;
-				margin-right: 12px; 
-			}
-			.el-dialog__title:after {
-				content:'';
-				display: inline-block;
-				background-image: url(../../assets/login-right.png);
-				background-size: 100% 100%;
-				width:91px;
-				height: 13px;
-				margin-left: 12px; 
-			}
-			.el-dialog__headerbtn {
-				top: 80px;
-    			right: 80px;
-				.el-dialog__close {
-					color: #FFF;
-					font-size: 30px;
-				}
-			}
-		  }
-		  .el-dialog__body {
-				padding:10px 20px;
-				.el-form {
-					padding:  20px 0px 0px;
-					.el-radio {
-						color: #FFF;
-						margin-right: 50px; 
-					}
-				}
-		  }
-	  }
-	  .el-dialog__body::before {
-		  content: '基本信息'; 
-		  width: 100%;
-		  height: 34px;
-		  display: inline-block;
-		  border-bottom: 1px dashed rgba(75,174,253,1); 
-		  color: #63ACDF;
-		  font-size: 13px;
-	  }
-	  .dialog-footer {
-		  text-align: center;
-	  }
-	  .el-dialog__footer::before {
-		  content: '其他信息'; 
-		  width: 100%;
-		  height: 34px;
-		  display: inline-block;
-		  border-bottom: 1px dashed rgba(75,174,253,1); 
-		  color: #63ACDF;
-		  text-align: left;
-		  font-size: 13px;
-      }
-    .textarea {
-        width: 100%;
-        background:rgba(5,37,75,1);
-        // border:1px solid rgba(2,67,157,1);
-        // border-radius:2px;
+.post-container /deep/.el-dialog {
+    .el-dialog__header {
+        text-align: center;
+    .el-dialog__title {
+        text-align: center;
+        color: #4BAEFD;
     }
+    .el-dialog__title:before {
+        content:'';
+        display: inline-block;
+        background-image: url(../../assets/login-left.png);
+        background-size: 100% 100%;
+        width:91px;
+        height: 13px;
+        margin-right: 12px; 
+    }
+    .el-dialog__title:after {
+        content:'';
+        display: inline-block;
+        background-image: url(../../assets/login-right.png);
+        background-size: 100% 100%;
+        width:91px;
+        height: 13px;
+        margin-left: 12px; 
+    }
+    .el-dialog__headerbtn {
+        top: 80px;
+        right: 80px;
+        .el-dialog__close {
+            color: #FFF;
+            font-size: 30px;
+        }
+    }
+    }
+    .el-dialog__body {
+        padding:10px 20px;
+        .el-form {
+            padding:  20px 0px 0px;
+            .el-radio {
+                color: #FFF;
+                margin-right: 50px; 
+            }
+        }
+    }
+}
+.el-dialog__body::before {
+    content: '基本信息'; 
+    width: 100%;
+    height: 34px;
+    display: inline-block;
+    border-bottom: 1px dashed rgba(75,174,253,1); 
+    color: #63ACDF;
+    font-size: 13px;
+}
+.dialog-footer {
+    text-align: center;
+    margin-top: 4%;
+}
+.el-dialog__footer::before {
+//   content: '其他信息'; 
+//   width: 100%;
+//   height: 34px;
+//   display: inline-block;
+    border-bottom: none !important; 
+//   color: #63ACDF;
+//   text-align: left;
+//   font-size: 13px;
+}
+.textarea {
+    width: 100%;
+    background:rgba(5,37,75,1);
+    // border:1px solid rgba(2,67,157,1);
+    // border-radius:2px;
+}
 .post-container /deep/.el-textarea__inner{
     background: #05254B;
     border: 1px solid #02439D; 

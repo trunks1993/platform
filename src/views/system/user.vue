@@ -437,7 +437,7 @@ export default {
 	  }
 	  .el-dialog {
 		  .el-dialog__header {
-			text-align: center;
+				text-align: center;
 			.el-dialog__title {
 			  text-align: center;
 			  color: #4BAEFD;

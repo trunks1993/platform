@@ -72,3 +72,9 @@ export const addGwPage = params => request({
   method: 'post',
   params,
 });
+//查询字典管理列表
+export const queryDictPage = params => request({
+  url: '/v1/manage/post/insert',
+  method: 'post',
+  params,
+});

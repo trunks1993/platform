@@ -1,7 +1,34 @@
 <template>
     <div class="dict-container">
         <div class="tabs-search">
-			<!-- <Search></Search> -->
+			<div class="search">
+				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
+					<el-form-item label="登录名称">
+						<el-input v-model="sizeForm.surLoginName"></el-input>
+					</el-form-item>
+					<el-form-item label="手机号码">
+						<el-input v-model="sizeForm.surPhoneNumber"></el-input>
+					</el-form-item>
+					<el-form-item label="用户状态">
+						<el-select v-model="sizeForm.surStatus" placeholder="全部">
+						<el-option label="正常" value="0"></el-option>
+						<el-option label="停用" value="1"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item label="创建时间">
+						<el-col :span="11">
+						<el-date-picker type="surBeginTime" placeholder="开始时间" v-model="sizeForm.date1" style="width: 100%;"></el-date-picker>
+						</el-col>
+						<el-col class="line" :span="2">-</el-col>
+						<el-col :span="11">
+						<el-date-picker type="surEndTime" placeholder="结束时间" v-model="sizeForm.date2" style="width: 100%;"></el-date-picker>
+						</el-col>
+					</el-form-item>
+					<el-form-item size="large" class="query">
+						<el-button type="primary" >查询</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
 		</div>
 		<div class="dashboard-content">
 			 <!-- <div class="organization"></div> -->
@@ -70,6 +97,13 @@ export default {
   data() {
     return {
          value: true,
+         sizeForm: {
+			surLoginName: '',
+			surPhoneNumber:'',
+			surStatus: '',
+			surBeginTime: '',
+			surEndTime: '',
+		},
          tableData3: [{
             logNumber: '2016-05-03',
             sysModule: '王小虎',
@@ -170,6 +204,10 @@ export default {
     height: 100%;
     .tabs-search {
         height: 187px;
+        .query{
+            margin: 0 !important;
+            width: 0 !important;
+        }
     }
     .dashboard-content {
         height: calc(100% - 187px);
