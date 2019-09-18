@@ -36,6 +36,12 @@ export const getSysDeptTreeData = params => request({
   method: 'get',
   params,
 });
+// 添加用户管理数据
+export const getSysUserAdd = params => request({
+  url: '/v1/api/user/SysUser/add',
+  method: 'post',
+  params,
+});
 // 获取角色管理列表
 export const getSysRoleList = params => request({
   url: '/v1/role/list',

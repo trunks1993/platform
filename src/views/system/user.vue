@@ -10,7 +10,7 @@
 						<el-input v-model="sizeForm.surPhoneNumber"></el-input>
 					</el-form-item>
 					<el-form-item label="用户状态">
-						<el-select v-model="sizeForm.surStatus" placeholder="全部">
+						<el-select v-model="sizeForm.surStatus" placeholder="全部" style="width:245px;">
 						<el-option label="正常" value="0"></el-option>
 						<el-option label="停用" value="1"></el-option>
 						</el-select>
@@ -136,57 +136,59 @@
           <img src="../../assets/login-right.png" />
         </div> -->
 		<el-form :model="form" style="height:308px;">
-			<el-form-item label="活动名称" :label-width="formLabelWidth">
-				<el-input v-model="form.name" autocomplete="off"></el-input>
+			<el-form-item label="用户名称" :label-width="formLabelWidth">
+				<el-input v-model="form.surLoginName" autocomplete="off"></el-input>
 			</el-form-item>
-			<el-form-item label="归属部门" :label-width="formLabelWidth">
-				<el-input v-model="form.name" autocomplete="off"></el-input>
+			<el-form-item label="部门编号" :label-width="formLabelWidth">
+				<el-input v-model="form.surDeptId" autocomplete="off"></el-input>
 			</el-form-item>
 			<el-form-item label="手机号码" :label-width="formLabelWidth">
-				<el-input v-model="form.name" autocomplete="off"></el-input>
+				<el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
 			</el-form-item>
 			<el-form-item label="邮 箱" :label-width="formLabelWidth">
-				<el-input v-model="form.name" autocomplete="off"></el-input>
+				<el-input v-model="form.surEmail" autocomplete="off"></el-input>
 			</el-form-item>
 			<el-form-item label="登录帐号" :label-width="formLabelWidth">
-				<el-input v-model="form.name" autocomplete="off"></el-input>
+				<el-input v-model="form.surUserName" autocomplete="off"></el-input>
 			</el-form-item>
 			<el-form-item label="登录密码" :label-width="formLabelWidth">
-				<el-input v-model="form.name" autocomplete="off"></el-input>
+				<el-input v-model="form.surPassword" autocomplete="off"></el-input>
 			</el-form-item>
 			<el-form-item label="用户性别" :label-width="formLabelWidth">
-				<el-radio v-model="radio" label="1">男</el-radio>
-  				<el-radio v-model="radio" label="2">女</el-radio>
+				<el-radio v-model="surSex" label="1">男</el-radio>
+  				<el-radio v-model="surSex" label="2">女</el-radio>
 			</el-form-item>
 			<el-form-item label="用户状态" :label-width="formLabelWidth">
 				<el-switch
-					v-model="value1">
+					v-model="form.value1">
 				</el-switch>
 			</el-form-item>
 			<el-form-item label="岗 位" :label-width="formLabelWidth">
 				<el-select v-model="form.region" placeholder="请选择岗位">
-					<el-option label="区域一" value="shanghai"></el-option>
-					<el-option label="区域二" value="beijing"></el-option>
+					<el-option label="董事长" value="董事长"></el-option>
+					<el-option label="项目经理" value="项目经理"></el-option>
+					<el-option label="人力资源" value="人力资源"></el-option>
+					<el-option label="普通员工" value="普通员工"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="岗 位" :label-width="formLabelWidth">
-				<el-radio v-model="radio" label="1">操作员</el-radio>
-  				<el-radio v-model="radio" label="2">管理员</el-radio>
-			</el-form-item>
+			<!-- <el-form-item label="角色" :label-width="formLabelWidth">
+				<el-radio v-model="surStatus" label="1">操作员</el-radio>
+  				<el-radio v-model="surStatus" label="2">管理员</el-radio>
+			</el-form-item> -->
 		</el-form>
 		<div slot="footer" class="dialog-footer">
 			<div class="textarea">
 				<span>活动形式</span>
-				<input type="textarea">
+				<input type="textarea" v-model="form.surRemark">
 			</div>
-			<el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
+			<el-button  @click="preservation" type="primary">保 存</el-button>
 			<el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
 		</div>
 		</el-dialog>
 	</div>
 </template>
 <script>
-import { getSysUserList,getSysDeptTreeData } from '@/api';
+import { getSysUserList,getSysDeptTreeData,getSysUserAdd } from '@/api';
 export default {
   data() {
     return {
@@ -203,19 +205,23 @@ export default {
 		current: 1,
 		total: 0,
 		pageSize:10,
-		radio: '1',
+		surSex: '1',
+		surStatus: '1',
 		dialogFormVisible: false,
 		formLabelWidth: '120px',
 		data: [],
 		form: {
-          name: '',
           region: '',
-          date1: '',
-          date2: '',
           delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
+		  value1:true,
+		  surRemark:'',
+		  surUserName:'',
+		  surPhoneNumber:'',
+		  surRemark:'',
+		  surEmail:'',
+		  surLoginName:'',
+		  surPassword:'',
+		  surDeptId:'',
         },
         defaultProps: {
           children: 'children',
@@ -261,6 +267,13 @@ export default {
 	  handleSizeChange: function(size) {
 		this.pageSize = size;
 	  },
+	  preservation(){
+		  this.dialogFormVisible = false;
+		  console.log(this.form);
+		  getSysUserAdd(this.form).then(res => {
+			  console.log(res)
+		  })
+	  },
 	//   刷新数据
 	  refresh(){
 		  this.Sysuser();
@@ -268,7 +281,7 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 	.user {
 		color: #fff;
 		height: 100%;
@@ -643,7 +656,6 @@ export default {
         width: 325px;
         color: #fff;
         float: left;
-        margin-right: 112px;
         height: 38px;
     }
     .el-form-item:nth-child(4) {

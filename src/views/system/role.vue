@@ -10,7 +10,7 @@
 						<el-input v-model="sizeForm.roleKey"></el-input>
 					</el-form-item>
 					<el-form-item label="角色状态">
-						<el-select v-model="sizeForm.status" placeholder="所有">
+						<el-select v-model="sizeForm.status" placeholder="所有"  style="width:245px;">
 						<el-option label="正常" value="0"></el-option>
 						<el-option label="禁用" value="1"></el-option>
 						</el-select>
@@ -171,7 +171,7 @@ export default {
 };
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 	.role {
 		color: #fff;
 		height: 100%;
@@ -376,7 +376,6 @@ export default {
         width: 325px;
         color: #fff;
         float: left;
-        margin-right: 112px;
         height: 60px;
     }
     .el-form-item:nth-child(4) {

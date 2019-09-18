@@ -7,7 +7,7 @@
 						<el-input v-model="sizeForm.name"></el-input>
 					</el-form-item>
 					<el-form-item label="角色状态">
-						<el-select v-model="sizeForm.region" placeholder="所有">
+						<el-select v-model="sizeForm.region" placeholder="所有"  style="width:245px;">
 						<el-option label="区域一" value="shanghai"></el-option>
 						<el-option label="区域二" value="beijing"></el-option>
 						</el-select>
@@ -34,44 +34,22 @@
 				</div>
 				<div class="table">
 					<el-table
-						ref="multipleTable"
-						:data="tableData"
-						tooltip-effect="dark"
-						style="width: 100%"
-						@selection-change="handleSelectionChange">
-						<el-table-column
+							:data="tableData"
+							style="width: 100%;margin-bottom: 20px;"
+							row-key="sdtDeptId"
+							:tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+						>
+					<el-table-column
 						type="selection"
-						width="55">
-						</el-table-column>
-						<el-table-column
-						label="部门名称"
-						>
-						<template slot-scope="scope">{{ scope.row.date }}</template>
-						</el-table-column>
-						<el-table-column
-						prop="name"
-						label="排序"
 						>
 						</el-table-column>
 						<el-table-column
-						label="	状态"
-						width="120"
-                        >
-						<template slot-scope="scope">
-							<el-switch
-							v-model="value1">
-							</el-switch>
-						</template>
-						</el-table-column>
-						<el-table-column
-						prop="address"
-						label="创建时间"
-						show-overflow-tooltip>
-						</el-table-column>
-						<el-table-column
-						label="操作"
-						width="340"
-                        >
+						v-for="(item,index) in tableList"
+						:key="index"
+						:label="item.label"
+						:prop="item.prop"
+						></el-table-column>
+						<el-table-column label="操作">
 						<template slot-scope="scope">
 							<span @click="handleClick(scope.row)">编辑</span>
 							<span>新增</span>
@@ -85,46 +63,86 @@
 	</div>
 </template>
 <script>
+import { getSysDeptTreeData } from '@/api';
 export default {
   data() {
     return {
-		tableData: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普'
-		}, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普'
-		}],
+		tableList: [
+        {
+          label: "菜单名称",
+          prop: "sdtDeptName"
+        },
+        {
+          label: "排序",
+          prop: "sdtDelFlag"
+        },
+        {
+          label: "状态",
+          prop: "sdtStatus"
+        },
+        {
+          label: "创建时间",
+          prop: "sdtCreateTime"
+        }
+      ],
+		tableData: [
+        {
+          id: 1,
+          date: "个人",
+          name: "第二根半价套餐",
+          address: "是兄弟就来割",
+		  operator: "铁手",
+		  type:'目录',
+		  solo:'显示',
+          state: "无痛",
+          children: [
+            {
+              id: 11,
+              date: "用户管理",
+              name: "第二根半价套餐",
+              alias: "是兄弟就来割",
+              operator: "铁手",
+              state: "无痛",
+              children: [
+                {
+                  id: 12,
+                  date: "角色管理",
+                  name: "第二根半价套餐",
+                  alias: "是兄弟就来割",
+                  operator: "铁手",
+                  state: "无痛"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 3,
+		  date: "全院",
+		  name: "第二根半价套餐",
+		  alias: "是兄弟就来割",
+		  operator: "铁手",
+		  state: "无痛",
+          children: [
+            {
+			  id: 31,
+			  date: "全院社团",
+              name: "第二根半价套餐",
+              alias: "是兄弟就来割",
+              operator: "铁手",
+              state: "无痛"
+            },
+            {
+			  id: 41,
+			  date: "全院管理",
+              name: "第二根半价套餐",
+              alias: "是兄弟就来割",
+              operator: "铁手",
+              state: "无痛"
+            }
+          ]
+        }
+      ],
 		value1: true,
 		multipleSelection: [],
 		sizeForm: {
@@ -161,9 +179,9 @@ export default {
         this.multipleSelection = val;
 	  },
 	  Sysuser() {
-		//    this.$store.dispatch('getUserManagementList', {pageNum:1,pageSize:10}).then(res => {
-		// 	   console.log(res);
-		//    });
+		getSysDeptTreeData().then(res => {
+			this.tableData = res;
+		});
 	  },
 	  onSubmit() {
 		console.log('submit!');
@@ -172,7 +190,7 @@ export default {
 };
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 	.dept {
 		color: #fff;
 		height: 100%;
@@ -289,6 +307,7 @@ export default {
 			}
 		}
 	}
+	
 </style>
 <style>
 	.el-switch {
@@ -368,13 +387,15 @@ export default {
 	*::-webkit-scrollbar-thumb {
 		background-color: #0154C7;
 	}
+	.el-table_1_column_1 {
+		width: 48px !important;
+	}
 </style>
 <style>
     .el-form-item {
         width: 325px;
         color: #fff;
         float: left;
-        margin-right: 112px;
         height: 60px;
     }
     .el-form-item:nth-child(4) {
