@@ -29,7 +29,11 @@ const mixin = {
       this.queryList.pageNum = current;
       afterHandler && afterHandler();
     },
-    handleExport() {}
+    handleExport(baseExpApi) {
+      const strArr = Object.entries(this.queryList).map(item => `${item[0]}=${item[1]}`);
+      const paramString = strArr.join('&');
+      window.location.href = `${baseExpApi}?${paramString}`;
+    },
   },
 };
 
