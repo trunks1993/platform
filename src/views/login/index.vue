@@ -33,10 +33,10 @@
 							class="password"
 						></el-input>
 					</el-form-item>
-            <el-form-item>
-              <el-button type="primary" style="width:100%" @click="login('ruleForm')">
-                登录
-              </el-button>
+            <el-form-item class="login-in" style="width:100%;">
+              <div style="width:100%;" @click="login('ruleForm')">
+                登  录
+              </div>
 					</el-form-item>
           </el-form>
         </div>
@@ -145,13 +145,16 @@ export default {
       .login-input{
         padding: 0 5%;
         .user{
+          width: 100%;
           height: 90px;
         }
         .pwd{
+          width: 100%;
           height: 78px;
         }
       }
       .login-input /deep/ .el-input__inner {
+        width: 100%;
         background: url(../../assets/login-input.png) !important;
         background-size: 100% 100% !important;
         border: none !important;
@@ -194,7 +197,18 @@ export default {
       }
       .login-input /deep/ .el-form-item{
           margin-bottom: 0;
+          margin-right: 0;
       }
+      .login-input /deep/ .el-form-item__content{
+          width:100%;
+      }
+     .login-input /deep/ .login-in .el-form-item__content{
+       height: 48px;
+       line-height: 48px;
+       font-size: 18px;
+       background:url(../../assets/login.png);
+       color: #fff;
+     }
     }
   }
  }

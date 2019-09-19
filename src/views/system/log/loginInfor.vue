@@ -71,7 +71,7 @@ export default {
   mixins: [mixin],
   data() {
     return {
-      baseExpApi:'http://192.168.0.105:9091/uumsApi/v1/logininfor/exportExcel',
+      baseExpApi:'/v1/logininfor/exportExcel',
       fqForm: [
         {
           fiAttr: {
