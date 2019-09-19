@@ -1,5 +1,5 @@
 <template>
-  <div class="user">
+  <div class="common-container">
     <FilterQueryForm
       :fAttr="{'label-width': '80px'}"
       :resetBtnVisible="false"
@@ -408,10 +408,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.user {
-  color: #fff;
-  height: 100%; 
-}
 .org-box {
   width: 223px;
   background: url(../../assets/images/org-bg.png);
@@ -426,23 +422,5 @@ export default {
 
 .content-box {
   width: calc(100% - 238px);
-  height: 100%;
-  padding: 20px;
-  margin-left: 15px;
-  background: url(../../assets/images/table-content-bg.png);
-  background-size: 100% 100%;
-  &-tool {
-    position: relative;
-    height: 38px;
-  }
-  &-table {
-    height: calc(100% - 148px);
-    margin-top: 35px;
-    overflow: auto;
-  }
-  &-pagination {
-    margin-top: 35px;
-    height: 32px;
-  }
 }
 </style>
