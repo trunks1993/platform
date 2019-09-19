@@ -123,8 +123,13 @@
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="重置密码" :visible.sync="dialogFormVisiblespass">
-      <el-form :model="passWordForm" style="height:308px;">
+    <el-dialog :visible.sync="dialogFormVisiblespass">
+       <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt="">
+        <span class="title">重置密码</span>
+        <img src="../../assets/images/icon-title-right.png" alt="">
+      </div>
+      <el-form :model="passWordForm"  :inline="true">
         <el-form-item label="登录名称：" :label-width="formLabelWidth">
           <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
@@ -151,7 +156,7 @@ import {
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
-const cityOptions = ['上海', '北京'];
+const cityOptions = ['管理员', '操作员'];
 export default {
   mixins: [mixin],
   data() {

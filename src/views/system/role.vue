@@ -1,103 +1,52 @@
 <template>
-  <div class="role">
-    <div class="tabs-search">
-      <div class="search">
-        <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-          <el-form-item label="角色名称">
-            <el-input v-model="sizeForm.roleName"></el-input>
-          </el-form-item>
-          <el-form-item label="权限字符">
-            <el-input v-model="sizeForm.roleKey"></el-input>
-          </el-form-item>
-          <el-form-item label="角色状态">
-            <el-select v-model="sizeForm.status" placeholder="所有" style="width:245px;">
-              <el-option label="正常" value="0"></el-option>
-              <el-option label="禁用" value="1"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="创建时间">
-
-            <!-- <el-col :span="11">
-              <el-date-picker
-                type="date"
-                placeholder="开始时间"
-                v-model="sizeForm.date1"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-col>
-            <el-col class="line" :span="2">-</el-col>
-            <el-col :span="11">
-              <el-date-picker
-                type="date"
-                placeholder="结束时间"
-                v-model="sizeForm.date2"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-col>
-            </el-col> -->
-          </el-form-item>
-          <el-form-item size="large">
-            <el-button type="primary" @click="onSubmit">搜索</el-button>
-            <el-button type="primary" @click="reset">重置</el-button>
-          </el-form-item>
-        </el-form>
+  <div class="common-container">
+    <FilterQueryForm
+      :fAttr="{'label-width': '80px'}"
+      :resetBtnVisible="false"
+      :searchBtnVisible="true"
+      :model="fqForm"
+      @afterFilter="handleFilter($event, getSysRoleList)"
+    ></FilterQueryForm>
+    <div class="app-wrapper">
+    <div class="content-box">
+      <div class="content-box-tool">
+        <el-button type="tool" icon="el-icon-plus" @click="roleAdds">新增</el-button>
+        <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
+        <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
+        <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
       </div>
-    </div>
-
-    <div class="dashboard-content">
-      <div class="table-content">
-        <div class="tableHead">
-          <div class="button" @click="roleAdds">新增</div>
-          <div class="button" @click="batchDelete">删除</div>
-          <div class="button" @click="revise">修改</div>
-          <div class="button" @click="handleExport(baseExpApi)">导出</div>
-          <div class="operation">
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-          </div>
-        </div>
-        <div class="table">
-          <el-table
-            ref="multipleTable"
-            :data="tableDataList"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-          >
-             <el-table-column type="selection"></el-table-column>
-            <el-table-column label="角色编号" prop="roleId"></el-table-column>
-            <el-table-column label="角色名称" prop="roleName"></el-table-column>
-            <el-table-column prop="roleKey" label="权限字符"></el-table-column>
-            <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
-            <el-table-column label="角色状态" width="120">
-              <template slot-scope="scope">
-                 <el-switch v-model="scope.row.status"></el-switch>
-              </template>
-            </el-table-column>
-            <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
-            <el-table-column label="操作" width="280">
-              <template slot-scope="scope">
-
-                <span @click="editor(scope.row)">编辑</span>
-                <span>数据权限</span>
-                <span>分配用户</span>
-                <span @click="deleted(scope.row.roleId)">删除</span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
+      <div class="content-box-table">
+        <el-table
+          ref="multipleTable"
+          :data="tableDataList"
+          tooltip-effect="dark"
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection"></el-table-column>
+          <el-table-column label="角色编号" prop="roleId"></el-table-column>
+          <el-table-column label="角色名称" prop="roleName"></el-table-column>
+          <el-table-column prop="roleKey" label="权限字符"></el-table-column>
+          <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
+          <el-table-column label="角色状态" width="120">
+            <template slot-scope="scope">
+              <el-switch v-model="scope.row.status"></el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
+          <el-table-column label="操作" width="280">
+            <template slot-scope="scope">
+              <el-button  type="text" @click="editor(scope.row)">编辑</el-button>
+                <el-button type="text" @click="deleted(scope.row.surUserId)">数据权限</el-button>
+                <el-button type="text-warn" @click="resetPassword(scope.row)">分配用户</el-button>
+                 <el-button type="text-warn" @click="deleted(scope.row.roleId)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="content-box-pagination">
         <el-pagination
-         style="text-align:right;margin-top:2%;"
+          style="text-align:right;margin-top:2%;"
           background
           layout="prev, pager, next"
           @size-change="handleSizeChange($event, query)"
@@ -108,10 +57,16 @@
         ></el-pagination>
       </div>
     </div>
-    <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-      <el-form :model="form" style="height:308px;">
+    </div>
+    <el-dialog :visible.sync="dialogFormVisible">
+       <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt="">
+        <span class="title">基本信息</span>
+        <img src="../../assets/images/icon-title-right.png" alt="">
+      </div>
+      <el-form :model="form" :inline="true">
         <el-form-item label="角色名称：" :label-width="formLabelWidth">
-           <el-input v-model="form.roleName" autocomplete="off"></el-input>
+          <el-input v-model="form.roleName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="权限字符：" :label-width="formLabelWidth">
           <el-input v-model="form.roleKey" autocomplete="off"></el-input>
@@ -127,18 +82,18 @@
         </el-form-item>
         <el-form-item label="菜单权限" :label-width="formLabelWidth">
           <el-tree
-          :data="data"
-          show-checkbox
-          default-expand-all
-          node-key="id"
-          width="500px"
-          ref="tree"
-          highlight-current
-          :props="defaultProps">
-        </el-tree>
+            :data="data"
+            show-checkbox
+            default-expand-all
+            node-key="id"
+            width="500px"
+            ref="tree"
+            highlight-current
+            :props="defaultProps"
+          ></el-tree>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer"  style="text-align: center;">
         <el-button @click="preservation" type="primary">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
@@ -146,14 +101,19 @@
   </div>
 </template>
 <script>
-import { getSysRoleList, deleteRoleGwPage,putRoleAdd,putRoleEdit,getMenuList } from "@/api";
+import {
+  getSysRoleList,
+  deleteRoleGwPage,
+  putRoleAdd,
+  putRoleEdit,
+  getMenuList
+} from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
 export default {
   mixins: [mixin],
   data() {
     return {
-
       baseExpApi:
         "http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel",
       fqForm: [
@@ -199,10 +159,10 @@ export default {
         // }
       ],
       data: [],
-        defaultProps: {
-          children: 'children',
-          label: 'menuName'
-        },
+      defaultProps: {
+        children: "children",
+        label: "menuName"
+      },
       tableData: [],
       value1: true,
       multipleSelection: [],
@@ -216,20 +176,19 @@ export default {
         status: ""
       },
       form: {
-
         roleName: "",
         roleKey: "",
         roleSort: "",
         status: "",
         remark: "",
-        dataScope: "",
+        dataScope: ""
       },
       pageShow: true,
       current: 1,
       pageSize: 5,
 
- total: 10,
-	  isSearch:true,
+      total: 10,
+      isSearch: true
     };
   },
   components: {
@@ -242,10 +201,10 @@ export default {
   },
   created() {
     this.query();
-       getMenuList(this.sizeForm).then(res => {
-        console.log(res)
-        this.data = res;
-      });
+    getMenuList(this.sizeForm).then(res => {
+      console.log(res);
+      this.data = res;
+    });
   },
   methods: {
     handleClick(row) {
@@ -284,7 +243,10 @@ export default {
       //批量删除
       console.log(this.multipleSelection);
       let selectArr = [];
-       if (typeof this.multipleSelection == "undefined" || this.multipleSelection.length == 0) {
+      if (
+        typeof this.multipleSelection == "undefined" ||
+        this.multipleSelection.length == 0
+      ) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
@@ -332,31 +294,33 @@ export default {
         });
     },
 
-
-    preservation() { // 新增保存
-       if(JSON.stringify(this.obj) == '{}'){//新增
-                this.addAsk();
-         }else{//编辑
-                this.saveAsk();
-         }  
+    preservation() {
+      // 新增保存
+      if (JSON.stringify(this.obj) == "{}") {
+        //新增
+        this.addAsk();
+      } else {
+        //编辑
+        this.saveAsk();
+      }
     },
-    addAsk(){
-       putRoleAdd(this.form).then(res=>{
-            this.$message({
-              type: "success",
-              message: "新增成功!"
-            });
-            this.dialogFormVisible = false;
-        })
+    addAsk() {
+      putRoleAdd(this.form).then(res => {
+        this.$message({
+          type: "success",
+          message: "新增成功!"
+        });
+        this.dialogFormVisible = false;
+      });
     },
-    saveAsk(){
-      putRoleEdit(this.form).then(res=>{
-          this.$message({
-            type: "success",
-            message: "修改成功!"
-          });
-          this.dialogFormVisible = false;
-      })
+    saveAsk() {
+      putRoleEdit(this.form).then(res => {
+        this.$message({
+          type: "success",
+          message: "修改成功!"
+        });
+        this.dialogFormVisible = false;
+      });
     },
     handleSizeChange: function(current) {
       console.log(current);
@@ -364,7 +328,7 @@ export default {
       this.queryDate();
     },
 
-    roleAdds(){
+    roleAdds() {
       this.dialogFormVisible = true;
       this.form = {};
       this.obj = {};
@@ -372,32 +336,35 @@ export default {
     editor(rows) {
       //编辑
       this.dialogFormVisible = true;
-      console.log(rows)
+      console.log(rows);
       this.form = rows;
       this.obj = rows;
     },
     // 权限
     getCheckedNodes() {
-        console.log(this.$refs.tree.getCheckedNodes());
-      },
-      getCheckedKeys() {
-        console.log(this.$refs.tree.getCheckedKeys());
-      },
-      setCheckedNodes() {
-        this.$refs.tree.setCheckedNodes([{
+      console.log(this.$refs.tree.getCheckedNodes());
+    },
+    getCheckedKeys() {
+      console.log(this.$refs.tree.getCheckedKeys());
+    },
+    setCheckedNodes() {
+      this.$refs.tree.setCheckedNodes([
+        {
           id: 5,
-          label: '二级 2-1'
-        }, {
+          label: "二级 2-1"
+        },
+        {
           id: 9,
-          label: '三级 1-1-1'
-        }]);
-      },
-      setCheckedKeys() {
-        this.$refs.tree.setCheckedKeys([3]);
-      },
-      resetChecked() {
-        this.$refs.tree.setCheckedKeys([]);
-      }
+          label: "三级 1-1-1"
+        }
+      ]);
+    },
+    setCheckedKeys() {
+      this.$refs.tree.setCheckedKeys([3]);
+    },
+    resetChecked() {
+      this.$refs.tree.setCheckedKeys([]);
+    }
   }
 };
 </script>

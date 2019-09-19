@@ -1,7 +1,6 @@
 <template>
-  <div class="dept">
-    <div class="tabs-search">
-			<div class="search">
+  <div class="common-container">
+    <div class="filter-container" style="height: 159px;background: url(../img/tabs-search-bg.e34485a0.png);background-size: 100% 100%;padding: 20px;">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="部门名称">
 						<el-input v-model="sizeForm.sdtDeptName"></el-input>
@@ -17,39 +16,15 @@
 						<el-button type="primary" @click="reset">重置</el-button>
 					</el-form-item>
 				</el-form>
-			</div>
     </div>
-    <!-- <div class="tabs-search" v-if="isSearch">
-      <FilterQueryForm
-        :fAttr="{'label-width': '80px'}"
-        :resetBtnVisible="false"
-        :searchBtnVisible="true"
-        :model="fqForm"
-        @afterFilter="handleFilter($event, query)"
-      ></FilterQueryForm>
-    </div> -->
-    <div class="dashboard-content">
-      <div class="table-content">
-        <div class="tableHead">
-          <div class="button" @click="addInfo">新增</div>
-          <div class="button" @click="revise">修改</div>
-          <div class="button">展开/折叠</div>
-          <div class="operation">
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-          </div>
-        </div>
-        <div class="table">
+    <div class="app-wrapper">
+      <div class="content-box">
+        <div class="content-box-tool">
+        <el-button type="tool" icon="el-icon-plus" @click="addInfo">新增</el-button>
+        <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
+        <el-button type="tool" icon="el-icon-export">展开/折叠</el-button>
+      </div>
+        <div class="content-box-table">
           <el-table
             :data="tableDataList"
             style="width: 100%;margin-bottom: 20px;"
@@ -74,17 +49,22 @@
             <el-table-column prop="sdtCreateTime" label="创建时间"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <span @click="editor(scope.row)">编辑</span>
-                <span @click="deptAdd(scope.row)">新增</span>
-                <span @click="deleted(scope.row.sdtDeptId)">删除</span>
+                <el-button  type="text" @click="editor(scope.row)">编辑</el-button>
+                <el-button type="text" @click="deptAdd(scope.row)">新增</el-button>
+                <el-button type="text-warn" @click="deleted(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
       </div>
     </div>
-    <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-      <el-form :model="form" style="height:308px;">
+    <el-dialog :visible.sync="dialogFormVisible">
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt="">
+        <span class="title">基本信息</span>
+        <img src="../../assets/images/icon-title-right.png" alt="">
+      </div>
+      <el-form :model="form" :inline="true">
         <el-form-item label="上级部门：" :label-width="formLabelWidth">
           <el-input v-model="form.sdtDeptPid" autocomplete="off"></el-input>
         </el-form-item>
@@ -108,7 +88,7 @@
           <el-radio v-model="form.sdtStatus" label="1">停用</el-radio>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" style="text-align: center;">
         <el-button @click="preservation" type="primary">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
@@ -134,7 +114,7 @@ export default {
       fqForm: [
         {
           fiAttr: {
-            label: "角色名称"
+            label: "部门名称"
           },
           el: "input",
           elAttr: {
@@ -144,17 +124,7 @@ export default {
         },
         {
           fiAttr: {
-            label: "权限字符"
-          },
-          el: "input",
-          elAttr: {
-            type: "number"
-          },
-          bindKey: "roleKey"
-        },
-        {
-          fiAttr: {
-            label: "角色状态"
+            label: "部门状态"
           },
           el: "select",
           elAttr: {},
