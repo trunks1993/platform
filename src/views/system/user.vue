@@ -5,7 +5,7 @@
       :resetBtnVisible="false"
       :searchBtnVisible="true"
       :model="fqForm"
-      @afterFilter="handleFilter($event, getSysUserList)"
+      @afterFilter="handleFilter($event, query)"
     ></FilterQueryForm>
 
     <div class="app-wrapper" style="display: flex;">
