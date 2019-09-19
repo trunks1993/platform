@@ -29,6 +29,13 @@ module.exports = {
       },
     });
   },
+
+  // 热更新
+  chainWebpack: (config) => {
+    // 修复HMR
+    config.resolve.symlinks(true);
+  },
+
   // 生产环境是否生成 sourceMap 文件
   productionSourceMap: true,
   // css相关配置
@@ -55,17 +62,17 @@ module.exports = {
     port: 8080,
     https: false,
     hotOnly: false,
-    // proxy: {
-    // // 设置代理
-    // // proxy all requests starting with /api to jsonplaceholder
-    //   '/uumsApi': {
-    //     target: 'http://192.168.0.124:9091', // 真实请求的目标地址
-    //     changeOrigin: true,
-    //     // pathRewrite: {
-    //     //   '^/api': '',
-    //     // },
-    //   },
-    // },
+    proxy: {
+    // 设置代理
+    // proxy all requests starting with /api to jsonplaceholder
+      '/uumsApi': {
+        target: 'http://192.168.0.124:9091', // 真实请求的目标地址
+        changeOrigin: true,
+        // pathRewrite: {
+        //   '^/api': '',
+        // },
+      },
+    },
     before: (app) => {},
   },
   // 第三方插件配置
