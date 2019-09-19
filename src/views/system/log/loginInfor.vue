@@ -1,6 +1,5 @@
 <template>
-  <div class="logininfor-container">
-    <div class="tabs-search">
+  <div class="common-container">
       <FilterQueryForm
         :fAttr="{'label-width': '80px'}"
         :resetBtnVisible="false"
@@ -8,47 +7,15 @@
         :model="fqForm"
         @afterFilter="handleFilter($event, query)"
       ></FilterQueryForm>
-    </div>
-    <div class="dashboard-content">
-      <!-- <div class="organization"></div> -->
-      <div class="table">
-        <!-- <div class="main-right"> -->
-        <div class="tableHead">
-          <!-- <el-button><i class="iconComm add"></i>新增</el-button> -->
-          <el-button @click="batchDelete()">
-            <i class="iconComm delete"></i>删除
-          </el-button>
-          <el-button @click="clearLog()">
-            <i class="iconComm modify"></i>清空
-          </el-button>
-          <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
-          <el-button  @click="handleExport(baseExpApi)">
-            <i class="iconComm leading"></i>导出
-          </el-button>
-          <div class="operation">
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-          </div>
+    <div class="app-wrapper" style="display: flex;">
+      <div class="content-box">
+        <div class="content-box-tool">
+          <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
+          <el-button type="tool" icon="el-icon-editor" @click="clearLog">清空</el-button>
+          <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
-        <div class="tabled">
-          <el-table
-            border
-            ref="multipleTable"
-            :data="tableDataList"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-          >
+        <div class="content-box-table">
+          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
             <el-table-column type="selection"></el-table-column>
             <el-table-column prop="slrInfoId" label="访问编码"></el-table-column>
             <el-table-column prop="slrLoginName" label="登录名称"></el-table-column>
@@ -58,24 +25,27 @@
             <el-table-column prop="slrOs" label="操作系统" show-overflow-tooltip></el-table-column>
             <el-table-column prop="slrStatus" label="登录状态" show-overflow-tooltip>
               <template slot-scope="scope">
-               <span :class="[scope.row.slrStatus == '0'  ? 'normal' : 'stop']">{{scope.row.slrStatus == 0 ? '成功' : '失败'}}</span>
+               <span
+                  :style="{color:scope.row.slrStatus == '0' ? '#45eba7' : '#cb3203'}"
+                >{{scope.row.slrStatus == '0' ? '成功' : '失败'}}</span>
               </template>
             </el-table-column>
             <el-table-column prop="slrOs" label="操作信息" show-overflow-tooltip></el-table-column>
             <el-table-column prop="slrLoginTime" label="登录时间" show-overflow-tooltip></el-table-column>
           </el-table>
         </div>
-        <el-pagination
-          style="text-align:right;margin-top:2%;"
-          background
-          layout="prev, pager, next"
-          @size-change="handleSizeChange($event, query)"
-          @current-change="handleCurrentChange($event, query)"
-          :current-page="queryList.pageNum"
-          :page-size="queryList.pageSize"
-          :total="total"
-        ></el-pagination>
-        <!-- </div> -->
+        <div class="content-box-pagination">
+          <el-pagination
+            style="text-align:right;"
+            background
+            layout="prev, pager, next"
+            @size-change="handleSizeChange($event, query)"
+            @current-change="handleCurrentChange($event, query)"
+            :current-page="queryList.pageNum"
+            :page-size="queryList.pageSize"
+            :total="total"
+          ></el-pagination>
+        </div>
       </div>
     </div>
   </div>
