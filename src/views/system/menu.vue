@@ -327,9 +327,3 @@ export default {
   }
 };
 </script>
-<style>
-  .el-table__expand-icon {
-    display: inline-block;
-  }
-</style>
-
