@@ -186,17 +186,10 @@ export default {
 //reset element css of el-icon-close
 .tags-view-item {
   .el-icon-close {
-    width: 16px;
-    height: 16px;
     vertical-align: 3px;
     text-align: center;
     position: absolute;
     right: 10px;
-    top: 4px;
-    &:before {
-      display: inline-block;
-      vertical-align: -3px;
-    }
     &:hover {
       color: #fff;
     }
