@@ -58,8 +58,13 @@
       </div>
     </div>
     <!-- 弹框 -->
-    <el-dialog title="操作日志基本信息" :visible.sync="dialogFormVisible">
-      <el-form :model="form" style="height:308px;">
+    <el-dialog :visible.sync="dialogFormVisible">
+        <div slot="title" class="dailog-title">
+            <img src="../../../assets/images/icon-title-left.png" alt />
+            <span class="title">操作日志基本信息</span>
+            <img src="../../../assets/images/icon-title-right.png" alt />
+        </div>
+      <el-form :model="form">
         <el-form-item label="操作模块" :label-width="formLabelWidth">
           <el-input v-model="form.title" autocomplete="off"></el-input>
         </el-form-item>
@@ -78,10 +83,22 @@
           </template>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <!-- <el-button type="primary" @click="save()">保 存</el-button> -->
+      <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
+    </el-dialog>
+     <!-- 删除弹框 -->
+    <el-dialog :visible.sync="dialogVisible">
+        <div slot="title" class="dailog-title">
+            <img src="../../../assets/images/icon-title-left.png" alt />
+            <span class="title">系统提示信息</span>
+            <img src="../../../assets/images/icon-title-right.png" alt />
+        </div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div slot="footer" style="text-align: center;">
+            <el-button type="primary" @click="sure">确 定</el-button>
+            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+        </div>
     </el-dialog>
   </div>
 </template>
@@ -200,7 +217,9 @@ export default {
       obj: {},
       formLabelWidth: "120px",
       dialogFormVisible: false,
-      options: []
+      options: [],
+      dialogVisible:false,
+      ids:'',
     };
   },
   components: {
@@ -236,26 +255,18 @@ export default {
     },
     deleted(ids) {
       //删除
-      this.$confirm("确认删除该数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          deleteOperLPage({ ids: ids }).then(res => {
+      this.dialogVisible = true;
+      this.ids = ids;
+    },
+    sure(){//确认删除
+        deleteOperLPage({ ids: this.ids }).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
             });
+            this.dialogVisible = false;
             this.query();
           });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
     },
     clearLog() {
       //清空日志
