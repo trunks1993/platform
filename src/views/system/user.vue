@@ -21,7 +21,7 @@
       </div>
       <div class="table-content">
         <div class="tableHead">
-          <div class="button" @click="dialog">新增</div>
+          <div class="button" @click="roleAdds">新增</div>
           <div class="button" @click="batchDelete">删除</div>
           <div class="button" @click="revise">修改</div>
           <div class="button">导入</div>
@@ -63,9 +63,9 @@
             <el-table-column prop="surCreateTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="220">
               <template slot-scope="scope">
-                <span @click="handleClick(scope.row)">查看</span>
-                <span>编辑</span>
-                <span>重置</span>
+                <span @click="editor(scope.row)">编辑</span>
+                <span @click="deleted(scope.row.surUserId)">删除</span>
+                <span @click="resetPassword(scope.row)">重置</span>
               </template>
             </el-table-column>
           </el-table>
@@ -84,49 +84,68 @@
     </div>
     <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
       <el-form :model="form" style="height:308px;">
-        <el-form-item label="活动名称" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+        <el-form-item label="用户名称" :label-width="formLabelWidth">
+          <el-input v-model="form.surUserName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="归属部门" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.surDeptId" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机号码" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮 箱" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.surEmail" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="登录帐号" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="登录密码" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.surPassword" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户性别" :label-width="formLabelWidth">
-          <el-radio v-model="radio" label="1">男</el-radio>
-          <el-radio v-model="radio" label="2">女</el-radio>
+          <el-radio v-model="form.surSex" label="1">男</el-radio>
+          <el-radio v-model="form.surSex" label="2">女</el-radio>
         </el-form-item>
         <el-form-item label="用户状态" :label-width="formLabelWidth">
-          <el-switch v-model="value1"></el-switch>
+          <el-switch v-model="form.surStatus"></el-switch>
         </el-form-item>
         <el-form-item label="岗 位" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择岗位">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="form.postIds" multiple placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="岗 位" :label-width="formLabelWidth">
-          <el-radio v-model="radio" label="1">操作员</el-radio>
-          <el-radio v-model="radio" label="2">管理员</el-radio>
-        </el-form-item>
+        <el-form-item label="角 色" :label-width="formLabelWidth">
+          <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
+            <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item> 
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer footer">
         <div class="textarea">
           <span>活动形式</span>
           <input type="textarea" />
         </div>
-        <el-button type="primary" @click="preservation(type)">保 存</el-button>
+        <el-button type="primary" @click="preservation()">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="重置密码" :visible.sync="dialogFormVisiblespass">
+      <el-form :model="passWordForm" style="height:308px;">
+        <el-form-item label="登录名称：" :label-width="formLabelWidth">
+          <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="输入密码：" :label-width="formLabelWidth">
+          <el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="preservationpassWord()">保 存</el-button>
+        <el-button type="primary" @click="dialogFormVisiblespass = false">关 闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -143,6 +162,7 @@ import {
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
+const cityOptions = ['上海', '北京'];
 export default {
   mixins: [mixin],
   data() {
@@ -178,6 +198,7 @@ export default {
           bindKey: "surStatus",
           option: [{ label: "正常", value: 0 }, { label: "禁用", value: 1 }]
         }
+        
         // {
         //   fiAttr: {
         //     label: "创建时间"
@@ -186,6 +207,27 @@ export default {
         //   bindkey: "surStatus"
         // }
       ],
+      checkedCities: ['管理员', '操作员'],
+      options: [{
+          value: '1',
+          label: '董事长'
+        }, {
+          value: '2',
+          label: '项目经理'
+        }, {
+          value: '3',
+          label: '人力资源'
+        }, {
+          value: '4',
+          label: '普通员工'
+        }],
+      valuefox: [],
+      cities: cityOptions,
+      isIndeterminate: true,
+      passWordForm:{
+        surLoginName :"",
+        surPassword:"",
+      },
       tableData: [],
       value1: true,
       multipleSelection: [],
@@ -205,17 +247,20 @@ export default {
 
       radio: "1",
       dialogFormVisible: false,
+      dialogFormVisiblespass:false,
       formLabelWidth: "120px",
       data: [],
       form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
+        surUserName: "",
+        surDeptId: "",
+        surPhoneNumber: "",
+        surEmail: "",
+        surLoginName: "",
+        surPassword: "",
         resource: "",
-        desc: ""
+        postIds:[],
+        surSex: '0',
+        form:"0",
       },
       defaultProps: {
         children: "children",
@@ -238,28 +283,45 @@ export default {
     });
   },
   methods: {
-    handleClick(row) {},
+    handleCheckAllChange(val) {
+        this.checkedCities = val ? cityOptions : [];
+        this.isIndeterminate = false;
+      },
+      handleCheckedCitiesChange(value) {
+        let checkedCount = value.length;
+        this.checkAll = checkedCount === this.cities.length;
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
+      },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     preservation(type) {
+      if(JSON.stringify(this.obj) == '{}'){//新增
+               this.addAsk();
+         }else{//编辑
+                this.saveAsk();
+         }  
       this.dialogFormVisible = false;
-      if(type == 0){
+    },
+    addAsk(){
         getSysUserAdd(this.form).then(res => {
-          this.$message({
-            type: "success",
-            message: "新增成功!"
-          });
-        });
-      }else {
-        let obj = {
+                this.$message({
+                  type: "success",
+                  message: "新增成功!"
+                });
+              });
+    },
+    saveAsk(){
+      let obj = {
           surLoginName:this.form.surUserName,
           surDeptId:this.form.surDeptId,
           surEmail:this.form.surEmail,
           surPhoneNumber:this.form.surPhoneNumber,
           surSex:this.form.surSex,
           surRemark:this.form.surRemark,
-          surPassword:this.form.surPassword,
+          // surUserId:
+          // roleIds:
+          // postIds:
         }
         putUserEdit(obj).then(res => {
           this.$message({
@@ -267,7 +329,6 @@ export default {
             message: "修改成功!"
           });
         });
-      }
     },
     exported() {
       //导出
@@ -293,7 +354,7 @@ export default {
     resetPassword(row) {
       //重置
       console.log(row);
-      this.dialogFormVisiblePassword = true;
+      this.dialogFormVisiblespass = true;
       this.passWordForm = row;
     },
     preservationpassWord() {
@@ -307,6 +368,7 @@ export default {
           type: "success",
           message: "重置成功!"
         });
+        this.dialogFormVisiblespass = false;
       });
     },
     revise() {
@@ -321,10 +383,6 @@ export default {
         this.form = this.multipleSelection.pop(); //获取最后一条
         this.obj = this.multipleSelection.pop();
       }
-    },
-    dialog(){ //新增
-      this.type = 0;
-      this.dialogFormVisible = true;
     },
     deleted(ids) {
       //删除
@@ -348,6 +406,11 @@ export default {
             message: "已取消删除"
           });
         });
+    },
+    roleAdds(){
+      this.dialogFormVisible = true;
+      this.form = {};
+      this.obj = {};
     },
     editor(rows) {
       //编辑
@@ -596,7 +659,7 @@ export default {
     }
   }
 }
-.el-dialog__footer::before {
+.footer::before {
   content: "其他信息";
   width: 100%;
   height: 34px;

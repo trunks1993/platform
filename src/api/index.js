@@ -72,6 +72,48 @@ export const deleteRoleGwPage = params => request({
   method: 'delete',
   params,
 });
+// 新增角色管理列表
+export const putRoleAdd = params => request({
+  url: '/v1/role/add',
+  method: 'put',
+  params,
+});
+// 修改角色管理列表
+export const putRoleEdit = params => request({
+  url: '/v1/role/edit',
+  method: 'put',
+  params,
+});
+// 搜索菜单管理列表
+export const getMenuList = params => request({
+  url: '/v1/menu/list',
+  method: 'get',
+  params,
+});
+// 根据条件搜索菜单管理列表
+export const getQueryByList = params => request({
+  url: '/v1/menu/queryByList',
+  method: 'get',
+  params,
+});
+// 新增菜单管理列表
+export const putMenuAdd = params => request({
+  url: '/v1/menu/add',
+  method: 'put',
+  params,
+});
+// 修改菜单管理列表
+export const putMenuEdit = params => request({
+  url: '/v1/menu/edit',
+  method: 'put',
+  params,
+});
+// 删除菜单管理列表
+export const getMenuDelete = params => request({
+  url: '/v1/menu/delete',
+  method: 'delete',
+  params,
+});
 // 搜索部门管理信息
 export const searchSysDeptList = params => request({
   url: '/v1/api/dept/SysDept/list',
@@ -84,22 +126,22 @@ export const postSysDeptAdd = params => request({
   method: 'post',
   params,
 });
-// 查询岗位管理列表
-export const queryGwPage = params => request({
-  url: '/v1/manage/post/queryByPage',
-  method: 'get',
+// 删除部门管理列表
+export const deleteSysDeptRomove = params => request({
+  url: '/v1/api/dept/SysDept/remove',
+  method: 'delete',
   params,
 });
-// 修改岗位管理列表
+// 修改部门管理列表
 export const putSysDeptEdit = params => request({
   url: '/v1/api/dept/SysDept/edit',
   method: 'put',
   params,
 });
-// 删除部门管理列表
-export const deleteSysDeptRomove = params => request({
-  url: '/v1/api/dept/SysDept/remove',
-  method: 'delete',
+// 查询岗位管理列表
+export const queryGwPage = params => request({
+  url: '/v1/manage/post/queryByPage',
+  method: 'get',
   params,
 });
 // 删除岗位管理列表

@@ -1,6 +1,6 @@
 <template>
   <div class="dept">
-    <!-- <div class="tabs-search">
+    <div class="tabs-search">
 			<div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
 					<el-form-item label="部门名称">
@@ -18,8 +18,8 @@
 					</el-form-item>
 				</el-form>
 			</div>
-    </div>-->
-    <div class="tabs-search" v-if="isSearch">
+    </div>
+    <!-- <div class="tabs-search" v-if="isSearch">
       <FilterQueryForm
         :fAttr="{'label-width': '80px'}"
         :resetBtnVisible="false"
@@ -27,12 +27,12 @@
         :model="fqForm"
         @afterFilter="handleFilter($event, query)"
       ></FilterQueryForm>
-    </div>
+    </div> -->
     <div class="dashboard-content">
       <div class="table-content">
         <div class="tableHead">
-          <div class="button" @click="dialogFormVisible = true">新增</div>
-          <div class="button">修改</div>
+          <div class="button" @click="addInfo">新增</div>
+          <div class="button" @click="revise">修改</div>
           <div class="button">展开/折叠</div>
           <div class="operation">
             <div>
@@ -54,34 +54,33 @@
             :data="tableDataList"
             style="width: 100%;margin-bottom: 20px;"
             row-key="sdtDeptId"
+            @selection-change="handleSelectionChange"
             :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
           >
             <el-table-column type="selection"></el-table-column>
-            <el-table-column
+            <!-- <el-table-column
               v-for="(item,index) in tableList"
               :key="index"
               :label="item.label"
               :prop="item.prop"
-            ></el-table-column>
+            ></el-table-column> -->
+            <el-table-column label="菜单名称" prop="sdtDeptName"></el-table-column>
+            <el-table-column prop="sdtDelFlag" label="排序"></el-table-column>
+            <el-table-column label="状态" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span :class="[scope.row.sdtStatus == '0'  ? 'normal' : 'stop']">{{scope.row.sdtStatus == '0' ? '正常' : '停用'}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="sdtCreateTime" label="创建时间"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <span @click="editor(scope.row)">编辑</span>
-                <span>新增</span>
+                <span @click="deptAdd(scope.row)">新增</span>
                 <span @click="deleted(scope.row.sdtDeptId)">删除</span>
               </template>
             </el-table-column>
           </el-table>
         </div>
-		 <el-pagination
-      style="text-align:right;margin-top:2%;"
-      background
-      layout="prev, pager, next"
-      @size-change="handleSizeChange($event, query)"
-      @current-change="handleCurrentChange($event, query)"
-      :current-page="queryList.pageNum"
-      :page-size="queryList.pageSize"
-      :total="total"
-    ></el-pagination>
       </div>
     </div>
     <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
@@ -121,7 +120,8 @@ import {
   getSysDeptTreeData,
   searchSysDeptList,
   postSysDeptAdd,
-  deleteSysDeptRomove
+  deleteSysDeptRomove,
+  putSysDeptEdit 
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -200,6 +200,7 @@ export default {
         sdtEmail: "",
         sdtStatus: "1"
       },
+      type:0,
       tableData: [],
       formLabelWidth: "120px",
       dialogFormVisible: false,
@@ -215,13 +216,8 @@ export default {
   components: {
     FilterQueryForm
   },
-  computed: {
-    query() {
-      return this.doQuery.bind(this, getSysDeptTreeData);
-    }
-  },
   created() {
-    this.query();
+    this.queryDate();
   },
   methods: {
     toggleSelection(rows) {
@@ -238,24 +234,44 @@ export default {
     },
     onSubmit() {
       console.log(this.sizeForm);
-      console.log("submit!");
       searchSysDeptList(this.sizeForm).then(res => {
-        this.tableData = res;
+        this.tableDataList = res;
         console.log(this.tableData);
       });
     },
+    queryDate() { //获取分页数据
+      getSysDeptTreeData().then(res => {
+        this.tableDataList = res;
+      });
+	  },
     reset() {
       //重置输入框数据
       this.sizeForm.sdtDeptName = "";
       this.sizeForm.sdtStatus = "";
     },
     preservation() {
+       if(JSON.stringify(this.obj) == '{}'){//新增
+                this.addAsk();
+         }else{//编辑
+                this.saveAsk();
+         }  
+    },
+    addAsk(){
       //新增保存
       postSysDeptAdd(this.form).then(res => {
-        console.log(res);
         this.$message({
           type: "success",
           message: "新增成功!"
+        });
+        this.dialogFormVisible = false;
+      });
+    },
+    saveAsk(){
+      //修改保存
+      putSysDeptEdit(this.form).then(res => {
+        this.$message({
+          type: "success",
+          message: "修改成功!"
         });
         this.dialogFormVisible = false;
       });
@@ -265,6 +281,30 @@ export default {
       this.dialogFormVisible = true;
       this.form = rows;
       this.obj = rows;
+    },
+    addInfo(){
+      this.dialogFormVisible = true;
+      this.form = {};
+      this.obj = {};
+    },
+    deptAdd(rows){ //具体行新增
+      this.dialogFormVisible = true;
+      this.form.sdtDeptPid = rows.sdtDeptId;
+      this.obj = {};
+    },
+    revise(){//批量修改
+        this.type = 1;
+        if(typeof(this.multipleSelection) == "undefined"){
+            this.$message({
+                message: '请选择需要修改的数据！',
+                type: 'warning'
+            });
+        }else{
+          console.log(this.multipleSelection)
+            this.dialogFormVisible = true;
+            this.form = this.multipleSelection.pop();//获取最后一条
+            this.obj = this.multipleSelection.pop();
+        }
     },
     deleted(ids) {
       //删除

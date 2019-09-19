@@ -1,6 +1,6 @@
 <template>
   <div class="role">
-    <!-- <div class="tabs-search">
+    <div class="tabs-search">
       <div class="search">
         <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
           <el-form-item label="角色名称">
@@ -40,8 +40,8 @@
           </el-form-item>
         </el-form>
       </div>
-    </div>-->
-    <div class="tabs-search" v-if="isSearch">
+    </div>
+    <!-- <div class="tabs-search" v-if="isSearch">
       <FilterQueryForm
         :fAttr="{'label-width': '80px'}"
         :resetBtnVisible="false"
@@ -49,13 +49,13 @@
         :model="fqForm"
         @afterFilter="handleFilter($event, query)"
       ></FilterQueryForm>
-    </div>
+    </div> -->
     <div class="dashboard-content">
       <div class="table-content">
         <div class="tableHead">
-          <div class="button" @click="dialogFormVisible = true">新增</div>
-          <div class="button" @click="batchDelete()">删除</div>
-          <div class="button">修改</div>
+          <div class="button" @click="roleAdds">新增</div>
+          <div class="button" @click="batchDelete">删除</div>
+          <div class="button" @click="revise">修改</div>
           <div class="button" @click="handleExport(baseExpApi)">导出</div>
           <div class="operation">
             <div>
@@ -87,13 +87,13 @@
             <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
             <el-table-column label="角色状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="scope.row.surStatus"></el-switch>
+                <el-switch v-model="scope.row.status"></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="280">
               <template slot-scope="scope">
-                <span @click="handleClick(scope.row)">编辑</span>
+                <span @click="editor(scope.row)">编辑</span>
                 <span>数据权限</span>
                 <span>分配用户</span>
                 <span @click="deleted(scope.row.roleId)">删除</span>
@@ -116,40 +116,32 @@
     <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
       <el-form :model="form" style="height:308px;">
         <el-form-item label="角色名称：" :label-width="formLabelWidth">
-          <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
+          <el-input v-model="form.roleName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="权限字符：" :label-width="formLabelWidth">
-          <el-input v-model="form.surDeptId" autocomplete="off"></el-input>
+          <el-input v-model="form.roleKey" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="显示顺序：" :label-width="formLabelWidth">
-          <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
+          <el-input v-model="form.roleSort" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="状态：" :label-width="formLabelWidth">
-          <el-radio v-model="form.surSex" label="1">男</el-radio>
-          <el-radio v-model="form.surSex" label="2">女</el-radio>
+          <el-switch v-model="form.status"></el-switch>
         </el-form-item>
         <el-form-item label="备注：" :label-width="formLabelWidth">
-          <el-input v-model="form.surUserName" autocomplete="off"></el-input>
+          <el-input v-model="form.remark" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="菜单权限" :label-width="formLabelWidth">
-          <el-input v-model="form.surPassword" autocomplete="off"></el-input>
+          <el-tree
+          :data="data"
+          show-checkbox
+          default-expand-all
+          node-key="id"
+          width="500px"
+          ref="tree"
+          highlight-current
+          :props="defaultProps">
+        </el-tree>
         </el-form-item>
-
-        <el-form-item label="用户状态" :label-width="formLabelWidth">
-          <el-switch v-model="form.value1"></el-switch>
-        </el-form-item>
-        <el-form-item label="岗 位" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择岗位">
-            <el-option label="董事长" value="董事长"></el-option>
-            <el-option label="项目经理" value="项目经理"></el-option>
-            <el-option label="人力资源" value="人力资源"></el-option>
-            <el-option label="普通员工" value="普通员工"></el-option>
-          </el-select>
-        </el-form-item>
-        <!-- <el-form-item label="角色" :label-width="formLabelWidth">
-					<el-radio v-model="surStatus" label="1">操作员</el-radio>
-					<el-radio v-model="surStatus" label="2">管理员</el-radio>
-        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="preservation" type="primary">保 存</el-button>
@@ -159,7 +151,7 @@
   </div>
 </template>
 <script>
-import { getSysRoleList, deleteRoleGwPage } from "@/api";
+import { getSysRoleList, deleteRoleGwPage,putRoleAdd,putRoleEdit,getMenuList } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
 export default {
@@ -210,6 +202,11 @@ export default {
         //   bindkey: "surStatus"
         // }
       ],
+      data: [],
+        defaultProps: {
+          children: 'children',
+          label: 'menuName'
+        },
       tableData: [],
       value1: true,
       multipleSelection: [],
@@ -223,17 +220,12 @@ export default {
         status: ""
       },
       form: {
-        region: "",
-        delivery: false,
-        value1: true,
-        surRemark: "",
-        surUserName: "",
-        surPhoneNumber: "",
-        surRemark: "",
-        surEmail: "",
-        surLoginName: "",
-        surPassword: "",
-        surDeptId: ""
+        roleName: "",
+        roleKey: "",
+        roleSort: "",
+        status: "",
+        remark: "",
+        dataScope: "",
       },
       pageShow: true,
       current: 1,
@@ -252,6 +244,10 @@ export default {
   },
   created() {
     this.query();
+       getMenuList(this.sizeForm).then(res => {
+        console.log(res)
+        this.data = res;
+      });
   },
   methods: {
     handleClick(row) {
@@ -272,6 +268,7 @@ export default {
     //搜索按钮
     onSubmit() {
       console.log("submit!");
+      console.log(this.sizeForm)
     },
     //重置按钮
     reset() {
@@ -290,7 +287,7 @@ export default {
       //批量删除
       console.log(this.multipleSelection);
       let selectArr = [];
-      if (typeof this.multipleSelection == "undefined") {
+      if (typeof this.multipleSelection == "undefined" || this.multipleSelection.length == 0) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
@@ -337,20 +334,71 @@ export default {
           });
         });
     },
-    preservation() {
-      新增保存;
+
+    preservation() { // 新增保存
+       if(JSON.stringify(this.obj) == '{}'){//新增
+                this.addAsk();
+         }else{//编辑
+                this.saveAsk();
+         }  
+    },
+    addAsk(){
+       putRoleAdd(this.form).then(res=>{
+            this.$message({
+              type: "success",
+              message: "新增成功!"
+            });
+            this.dialogFormVisible = false;
+        })
+    },
+    saveAsk(){
+      putRoleEdit(this.form).then(res=>{
+          this.$message({
+            type: "success",
+            message: "修改成功!"
+          });
+          this.dialogFormVisible = false;
+      })
     },
     handleSizeChange: function(current) {
       console.log(current);
       this.current = current;
       this.queryDate();
     },
+    roleAdds(){
+      this.dialogFormVisible = true;
+      this.form = {};
+      this.obj = {};
+    },
     editor(rows) {
       //编辑
       this.dialogFormVisible = true;
+      console.log(rows)
       this.form = rows;
       this.obj = rows;
-    }
+    },
+    // 权限
+    getCheckedNodes() {
+        console.log(this.$refs.tree.getCheckedNodes());
+      },
+      getCheckedKeys() {
+        console.log(this.$refs.tree.getCheckedKeys());
+      },
+      setCheckedNodes() {
+        this.$refs.tree.setCheckedNodes([{
+          id: 5,
+          label: '二级 2-1'
+        }, {
+          id: 9,
+          label: '三级 1-1-1'
+        }]);
+      },
+      setCheckedKeys() {
+        this.$refs.tree.setCheckedKeys([3]);
+      },
+      resetChecked() {
+        this.$refs.tree.setCheckedKeys([]);
+      }
   }
 };
 </script>

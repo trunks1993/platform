@@ -1,38 +1,29 @@
 <template>
   <div class="menu">
-    <!-- <div class="tabs-search">
+    <div class="tabs-search">
 			<div class="search">
 				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-					<el-form-item label="角色名称">
-						<el-input v-model="sizeForm.name"></el-input>
+					<el-form-item label="菜单名称">
+						<el-input v-model="sizeForm.menuName"></el-input>
 					</el-form-item>
-					<el-form-item label="角色状态">
-						<el-select v-model="sizeForm.region" placeholder="所有"  style="width:245px;">
+					<el-form-item label="菜单状态">
+						<el-select v-model="sizeForm.visible" placeholder="所有"  style="width:245px;">
 						<el-option label="显示" value="0"></el-option>
 						<el-option label="隐藏" value="1"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item size="large">
-						<el-button type="primary" @click="onSubmit">搜索</el-button>
+						<el-button type="primary" @click="search">搜索</el-button>
 						<el-button type="primary" @click="onSubmit">重置</el-button>
 					</el-form-item>
 				</el-form>
 			</div>
-    </div>-->
-    <div class="tabs-search" v-if="isSearch">
-      <FilterQueryForm
-        :fAttr="{'label-width': '80px'}"
-        :resetBtnVisible="false"
-        :searchBtnVisible="true"
-        :model="fqForm"
-        @afterFilter="handleFilter($event, query)"
-      ></FilterQueryForm>
     </div>
     <div class="dashboard-content">
       <div class="table-content">
         <div class="tableHead">
-          <div class="button"  @click="dialogFormVisible = true">新增</div>
-          <div class="button">修改</div>
+          <div class="button"  @click="saveAskfather">新增</div>
+          <div class="button" @click="revise">修改</div>
           <div class="button">展开/折叠</div>
           <div class="operation">
             <div>
@@ -54,6 +45,7 @@
             :data="tableDataList"
             style="width: 100%;margin-bottom: 20px;"
             row-key="menuId"
+            @selection-change="handleSelectionChange"
             :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
           >
             <el-table-column type="selection"></el-table-column>
@@ -65,9 +57,9 @@
             ></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <span @click="handleClick(scope.row)">查看</span>
-                <span>编辑</span>
-                <span>重置</span>
+                <span @click="editor(scope.row)">编辑</span>
+                <span @click="saveAskhz(scope.row)">新增</span>
+                <span @click="deleted(scope.row.menuId)">删除</span>
               </template>
             </el-table-column>
           </el-table>
@@ -76,41 +68,30 @@
     </div>
     <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
       <el-form :model="form" style="height:308px;">
-        <el-form-item label="角色名称：" :label-width="formLabelWidth">
-          <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
+        <el-form-item label="上级菜单：" :label-width="formLabelWidth">
+          <el-input v-model="form.parentId" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="权限字符：" :label-width="formLabelWidth">
-          <el-input v-model="form.surDeptId" autocomplete="off"></el-input>
+        <el-form-item label="菜单类型：" :label-width="formLabelWidth">
+          <el-input v-model="form.menuType" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="显示顺序：" :label-width="formLabelWidth">
-          <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
+        <el-form-item label="菜单名称：" :label-width="formLabelWidth">
+          <el-input v-model="form.menuName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="状态：" :label-width="formLabelWidth">
-          <el-radio v-model="form.surSex" label="1">男</el-radio>
-          <el-radio v-model="form.surSex" label="2">女</el-radio>
+        <el-form-item label="请求地址：" :label-width="formLabelWidth">
+          <el-input v-model="form.path" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="备注：" :label-width="formLabelWidth">
-          <el-input v-model="form.surUserName" autocomplete="off"></el-input>
+        <el-form-item label="权限标识：" :label-width="formLabelWidth">
+          <el-input v-model="form.perms" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="菜单权限" :label-width="formLabelWidth">
-          <el-input v-model="form.surPassword" autocomplete="off"></el-input>
+        <el-form-item label="显示排序：" :label-width="formLabelWidth">
+          <el-input v-model="form.orderNum" autocomplete="off"></el-input>
         </el-form-item>
-
-        <el-form-item label="用户状态" :label-width="formLabelWidth">
-          <el-switch v-model="form.value1"></el-switch>
+        <el-form-item label="图标：" :label-width="formLabelWidth">
+          <el-input v-model="form.icon" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="岗 位" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择岗位">
-            <el-option label="董事长" value="董事长"></el-option>
-            <el-option label="项目经理" value="项目经理"></el-option>
-            <el-option label="人力资源" value="人力资源"></el-option>
-            <el-option label="普通员工" value="普通员工"></el-option>
-          </el-select>
+        <el-form-item label="菜单状态：" :label-width="formLabelWidth">
+          <el-switch v-model="form.visible"></el-switch>
         </el-form-item>
-        <!-- <el-form-item label="角色" :label-width="formLabelWidth">
-					<el-radio v-model="surStatus" label="1">操作员</el-radio>
-					<el-radio v-model="surStatus" label="2">管理员</el-radio>
-        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="preservation" type="primary">保 存</el-button>
@@ -120,7 +101,8 @@
   </div>
 </template>
 <script>
-import { getMenuTree } from "@/api";
+import { getMenuTree,putMenuAdd,getMenuDelete,getMenuList,getQueryByList,putMenuEdit  } from "@/api";
+import FilterQueryForm from "@/components/FilterQueryForm";
 export default {
   data() {
     return {
@@ -200,24 +182,27 @@ export default {
       dialogFormVisible: false,
       formLabelWidth:'120px',
       form: {
-        region: "",
-        delivery: false,
-        value1: true,
-        surRemark: "",
-        surUserName: "",
-        surPhoneNumber: "",
-        surRemark: "",
-        surEmail: "",
-        surLoginName: "",
-        surPassword: "",
-        surDeptId: ""
+        parentId: "",
+        menuName: "",
+        systemId: "",
+        parentId: "",
+        orderNum: "",
+        path: "",
+        menuType: "",
+        visible: "",
+        perms: "",
+        icon: "",
+        component: "",
       },
       sizeForm: {
-        name: "",
-        region: ""
+        menuName: "",
+        visible: ""
 	  },
 	  isSearch:true,
     };
+  },
+  components: {
+    FilterQueryForm
   },
   created() {
   	this.queryDate();
@@ -235,21 +220,124 @@ export default {
         this.$refs.multipleTable.clearSelection();
       }
     },
+    deleted(ids) {
+      //删除
+      this.$confirm("确认删除该数据?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          getMenuDelete({ menuId: ids }).then(res => {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            this.queryDate();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    revise() {
+      if (typeof this.multipleSelection == "undefined") {
+        this.$message({
+          message: "请选择需要修改的数据！",
+          type: "warning"
+        });
+      } else {
+        console.log(this.multipleSelection)
+        this.dialogFormVisible = true;
+        this.form = this.multipleSelection.pop(); //获取最后一条
+        this.obj = this.multipleSelection.pop();
+      }
+    },
     handleSelectionChange(val) {
+      console.log(val)
       this.multipleSelection = val;
     },
     onSubmit() {
       this.queryDate();
     },
-    queryDate() {
-		   getMenuTree(this.sizeForm).then(res => {
-			   console.log(res)
-				this.tableDataList = res;
-		   });
-	  },
-    preservation(){ //保存
-
+    search() {
+      console.log(this.sizeForm);
+      getQueryByList(this.sizeForm).then(res => {
+        console.log(res)
+        this.tableDataList = res.rows;
+        console.log(this.tableData);
+      });
     },
+    queryDate() {
+		  getMenuList(this.sizeForm).then(res => {
+			  console.log(res)
+				this.tableDataList = res;
+		  });
+    },
+    preservation(){
+        if(JSON.stringify(this.obj) == '{}'){//新增
+                this.addAsk();
+         }else{//编辑
+                this.saveAsk();
+         }  
+    },
+    addAsk(){
+       this.form.visible = this.form.visible == true ? 0:1 
+       putMenuAdd(this.form).then(res=>{
+            this.$message({
+              type: "success",
+              message: "新增成功!"
+            });
+            this.dialogFormVisible = false;
+        })
+    },
+    saveAsk(){
+      // console.log(this.form)
+      this.form.visible = this.form.visible == true ? 0:1 
+      // this.form.systemId = this.form.systemId;
+      let obj = {
+          menuId: this.form.menuId,
+          parentId: this.form.parentId,
+          menuName: this.form.menuName,
+          systemId: this.form.systemId,
+          parentId: this.form.parentId,
+          orderNum:this.form.orderNum,
+          path: this.form.path,
+          menuType: this.form.menuType,
+          visible: this.form.visible,
+          perms: this.form.perms,
+          icon: this.form.icon,
+          component:this.form.component,
+      }
+      console.log(this.form)
+        putMenuEdit(obj).then(res=>{
+            this.$message({
+              type: "success",
+              message: "修改成功!"
+            });
+            this.dialogFormVisible = false;
+        })
+    },
+    saveAskfather(){
+      this.dialogFormVisible = true;
+      this.form = {};
+      this.obj = {};
+    },
+    saveAskhz(rows){
+      this.dialogFormVisible = true;
+       this.form.parentId = rows.menuId; 
+       this.obj = {};
+    },
+    editor(rows) {
+      console.log(rows)
+      //编辑
+      this.dialogFormVisible = true;
+      this.form = rows;
+      this.obj = rows;
+    }
   }
 };
 </script>
