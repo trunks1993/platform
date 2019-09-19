@@ -1,22 +1,18 @@
 <template>
   <div class="user">
-    <div class="tabs-search">
-      <FilterQueryForm
-        :fAttr="{'label-width': '80px'}"
-        :resetBtnVisible="false"
-        :searchBtnVisible="true"
-        :model="fqForm"
-        @afterFilter="handleFilter($event, getSysUserList)"
-      ></FilterQueryForm>
-    </div>
-    <div class="dashboard-content">
+    <FilterQueryForm
+      :fAttr="{'label-width': '80px'}"
+      :resetBtnVisible="false"
+      :searchBtnVisible="true"
+      :model="fqForm"
+      @afterFilter="handleFilter($event, getSysUserList)"
+    ></FilterQueryForm>
+    <div class="app-wrapper" style="display: flex;">
       <div class="organization">
         <div class="zzBox">
           <span>组织结构</span>
           <div class="revise">
-            <router-link to="/system/dept">
-              <i class="comm revised"></i>
-            </router-link>
+            <i class="comm revised"></i>
             <i class="comm refresh"></i>
             <i class="comm select"></i>
           </div>
@@ -26,15 +22,15 @@
       <div class="table-content">
         <div class="tableHead">
           <div class="button" @click="dialogFormVisible = true">新增</div>
-          <div class="button" @click="batchDelete">删除</div>
-          <div class="button" @click="revise">修改</div>
+          <div class="button">删除</div>
+          <div class="button">修改</div>
           <div class="button">导入</div>
-          <div class="button" @click="exported">导出</div>
+          <div class="button">导出</div>
           <div class="operation">
-            <div @click="toggle">
+            <div>
               <span></span>
             </div>
-            <div @click="getSysUserList">
+            <div @click="getSysUserList()">
               <span></span>
             </div>
             <div>
@@ -67,9 +63,9 @@
             <el-table-column prop="surCreateTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="220">
               <template slot-scope="scope">
-                <span @click="editor(scope.row)">编辑</span>
-                <span @click="deleted(scope.row.surUserId)">删除</span>
-                <span @click="resetPassword(scope.row)">重置</span>
+                <span @click="handleClick(scope.row)">查看</span>
+                <span>编辑</span>
+                <span>重置</span>
               </template>
             </el-table-column>
           </el-table>
@@ -77,7 +73,7 @@
         <el-pagination
           style="text-align:right;margin-top:2%;"
           background
-          layout="prev, pager, next, jumper,total"
+          layout="prev, pager, next"
           @size-change="handleSizeChange($event, query)"
           @current-change="handleCurrentChange($event, query)"
           :current-page="queryList.pageNum"
@@ -88,40 +84,38 @@
     </div>
     <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
       <el-form :model="form" style="height:308px;">
-        <el-form-item label="用户名称" :label-width="formLabelWidth">
-          <el-input v-model="form.surUserName" autocomplete="off"></el-input>
+        <el-form-item label="活动名称" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="归属部门" :label-width="formLabelWidth">
-          <el-input v-model="form.surDeptId" autocomplete="off"></el-input>
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机号码" :label-width="formLabelWidth">
-          <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮 箱" :label-width="formLabelWidth">
-          <el-input v-model="form.surEmail" autocomplete="off"></el-input>
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="登录帐号" :label-width="formLabelWidth">
-          <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="登录密码" :label-width="formLabelWidth">
-          <el-input v-model="form.surPassword" autocomplete="off"></el-input>
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户性别" :label-width="formLabelWidth">
-          <el-radio v-model="form.surSex" label="1">男</el-radio>
-          <el-radio v-model="form.surSex" label="2">女</el-radio>
+          <el-radio v-model="radio" label="1">男</el-radio>
+          <el-radio v-model="radio" label="2">女</el-radio>
         </el-form-item>
         <el-form-item label="用户状态" :label-width="formLabelWidth">
           <el-switch v-model="value1"></el-switch>
         </el-form-item>
         <el-form-item label="岗 位" :label-width="formLabelWidth">
           <el-select v-model="form.region" placeholder="请选择岗位">
-            <el-option label="董事长" value="董事长"></el-option>
-            <el-option label="项目经理" value="项目经理"></el-option>
-            <el-option label="人力资源" value="人力资源"></el-option>
-            <el-option label="普通员工" value="普通员工"></el-option>
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="角 色" :label-width="formLabelWidth">
+        <el-form-item label="岗 位" :label-width="formLabelWidth">
           <el-radio v-model="radio" label="1">操作员</el-radio>
           <el-radio v-model="radio" label="2">管理员</el-radio>
         </el-form-item>
@@ -129,36 +123,16 @@
       <div slot="footer" class="dialog-footer">
         <div class="textarea">
           <span>活动形式</span>
-          <input type="textarea" v-model="form.surRemark" />
+          <input type="textarea" />
         </div>
-        <el-button type="primary" @click="preservation">保 存</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog title="重置密码" :visible.sync="dialogFormVisiblePassword">
-      <el-form :model="passWordForm" style="height:308px;">
-        <el-form-item label="登录名称" :label-width="formLabelWidth">
-          <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="输入密码" :label-width="formLabelWidth">
-          <el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="preservationpassWord" type="primary">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisiblePassword = false">关 闭</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import {
-  getSysUserList,
-  getSysDeptTreeData,
-  deleteUserGwPage,
-  postresetPwd,
-  getSysUserAdd
-} from "@/api";
+import { getSysUserList, getSysDeptTreeData } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
 export default {
@@ -219,29 +193,20 @@ export default {
       // 	current: 1,
       // 	pageSize: 10,
       //   },
-      passWordForm: {
-        surUserId: "",
-        surPassword: ""
-      },
+
       radio: "1",
-      surSex: "1",
-      surStatus: "1",
       dialogFormVisible: false,
-      dialogFormVisiblePassword: false,
       formLabelWidth: "120px",
-      isSearch: true,
-      pageShow: true,
       data: [],
       form: {
-        surDeptId: "",
-        surLoginName: "",
-        surUserName: "",
-        surEmail: "",
-        surPhoneNumber: "",
-        surSex: "",
-        surPassword: "",
-        surRemark: "",
-        surSex: "1"
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
+        delivery: false,
+        type: [],
+        resource: "",
+        desc: ""
       },
       defaultProps: {
         children: "children",
@@ -268,259 +233,150 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    preservation() {
-      this.dialogFormVisible = false;
-      console.log(this.form);
-      getSysUserAdd(this.form).then(res => {
-        this.$message({
-          type: "success",
-          message: "新增成功!"
-        });
-      });
-    },
-    exported() {
-      //导出
-      window.location.href =
-        "http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel";
-    },
-    batchDelete() {
-      //批量删除
-      console.log(this.multipleSelection);
-      let selectArr = [];
-      if (typeof this.multipleSelection == "undefined") {
-        this.$message({
-          message: "请选择需要删除的数据！",
-          type: "warning"
-        });
-      } else {
-        this.multipleSelection.forEach((v, i) => {
-          selectArr.push(v.surUserId);
-        });
-        this.deleted(selectArr.join(","));
-      }
-    },
-    resetPassword(row) {
-      //重置
-      console.log(row);
-      this.dialogFormVisiblePassword = true;
-      this.passWordForm = row;
-    },
-    preservationpassWord() {
-      console.log(this.passWordForm.surPassword);
-      console.log(this.passWordForm.surUserId);
-      postresetPwd({
-        password: this.passWordForm.surPassword,
-        surUserId: this.passWordForm.surUserId
-      }).then(res => {
-        this.$message({
-          type: "success",
-          message: "重置成功!"
-        });
-      });
-    },
-    revise() {
-      if (typeof this.multipleSelection == "undefined") {
-        this.$message({
-          message: "请选择需要修改的数据！",
-          type: "warning"
-        });
-      } else {
-        this.dialogFormVisible = true;
-        this.form = this.multipleSelection.pop(); //获取最后一条
-        this.obj = this.multipleSelection.pop();
-      }
-    },
-    deleted(ids) {
-      //删除
-      this.$confirm("确认删除该数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          deleteUserGwPage({ ids: ids }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            this.queryDate();
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-    editor(rows) {
-      //编辑
-      this.dialogFormVisible = true;
-      this.form = rows;
-      this.obj = rows;
-    },
-    getSysUserList() {
-      getSysUserList(this.queryList).then(res => {
-        this.total = +res.total;
-        this.tableData = res.rows;
-      });
-    },
-    toggle() {
-      //显示隐藏查询切换
-      this.isSearch = !this.isSearch;
-    },
     handleNodeClick(data) {}
   }
 };
 </script>
-
-<style lang="scss" scoped>
+<style lang="scss">
 .user {
   color: #fff;
   height: 100%;
-  .dashboard-content {
-    height: calc(100% - 174px);
-    width: 100%;
-    display: flex;
-    margin-top: 15px;
-    .organization {
-      width: 223px;
-      height: 100%;
-      background: url(../../assets/images/organization-bg.png);
-      background-size: 100% 100%;
-      padding: 22px;
-      box-sizing: border-box;
-      .zzBox {
-        width: 100%;
-        margin-bottom: 14px;
-        span {
-          color: #fff;
-          font-size: 14px;
-        }
-        .revise {
-          width: 47%;
+  .organization {
+    width: 223px;
+    height: 100%;
+    background: url(../../assets/images/organization-bg.png);
+    background-size: 100% 100%;
+    padding: 22px;
+    box-sizing: border-box;
+    .zzBox {
+      width: 100%;
+      margin-bottom: 14px;
+      span {
+        color: #fff;
+        font-size: 14px;
+      }
+      .revise {
+        width: 47%;
+        display: inline-block;
+        float: right;
+        .comm {
           display: inline-block;
-          float: right;
-          .comm {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            background: url(../../assets/images/revise.png);
-            background-size: 100% 100%;
-            vertical-align: middle;
-            margin-right: 10%;
-            cursor: pointer;
-          }
-          .revised {
-            background: url(../../assets/images/refresh.png);
-          }
-          .select {
-            background: url(../../assets/images/select.png);
-          }
+          width: 18px;
+          height: 18px;
+          background: url(../../assets/images/revise.png);
+          background-size: 100% 100%;
+          vertical-align: middle;
+          margin-right: 10%;
+          cursor: pointer;
+        }
+        .revised {
+          background: url(../../assets/images/refresh.png);
+        }
+        .select {
+          background: url(../../assets/images/select.png);
         }
       }
     }
-    .table-content {
-      width: calc(100% - 239px);
-      height: 100%;
-      margin-left: 16px;
-      background: url(../../assets/images/table-content-bg.png);
-      background-size: 100% 100%;
-      padding: 22px 34px;
-      box-sizing: border-box;
-      .tableHead {
-        height: 70px;
-        .button {
-          width: 90px;
-          height: 36px;
-          line-height: 36px;
-          background: #05254b;
-          margin-right: 20px;
-          float: left;
-          border-radius: 4px;
-          text-align: right;
-          padding-right: 20px;
+  }
+  .table-content {
+    width: calc(100% - 239px);
+    height: 100%;
+    margin-left: 16px;
+    background: url(../../assets/images/table-content-bg.png);
+    background-size: 100% 100%;
+    padding: 22px 34px;
+    box-sizing: border-box;
+    .tableHead {
+      height: 70px;
+      .button {
+        width: 90px;
+        height: 36px;
+        line-height: 36px;
+        background: #05254b;
+        margin-right: 20px;
+        float: left;
+        border-radius: 4px;
+        text-align: right;
+        padding-right: 20px;
+        cursor: pointer;
+      }
+      .button::before {
+        content: "";
+        width: 14px;
+        height: 14px;
+        display: inline-block;
+        background-image: url(../../assets/icon.png);
+        background-position: -57px 792px;
+        margin-right: 6px;
+      }
+      .button:nth-child(2):before {
+        background-position: -57px 770px;
+      }
+      .button:nth-child(3):before {
+        background-position: -57px 749px;
+      }
+      .button:nth-child(4):before {
+        background-position: -57px 726px;
+      }
+      .button:nth-child(5):before {
+        background-position: -57px 704px;
+      }
+      .operation {
+        width: 210px;
+        height: 36px;
+        background: #05254b;
+        border: 1px solid #02439d;
+        float: right;
+        display: flex;
+        div {
+          width: 25%;
+          height: 28px;
+          margin-top: 4px;
+          position: relative;
           cursor: pointer;
-        }
-        .button::before {
-          content: "";
-          width: 14px;
-          height: 14px;
-          display: inline-block;
-          background-image: url(../../assets/icon.png);
-          background-position: -57px 792px;
-          margin-right: 6px;
-        }
-        .button:nth-child(2):before {
-          background-position: -57px 770px;
-        }
-
-        .button:nth-child(3):before {
-          background-position: -57px 749px;
-        }
-        .button:nth-child(4):before {
-          background-position: -57px 726px;
-        }
-        .button:nth-child(5):before {
-          background-position: -57px 704px;
-        }
-        .operation {
-          width: 210px;
-          height: 36px;
-          background: #05254b;
-          border: 1px solid #02439d;
-          float: right;
-          display: flex;
-          div {
-            width: 25%;
-            height: 28px;
-            margin-top: 4px;
-            position: relative;
-            cursor: pointer;
-            span {
-              width: 14px;
-              height: 14px;
-              display: inline-block;
-              background-image: url(../../assets/icon.png);
-              background-position: -57px 422px;
-              position: absolute;
-              left: 50%;
-              margin-left: -7px;
-              top: 50%;
-              margin-top: -7px;
-            }
-          }
-          div::before {
-            content: "";
-            width: 1px;
-            height: 28px;
+          span {
+            width: 14px;
+            height: 14px;
             display: inline-block;
-            background: linear-gradient(
-              0deg,
-              rgba(1, 84, 199, 0) 0%,
-              rgba(1, 84, 199, 1) 42%,
-              rgba(1, 84, 199, 0) 100%
-            );
-          }
-          div:nth-child(1):before {
-            width: 0;
-          }
-          div:nth-child(2) span {
-            background-position: -57px 376px;
-          }
-          div:nth-child(3) span {
-            background-position: -57px 331px;
-          }
-          div:nth-child(4) span {
-            background-position: -57px 288px;
+            background-image: url(../../assets/icon.png);
+            background-position: -57px 422px;
+            position: absolute;
+            left: 50%;
+            margin-left: -7px;
+            top: 50%;
+            margin-top: -7px;
           }
         }
+        div::before {
+          content: "";
+          width: 1px;
+          height: 28px;
+          display: inline-block;
+          background: linear-gradient(
+            0deg,
+            rgba(1, 84, 199, 0) 0%,
+            rgba(1, 84, 199, 1) 42%,
+            rgba(1, 84, 199, 0) 100%
+          );
+        }
+        div:nth-child(1):before {
+          width: 0;
+        }
+        div:nth-child(2) span {
+          background-position: -57px 376px;
+        }
+        div:nth-child(3) span {
+          background-position: -57px 331px;
+        }
+        div:nth-child(4) span {
+          background-position: -57px 288px;
+        }
       }
-      .table {
-        width: 100%;
-        height: calc(100% - 165px);
-        overflow: auto;
-      }
+    }
+    .table {
+      width: 100%;
+      height: calc(100% - 165px);
+      overflow: auto;
     }
   }
 }
