@@ -66,8 +66,8 @@
 			 </div>
 		</div>
         <!-- 弹框 -->
-        <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-            <el-form :model="form" style="height:308px;">
+        <el-dialog title="字典管理基本信息" :visible.sync="dialogFormVisible">
+            <el-form :model="form">
                 <el-form-item label="字典名称" :label-width="formLabelWidth">
                     <el-input v-model="form.dictName" autocomplete="off"></el-input>
                 </el-form-item>
@@ -88,6 +88,14 @@
                 <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
             </div>
 		</el-dialog>
+        <!-- 字典数据 -->
+        <!-- <el-dialog>
+            <el-form>
+                <el-form-item label="字典名称" :label-width="formLabelWidth">
+                    <el-input v-model="form.dictName" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+        </el-dialog> -->
     </div>
 </template>
 <script>
@@ -98,7 +106,7 @@ export default {
     mixins: [mixin],
     data() {
         return {
-            baseExpApi:'http://192.168.0.105:9091/uumsApi/v1/dictionaries/dictType/exportExcel',
+            baseExpApi:'http://192.168.0.105:9091/uumsApi/v1/dictionaries/dictType/export',
             fqForm: [
                 {
                 fiAttr: {
@@ -166,9 +174,6 @@ export default {
         change (data) {
             console.log(data)
         },
-        // exported(){//导出
-        //     window.location.href = 'http://192.168.0.105:9091/uumsApi/v1/dictionaries/dictType/exportExcel?dictName='+this.sizeForm.name+'&dictType='+this.sizeForm.type+'&status='+this.sizeForm.status;
-        // },
         batchDelete(){//批量删除
             let selectArr = [];
             if(typeof(this.multipleSelection) == "undefined"){
@@ -224,6 +229,8 @@ export default {
             this.dialogFormVisible = true;
             this.form = rows;
             this.obj = rows;
+            let status = this.form.status == '0' ?  true : false;
+            this.$set(this.form,'state',status);//更新form中state的值
         },
         save(){//编辑入参
             if(JSON.stringify(this.obj) == '{}'){//新增
@@ -233,13 +240,14 @@ export default {
             }  
         },
         saveAsk(){//编辑保存
-            this.form.status = this.form.state ?  '0': '1';
+            this.form.status = this.form.state ?  '0': '1';//更新状态传给后端
             editorDictPage(this.form).then(res => {
                 this.$message({
                     message: '修改成功！',
                     type: 'success'
                 });
                 this.dialogFormVisible = false;
+                this.query();
             });
         },
         addAsk(){//新增保存
@@ -407,32 +415,37 @@ export default {
         padding:10px 20px;
         .el-form {
             padding:  20px 0px 0px;
+            width: 80% !important;
+            margin: auto;
+            margin-top: 2%;
+            overflow: hidden;
             .el-radio {
                 color: #FFF;
                 margin-right: 50px; 
             }
         }
     }
-}
-.el-dialog__body::before {
-    content: '基本信息'; 
-    width: 100%;
-    height: 34px;
-    display: inline-block;
-    border-bottom: 1px dashed rgba(75,174,253,1); 
-    color: #63ACDF;
-    font-size: 13px;
-}
-.dialog-footer {
-    text-align: center;
-    margin-top: 4%;
-}
-.el-dialog__footer::before {
-    border-bottom: none !important; 
-}
-.textarea {
-    width: 100%;
-    background:rgba(5,37,75,1);
+    .el-dialog__body::before {
+        content: '字典管理信息'; 
+        width: 100%;
+        height: 34px;
+        display: inline-block;
+        border-bottom: 1px dashed rgba(75,174,253,1); 
+        color: #63ACDF;
+        font-size: 13px;
+    }
+    .dialog-footer {
+        text-align: center;
+        margin-top: 4%;
+    }
+    .el-dialog__footer::before {
+        border-bottom: none !important; 
+    }
+    .textarea {
+        width: 86% !important;
+        background:rgba(5,37,75,1);
+        // padding-right: 0 !important;
+    }
 }
 .dict-container /deep/.el-textarea__inner{
     background: #05254B;
@@ -440,7 +453,7 @@ export default {
     border-radius:2px;
 }
 .dict-container /deep/.inputTextarea{
-    width: 650px;
+    width: 100%;
     padding-right:150px;
 }
 .dict-container /deep/ .el-switch {
@@ -515,5 +528,14 @@ export default {
 .dict-container /deep/ .el-pagination .el-input__inner{
     background: none !important;
     border: none !important;
+}
+.dict-container /deep/ .el-table th, .el-table tr{
+    border-top: 1px solid rgba(96, 118, 173, .3) !important;
+}
+.dict-container /deep/ .el-table tr th:first-child{
+    border-left: 1px solid rgba(96, 118, 173, .3) !important;
+}
+.dict-container /deep/ .el-table tr td:first-child{
+    border-left: 1px solid rgba(96, 118, 173, .3) !important;
 }
 </style>

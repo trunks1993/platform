@@ -1,45 +1,6 @@
 <template>
   <div class="logininfor-container">
     <div class="tabs-search">
-      <!-- <div class="search">
-        <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-          <el-form-item label="登录地址">
-            <el-input v-model="sizeForm.address"></el-input>
-          </el-form-item>
-          <el-form-item label="登录名称">
-            <el-input v-model="sizeForm.name"></el-input>
-          </el-form-item>
-          <el-form-item label="登录状态">
-            <el-select v-model="sizeForm.status" placeholder="所有">
-              <el-option label="所有" value></el-option>
-              <el-option label="成功" value="0"></el-option>
-              <el-option label="失败" value="1"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="创建时间">
-            <el-col :span="11">
-              <el-date-picker
-                type="beginTime"
-                placeholder="开始时间"
-                v-model="sizeForm.beginTime"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-col>
-            <el-col class="line" :span="2">-</el-col>
-            <el-col :span="11">
-              <el-date-picker
-                type="endTime"
-                placeholder="结束时间"
-                v-model="sizeForm.endTime"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-col>
-          </el-form-item>
-          <el-form-item size="large" class="query">
-            <el-button type="primary" @click="queryDate()">查询</el-button>
-          </el-form-item>
-        </el-form>
-      </div> -->
       <FilterQueryForm
         :fAttr="{'label-width': '80px'}"
         :resetBtnVisible="false"
@@ -97,11 +58,11 @@
             <el-table-column prop="slrOs" label="操作系统" show-overflow-tooltip></el-table-column>
             <el-table-column prop="slrStatus" label="登录状态" show-overflow-tooltip>
               <template slot-scope="scope">
-               <span :class="[scope.row.status == '0'  ? 'normal' : 'stop']">{{scope.row.status == '0' ? '成功' : '失败'}}</span>
+               <span :class="[scope.row.slrStatus == '0'  ? 'normal' : 'stop']">{{scope.row.slrStatus == 0 ? '成功' : '失败'}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="mainHost" label="操作信息" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="mainHost" label="登录时间" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="slrOs" label="操作信息" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="slrLoginTime" label="登录时间" show-overflow-tooltip></el-table-column>
           </el-table>
         </div>
         <el-pagination
@@ -201,7 +162,7 @@ export default {
         });
       } else {
         this.multipleSelection.forEach((v, i) => {
-          selectArr.push(v.dictId);
+          selectArr.push(v.slrInfoId);
         });
         this.deleted(selectArr.join(","));
       }
@@ -214,7 +175,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          deleteLoginPage({ str: ids }).then(res => {
+          deleteLoginPage({ ids: ids }).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
@@ -229,8 +190,7 @@ export default {
           });
         });
     },
-    clearLog() {
-      //清空日志
+    clearLog() { //清空日志
       this.$confirm("确认清除数据?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -251,12 +211,7 @@ export default {
             message: "已取消清除"
           });
         });
-    },
-    // exported() {
-    //   //导出
-    //   window.location.href =
-    //     "http://192.168.0.105:9091/uumsApi/v1/logininfor/exportExcel";
-    // }
+    }
   }
 };
 </script>
@@ -393,5 +348,14 @@ export default {
 .logininfor-container /deep/ .el-pagination .el-input__inner {
   background: none !important;
   border: none !important;
+}
+.logininfor-container /deep/ .el-table th, .el-table tr{
+    border-top: 1px solid rgba(96, 118, 173, .3) !important;
+}
+.logininfor-container /deep/ .el-table tr th:first-child{
+    border-left: 1px solid rgba(96, 118, 173, .3) !important;
+}
+.logininfor-container /deep/ .el-table tr td:first-child{
+    border-left: 1px solid rgba(96, 118, 173, .3) !important;
 }
 </style>

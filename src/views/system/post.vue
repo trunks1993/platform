@@ -74,8 +74,8 @@
 		</div>
 
         <!-- 弹框 -->
-        <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-            <el-form :model="form" style="height:308px;">
+        <el-dialog title="岗位管理基本信息" :visible.sync="dialogFormVisible">
+            <el-form :model="form">
                 <el-form-item label="岗位名称" :label-width="formLabelWidth">
                     <el-input v-model="form.postName" autocomplete="off"></el-input>
                 </el-form-item>
@@ -109,7 +109,7 @@ export default {
     mixins: [mixin],
     data() {
         return {
-            baseExpApi: 'http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel',
+            baseExpApi: 'http://192.168.0.105:9091/uumsApi/v1/manage/post/export',
             fqForm: [
                 {
                 fiAttr: {
@@ -197,7 +197,9 @@ export default {
         editor(rows){//编辑
             this.dialogFormVisible = true;
             this.form = rows;
-            this.obj = rows;
+            this.obj = rows;console.log(this.form);
+            let status = this.obj.status == '0' ?  true : false;
+            this.$set(this.form,'state',status);//更新form中state的值
         },
         save(){//编辑入参
             if(JSON.stringify(this.obj) == '{}'){//新增
@@ -207,13 +209,14 @@ export default {
             }  
         },
         saveAsk(){//编辑保存
-            this.form.status = this.form.state ?  '0': '1';
+            this.form.status = this.form.state ?  '0': '1';//更新状态传给后端
             editorGwPage(this.form).then(res => {
                 this.$message({
                     message: '修改成功！',
                     type: 'success'
                 });
                 this.dialogFormVisible = false;
+                this.query();
             });
         },
         addAsk(){//新增保存
@@ -224,7 +227,7 @@ export default {
                     type: 'success'
                 });
                 this.dialogFormVisible = false;
-                this.queryDate();
+                this.query();
             });
         },
         handleSelectionChange(val) {//多选
@@ -253,7 +256,7 @@ export default {
                         type: 'success',
                         message: '删除成功!'
                     });
-                    this.queryDate();
+                    this.query();
                 });  
             }).catch(() => {
                 this.$message({
@@ -413,32 +416,36 @@ export default {
         padding:10px 20px;
         .el-form {
             padding:  20px 0px 0px;
+            width: 80% !important;
+            margin: auto;
+            margin-top: 2%;
+            overflow: hidden;
             .el-radio {
                 color: #FFF;
                 margin-right: 50px; 
             }
         }
     }
-}
-.el-dialog__body::before {
-    content: '基本信息'; 
-    width: 100%;
-    height: 34px;
-    display: inline-block;
-    border-bottom: 1px dashed rgba(75,174,253,1); 
-    color: #63ACDF;
-    font-size: 13px;
-}
-.dialog-footer {
-    text-align: center;
-    margin-top: 4%;
-}
-.el-dialog__footer::before {
-    border-bottom: none !important; 
-}
-.textarea {
-    width: 100%;
-    background:rgba(5,37,75,1);
+    .el-dialog__body::before {
+        content: '岗位信息'; 
+        width: 100%;
+        height: 34px;
+        display: inline-block;
+        border-bottom: 1px dashed rgba(75,174,253,1); 
+        color: #63ACDF;
+        font-size: 13px;
+    }
+    .dialog-footer {
+        text-align: center;
+        margin-top: 4%;
+    }
+    .el-dialog__footer::before {
+        border-bottom: none !important; 
+    }
+    .textarea {
+        width: 86%;
+        background:rgba(5,37,75,1);
+    }
 }
 .post-container /deep/.el-textarea__inner{
     background: #05254B;
@@ -463,17 +470,14 @@ export default {
     color: #E6BF06;
 }
 .post-container /deep/.el-form-item__content,.el-button{
-    margin-left: 0 ;
+    // margin-left: 0 ;
 }
 .post-container /deep/.el-form-item:nth-child(4){
-    width:0;
+    // width:0;
 }
 .post-container /deep/ .el-message-box__btns button:nth-child(2){
     background: transparent !important;
 }
-// .post-container /deep/ .el-button--primary {
-//     background: url(../../assets/buttonbg.png) !important;
-// }
 .el-message-box__btns .el-button--primary:focus, .el-button--primary:hover{
     background: #022960;
 }
@@ -484,6 +488,15 @@ export default {
 .post-container /deep/.el-pagination span:not([class*=suffix]), .el-pagination button{
     margin-left: 10px;
     margin-right: 0;
+}
+.post-container /deep/ .el-table th, .el-table tr{
+    border-top: 1px solid rgba(96, 118, 173, .3) !important;
+}
+.post-container /deep/ .el-table tr th:first-child{
+    border-left: 1px solid rgba(96, 118, 173, .3) !important;
+}
+.post-container /deep/ .el-table tr td:first-child{
+    border-left: 1px solid rgba(96, 118, 173, .3) !important;
 }
 </style>
 <style>
