@@ -1,48 +1,5 @@
 <template>
-  <div class="operlog-container">
-    <div class="tabs-search">
-      <!-- <div class="search">
-				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-					<el-form-item label="系统模块">
-						<el-input v-model="sizeForm.module"></el-input>
-					</el-form-item>
-					<el-form-item label="操作人员">
-						<el-input v-model="sizeForm.name"></el-input>
-					</el-form-item>
-					<el-form-item label="操作类型">
-						<el-select v-model="sizeForm.type" placeholder="请选择">
-                            <el-option label="新增" value="0"></el-option>
-                            <el-option label="修改" value="1"></el-option>
-                            <el-option label="删除" value="2"></el-option>
-                            <el-option label="授权" value="3"></el-option>
-                            <el-option label="导出" value="4"></el-option>
-                            <el-option label="导入" value="5"></el-option>
-                            <el-option label="强退" value="6"></el-option>
-                            <el-option label="生成代码" value="7"></el-option>
-                            <el-option label="清空数据" value="8"></el-option>
-						</el-select>
-					</el-form-item>
-                    <el-form-item label="操作状态">
-						<el-select v-model="sizeForm.status" placeholder="所有">
-						    <el-option label="所有" value=""></el-option>
-                            <el-option label="成功" value="0"></el-option>
-                            <el-option label="失败" value="1"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item label="操作时间">
-						<el-col :span="11">
-						<el-date-picker type="beginTime" placeholder="开始时间" v-model="sizeForm.beginTime" style="width: 100%;"></el-date-picker>
-						</el-col>
-						<el-col class="line" :span="2">-</el-col>
-						<el-col :span="11">
-						<el-date-picker type="endTime" placeholder="结束时间" v-model="sizeForm.endTime" style="width: 100%;"></el-date-picker>
-						</el-col>
-					</el-form-item>
-					<el-form-item size="large" class="query">
-						<el-button type="primary" @click="query()">查询</el-button>
-					</el-form-item>
-				</el-form>
-      </div>-->
+  <div class="common-container">
       <FilterQueryForm
         :fAttr="{'label-width': '80px'}"
         :resetBtnVisible="false"
@@ -50,95 +7,75 @@
         :model="fqForm"
         @afterFilter="handleFilter($event, query)"
       ></FilterQueryForm>
-    </div>
-    <div class="dashboard-content">
-      <!-- <div class="organization"></div> -->
-      <div class="table">
-        <!-- <div class="main-right"> -->
-        <div class="tableHead">
-          <!-- <el-button><i class="iconComm add"></i>新增</el-button> -->
-          <el-button @click="batchDelete()">
-            <i class="iconComm delete"></i>删除
-          </el-button>
-          <el-button @click="clearLog()">
-            <i class="iconComm modify"></i>清空
-          </el-button>
-          <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
-          <el-button @click="handleExport(baseExpApi)">
-            <i class="iconComm leading"></i>导出
-          </el-button>
-          <div class="operation">
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-          </div>
+    <div class="app-wrapper" style="display: flex;">
+      <div class="content-box">
+        <div class="content-box-tool">
+          <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
+          <el-button type="tool" icon="el-icon-editor" @click="clearLog">清空</el-button>
+          <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
-        <div class="tabled">
-          <el-table
-            border
-            ref="multipleTable"
-            :data="tableDataList"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-          >
+        <div class="content-box-table">
+          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
             <el-table-column type="selection"></el-table-column>
             <el-table-column prop="operId" label="日志编号"></el-table-column>
             <el-table-column prop="title" label="系统模块"></el-table-column>
-            <el-table-column prop="operatorType" label="操作类型" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="operatorType" label="操作类型" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span v-for="(item,index) in options" :key="index">{{item.value == scope.row.operatorType ? item.label : ''}}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="operName" label="操作人员" show-overflow-tooltip></el-table-column>
             <el-table-column prop="deptName" label="部门名称" show-overflow-tooltip></el-table-column>
             <el-table-column prop="operIp" label="主机" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="operLocation" label="操作地点" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="operUrl" label="操作地点" show-overflow-tooltip></el-table-column>
             <el-table-column property="status" label="操作状态">
               <template slot-scope="scope">
-               <span :class="[scope.row.status == '0'  ? 'normal' : 'stop']">{{scope.row.status == '0' ? '成功' : '失败'}}</span>
+                 <span
+                  :style="{color:scope.row.status == '0' ? '#45eba7' : '#cb3203'}"
+                >{{scope.row.status == '0' ? '成功' : '失败'}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="time" label="操作时间" show-overflow-tooltip></el-table-column>
-            <el-table-column label="操作">
+            <el-table-column prop="operTime" label="操作时间" show-overflow-tooltip></el-table-column>
+            <!-- <el-table-column label="操作">
               <template slot-scope="scope">
                 <span @click="lookUp(scope.row)" style="color:#E6BF06;cursor: pointer;">详细</span>
               </template>
-            </el-table-column>
+            </el-table-column>-->
           </el-table>
         </div>
-        <el-pagination
-          style="text-align:right;margin-top:2%;"
-          background
-          layout="prev, pager, next"
-          @size-change="handleSizeChange($event, query)"
-          @current-change="handleCurrentChange($event, query)"
-          :current-page="queryList.pageNum"
-          :page-size="queryList.pageSize"
-          :total="total"
-        ></el-pagination>
-        <!-- </div> -->
+        <div class="content-box-pagination">
+          <el-pagination
+            style="text-align:right;"
+            background
+            layout="prev, pager, next"
+            @size-change="handleSizeChange($event, query)"
+            @current-change="handleCurrentChange($event, query)"
+            :current-page="queryList.pageNum"
+            :page-size="queryList.pageSize"
+            :total="total"
+          ></el-pagination>
+        </div>
       </div>
     </div>
     <!-- 弹框 -->
-    <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-      <el-form :model="form" style="height:308px;">
+    <el-dialog :visible.sync="dialogFormVisible">
+        <div slot="title" class="dailog-title">
+            <img src="../../../assets/images/icon-title-left.png" alt />
+            <span class="title">操作日志基本信息</span>
+            <img src="../../../assets/images/icon-title-right.png" alt />
+        </div>
+      <el-form :model="form">
         <el-form-item label="操作模块" :label-width="formLabelWidth">
           <el-input v-model="form.title" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="登录信息" :label-width="formLabelWidth">
-          <el-input v-model="form.loginInfo" autocomplete="off"></el-input>
+          <el-input v-model="form.operName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="请求地址" :label-width="formLabelWidth">
-          <el-input v-model="form.operLocation" autocomplete="off"></el-input>
+          <el-input v-model="form.operUrl" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="操作方法" :label-width="formLabelWidth">
-          <el-input v-model="form.operLocation" autocomplete="off"></el-input>
+          <el-input v-model="form.methodName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="状态" :label-width="formLabelWidth" style="width: 325px;">
           <template slot-scope="scope">
@@ -146,22 +83,39 @@
           </template>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <!-- <el-button type="primary" @click="save()">保 存</el-button> -->
+      <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
+    </el-dialog>
+     <!-- 删除弹框 -->
+    <el-dialog :visible.sync="dialogVisible">
+        <div slot="title" class="dailog-title">
+            <img src="../../../assets/images/icon-title-left.png" alt />
+            <span class="title">系统提示信息</span>
+            <img src="../../../assets/images/icon-title-right.png" alt />
+        </div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div slot="footer" style="text-align: center;">
+            <el-button type="primary" @click="sure">确 定</el-button>
+            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+        </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { queryOperLPage, deleteOperLPage, clearOperLPage } from "@/api";
+import {
+  queryOperLPage,
+  deleteOperLPage,
+  clearOperLPage,
+  selectTypePage,
+} from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
 export default {
   mixins: [mixin],
   data() {
     return {
-      baseExpApi:'http://192.168.0.105:9091/uumsApi/v1/operLog/exportExcel',
+      baseExpApi: "http://192.168.0.105:9091/uumsApi/v1/operLog/exportExcel",
       fqForm: [
         {
           fiAttr: {
@@ -181,7 +135,7 @@ export default {
           elAttr: {
             type: "number"
           },
-          bindKey: "dictType"
+          bindKey: "operName"
         },
         {
           fiAttr: {
@@ -189,43 +143,51 @@ export default {
           },
           el: "select",
           elAttr: {},
-          bindKey: "status",
+          bindKey: "operatorType",
           option: [
             {
-              label: "新增",
+              label: "请选择",
+              value: ""
+            },
+            {
+              label: "其他",
               value: 0
             },
             {
-              label: "修改",
+              label: "新增",
               value: 1
             },
             {
-              label: "删除",
+              label: "修改",
               value: 2
             },
             {
-              label: "授权",
+              label: "删除",
               value: 3
             },
             {
-              label: "导出",
+              label: "授权",
               value: 4
             },
             {
-              label: "导入",
+              label: "导出",
               value: 5
             },
             {
-              label: "强退",
+              label: "导入",
               value: 6
             },
             {
-              label: "生成代码",
+              label: "强退",
               value: 7
             },
             {
-              label: "清空数据",
+              label: "生成代码",
               value: 8
+            },
+            {
+              label: "清空",
+              value: 9
             }
           ]
         },
@@ -254,7 +216,10 @@ export default {
       form: {},
       obj: {},
       formLabelWidth: "120px",
-      dialogFormVisible:false
+      dialogFormVisible: false,
+      options: [],
+      dialogVisible:false,
+      ids:'',
     };
   },
   components: {
@@ -262,6 +227,7 @@ export default {
   },
   created() {
     this.query();
+    this.selectType();
   },
   computed: {
     query() {
@@ -282,39 +248,26 @@ export default {
         });
       } else {
         this.multipleSelection.forEach((v, i) => {
-          selectArr.push(v.dictId);
+          selectArr.push(v.operId);
         });
         this.deleted(selectArr.join(","));
       }
     },
     deleted(ids) {
       //删除
-      this.$confirm("确认删除该数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          deleteOperLPage({ str: ids }).then(res => {
+      this.dialogVisible = true;
+      this.ids = ids;
+    },
+    sure(){//确认删除
+        deleteOperLPage({ ids: this.ids }).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
             });
+            this.dialogVisible = false;
             this.query();
           });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
     },
-    // exported() {
-    //   //导出
-    //   window.location.href =
-    //     "http://192.168.0.105:9091/uumsApi/v1/operLog/exportExcel";
-    // },
     clearLog() {
       //清空日志
       this.$confirm("确认清除数据?", "提示", {
@@ -337,6 +290,19 @@ export default {
             message: "已取消清除"
           });
         });
+    },
+    selectType() {
+      //操作类型
+      selectTypePage({
+        dictType: "log_oper_type"
+      }).then(res => {
+        res.forEach((item, index) => {
+          var obj = {};
+          obj.label = item.dictLabel;
+          obj.value = item.dictValue;
+          this.options.push(obj);
+        });
+      });
     },
     lookUp() {
       //详情

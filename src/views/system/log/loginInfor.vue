@@ -1,45 +1,5 @@
 <template>
-  <div class="logininfor-container">
-    <div class="tabs-search">
-      <!-- <div class="search">
-        <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-          <el-form-item label="登录地址">
-            <el-input v-model="sizeForm.address"></el-input>
-          </el-form-item>
-          <el-form-item label="登录名称">
-            <el-input v-model="sizeForm.name"></el-input>
-          </el-form-item>
-          <el-form-item label="登录状态">
-            <el-select v-model="sizeForm.status" placeholder="所有">
-              <el-option label="所有" value></el-option>
-              <el-option label="成功" value="0"></el-option>
-              <el-option label="失败" value="1"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="创建时间">
-            <el-col :span="11">
-              <el-date-picker
-                type="beginTime"
-                placeholder="开始时间"
-                v-model="sizeForm.beginTime"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-col>
-            <el-col class="line" :span="2">-</el-col>
-            <el-col :span="11">
-              <el-date-picker
-                type="endTime"
-                placeholder="结束时间"
-                v-model="sizeForm.endTime"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-col>
-          </el-form-item>
-          <el-form-item size="large" class="query">
-            <el-button type="primary" @click="queryDate()">查询</el-button>
-          </el-form-item>
-        </el-form>
-      </div> -->
+  <div class="common-container">
       <FilterQueryForm
         :fAttr="{'label-width': '80px'}"
         :resetBtnVisible="false"
@@ -47,47 +7,15 @@
         :model="fqForm"
         @afterFilter="handleFilter($event, query)"
       ></FilterQueryForm>
-    </div>
-    <div class="dashboard-content">
-      <!-- <div class="organization"></div> -->
-      <div class="table">
-        <!-- <div class="main-right"> -->
-        <div class="tableHead">
-          <!-- <el-button><i class="iconComm add"></i>新增</el-button> -->
-          <el-button @click="batchDelete()">
-            <i class="iconComm delete"></i>删除
-          </el-button>
-          <el-button @click="clearLog()">
-            <i class="iconComm modify"></i>清空
-          </el-button>
-          <!-- <el-button><i class="iconComm loading"></i>导入</el-button> -->
-          <el-button  @click="handleExport(baseExpApi)">
-            <i class="iconComm leading"></i>导出
-          </el-button>
-          <div class="operation">
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-          </div>
+    <div class="app-wrapper" style="display: flex;">
+      <div class="content-box">
+        <div class="content-box-tool">
+          <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
+          <el-button type="tool" icon="el-icon-editor" @click="clearLog">清空</el-button>
+          <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
-        <div class="tabled">
-          <el-table
-            border
-            ref="multipleTable"
-            :data="tableDataList"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-          >
+        <div class="content-box-table">
+          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
             <el-table-column type="selection"></el-table-column>
             <el-table-column prop="slrInfoId" label="访问编码"></el-table-column>
             <el-table-column prop="slrLoginName" label="登录名称"></el-table-column>
@@ -97,26 +25,42 @@
             <el-table-column prop="slrOs" label="操作系统" show-overflow-tooltip></el-table-column>
             <el-table-column prop="slrStatus" label="登录状态" show-overflow-tooltip>
               <template slot-scope="scope">
-               <span :class="[scope.row.status == '0'  ? 'normal' : 'stop']">{{scope.row.status == '0' ? '成功' : '失败'}}</span>
+               <span
+                  :style="{color:scope.row.slrStatus == '0' ? '#45eba7' : '#cb3203'}"
+                >{{scope.row.slrStatus == '0' ? '成功' : '失败'}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="mainHost" label="操作信息" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="mainHost" label="登录时间" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="slrOs" label="操作信息" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="slrLoginTime" label="登录时间" show-overflow-tooltip></el-table-column>
           </el-table>
         </div>
-        <el-pagination
-          style="text-align:right;margin-top:2%;"
-          background
-          layout="prev, pager, next"
-          @size-change="handleSizeChange($event, query)"
-          @current-change="handleCurrentChange($event, query)"
-          :current-page="queryList.pageNum"
-          :page-size="queryList.pageSize"
-          :total="total"
-        ></el-pagination>
-        <!-- </div> -->
+        <div class="content-box-pagination">
+          <el-pagination
+            style="text-align:right;"
+            background
+            layout="prev, pager, next"
+            @size-change="handleSizeChange($event, query)"
+            @current-change="handleCurrentChange($event, query)"
+            :current-page="queryList.pageNum"
+            :page-size="queryList.pageSize"
+            :total="total"
+          ></el-pagination>
+        </div>
       </div>
     </div>
+     <!-- 删除弹框 -->
+    <el-dialog :visible.sync="dialogVisible">
+        <div slot="title" class="dailog-title">
+            <img src="../../../assets/images/icon-title-left.png" alt />
+            <span class="title">系统提示信息</span>
+            <img src="../../../assets/images/icon-title-right.png" alt />
+        </div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div slot="footer" style="text-align: center;">
+            <el-button type="primary" @click="sure">确 定</el-button>
+            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+        </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -173,7 +117,9 @@ export default {
       dialogFormVisible: false,
       form: {},
       obj: {},
-      formLabelWidth: "120px"
+      formLabelWidth: "120px",
+      dialogVisible:false,
+      ids:'',
     };
   },
   components: {
@@ -201,36 +147,27 @@ export default {
         });
       } else {
         this.multipleSelection.forEach((v, i) => {
-          selectArr.push(v.dictId);
+          selectArr.push(v.slrInfoId);
         });
         this.deleted(selectArr.join(","));
       }
     },
     deleted(ids) {
       //删除
-      this.$confirm("确认删除该数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          deleteLoginPage({ str: ids }).then(res => {
+      this.dialogVisible = true;
+      this.ids = ids;
+    },
+    sure(){//确认删除
+        deleteLoginPage({ ids: this.ids }).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
             });
+            this.dialogVisible = false;
             this.query();
           });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
     },
-    clearLog() {
-      //清空日志
+    clearLog() { //清空日志
       this.$confirm("确认清除数据?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -251,12 +188,7 @@ export default {
             message: "已取消清除"
           });
         });
-    },
-    // exported() {
-    //   //导出
-    //   window.location.href =
-    //     "http://192.168.0.105:9091/uumsApi/v1/logininfor/exportExcel";
-    // }
+    }
   }
 };
 </script>
