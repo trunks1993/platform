@@ -1,6 +1,5 @@
-@import './custom.scss';
 @import './element-variables.scss';
-@import './table.scss';
+@import './iconfont.scss';
 
 body {
   height: 100%;
@@ -27,4 +26,95 @@ html {
 *:before,
 *:after {
   box-sizing: inherit;
+}
+*:focus {
+  outline: none;
+}
+// ul {
+//   user-select: none;
+//   list-style: none;
+// }
+*::-webkit-scrollbar {
+  width: 16px;
+}
+*::-webkit-scrollbar-track {
+  background-color: #05254b;
+  border: 1px solid #02439d;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #0154c7;
+}
+
+// sider-bar
+.sider-bar {
+  & > ul {
+    height: 100%;
+    overflow-y: scroll;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .el-menu {
+    background-color: transparent;
+    border-right: none;
+    i {
+      display: none;
+    }
+    li[class*="is-opened el-submenu-parent"] {
+      background: url("../assets/images/menu-title-bg-expand.png") no-repeat;
+      background-size: 100% 100%;
+      .sub-title-line {
+        display: block;
+        width: 80%;
+        height: 1px;
+        background: #00d6fd;
+        margin: auto;
+      }
+    }
+    .el-menu-item {
+      color: #fff;
+      // padding: 0 0!important;
+      &:hover,
+      &:focus {
+        background-color: transparent;
+      }
+      &:focus {
+        color: $azure;
+        background-color: transparent;
+      }
+    }
+    .el-submenu-parent {
+      background: url("../assets/images/menu-title-bg.png") no-repeat;
+      background-size: 100% 54px;
+      margin-bottom: 20px;
+      .sub-title-line {
+        display: none;
+      }
+      & > .el-submenu__title {
+        font-size: 18px;
+        text-align: center;
+        height: 54px;
+        line-height: 54px;
+      }
+      & > ul > div > li {
+        padding-left: 0;
+        text-align: center;
+      }
+    }
+    .el-submenu__title {
+      color: #fff;
+      // padding: 0 0!important;
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+// app-wrapper
+.app-wrapper {
+  height: calc(100% - 174px);
+  width: 100%;
+  margin-top: 15px;
 }

@@ -1,6 +1,57 @@
-$mainColor: #05254b;
+$navy: #05254b;
 $tableBorder: 1px solid rgba(2, 67, 157, 0.2);
-$customBlue: #4baefd;
+$azure: #4baefd;
+$green: #0ebae1;
+
+// button
+.el-button {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  line-height: 14px;
+  padding: 0;
+  cursor: pointer;
+
+  & + & {
+    margin-left: 10px;
+  }
+
+  &--primary {
+    padding: 10px 50px;
+    background: url(../assets/images/icon-bg-btn.png) repeat;
+    background-size: 100% 100%;
+
+    &:hover {
+      background: url(../assets/images/icon-bg-btn-active.png) repeat;
+      background-size: 100% 100%;
+      color: $green;
+    }
+  }
+
+  &--tool {
+    background: $navy;
+    border-radius: 4px;
+    padding: 12px 19px;
+    &:hover {
+      color: $green;
+    }
+    i {
+      margin-right: 10px;
+    }
+  }
+
+  &--text {
+    color: #45eba7;
+    &-warn {
+      color: #e6bf06;
+    }
+    &-danger {
+      color: #cb3203;
+    }
+  }
+}
+
 // checkbox样式
 .el-checkbox {
   .el-checkbox__input {
@@ -15,7 +66,7 @@ $customBlue: #4baefd;
   input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    background-color: $mainColor;
+    background-color: $navy;
     -webkit-appearance: none;
     border: 1px solid #0284a1;
     border-radius: 2px;
@@ -23,7 +74,7 @@ $customBlue: #4baefd;
     &:checked {
       background: url("../assets/icon.png") no-repeat;
       background-position: -57px -301px;
-      background-color: $mainColor;
+      background-color: $navy;
     }
   }
 }
@@ -44,7 +95,7 @@ $customBlue: #4baefd;
       }
     }
     th {
-      color: $customBlue;
+      color: $azure;
       &:not(:first-child) {
         border-left: $tableBorder;
       }
@@ -52,71 +103,248 @@ $customBlue: #4baefd;
   }
 }
 
-// sider-bar
-.sider-bar {
-  & > ul {
-    height: 100%;
-    overflow-y: scroll;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-  .el-menu {
-    background-color: transparent;
-    border-right: none;
-    li[class*="is-opened el-submenu-parent"] {
-      background: url("../assets/images/menu-title-bg-expand.png") no-repeat;
-      background-size: 100% 100%;
-      .sub-title-line {
-        display: block;
-        width: 80%;
-        height: 1px;
-        background: #00D6FD;
-        margin: auto;
-      }
-    }
-    .el-menu-item {
-      color: #fff;
-      // padding: 0 0!important;
-      &:hover, &:focus {
-        background-color: transparent;
-      }
-      &:focus {
-        color: $customBlue;
-        background-color: transparent;
-      }
-    }
-    .el-submenu-parent {
-      background: url("../assets/images/menu-title-bg.png") no-repeat;
-      background-size: 100% 54px;
-      margin-bottom: 20px;
-      .sub-title-line {
-        display: none;
-      }
-      & > .el-submenu__title {
-        font-size: 18px;
-        text-align: center;
-        height: 54px;
-        line-height: 54px;
-      }
-      & > ul > div > li {
-        padding-left: 0;
-        text-align: center;
-      }
-    }
-    .el-submenu__title {
-      color: #fff;
-      // padding: 0 0!important;
-      &:hover {
-        background-color: transparent;
-      }
+// 表单样式
+.el-form {
+  &-item {
+    display: inline-block;
+    margin-right: 120px;
+    &__label {
+      color: #fff !important;
     }
   }
 }
 
-// app-wrapper
-.app-wrapper {
-  height: calc(100% - 174px);
+// input
+.el-input {
+  position: relative;
+  font-size: 14px;
+  display: inline-block;
   width: 100%;
-  margin-top: 15px;
+  input {
+    background: $navy;
+    border: 1px solid #02439d;
+    color: #fff;
+    border-radius: 2px;
+    height: 30px;
+    width: 250px;
+    line-height: 30px;
+    font-size: inherit;
+    padding: 0 15px;
+    transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    &:focus {
+      border-color: $azure;
+    }
+  }
+}
+
+// 分页插件
+.el-pagination {
+  white-space: nowrap;
+  padding: 0 5px;
+  color: #8489a8;
+  font-weight: bold;
+  .btn-prev,
+  .btn-next {
+    background-color: $navy;
+    font-size: 13px;
+    height: 28px;
+    line-height: 28px;
+    vertical-align: top;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    color: #8489a8;
+    margin: 0 5px;
+    min-width: 30px;
+    border-radius: 2px;
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+  .el-pager {
+    display: inline-block;
+    // user-select: none;
+    // list-style: none;
+    vertical-align: top;
+    font-size: 0;
+    padding: 0;
+    margin: 0;
+    li {
+      display: inline-block;
+      font-size: 14px;
+      margin: 0 5px;
+      background-color: $navy;
+      min-width: 30px;
+      border-radius: 2px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .active {
+      color: #409eff;
+      background: url(../assets/images/icon-bg-pt.png) repeat;
+      background-size: 100% 100%;
+      cursor: default;
+    }
+  }
+}
+
+.el-select {
+  display: inline-block;
+  position: relative;
+
+  input {
+    cursor: pointer;
+    padding-right: 35px;
+  }
+
+  .el-input__suffix {
+    position: absolute;
+    height: 100%;
+    right: 5px;
+    top: 0;
+    text-align: center;
+    color: #c0c4cc;
+    transition: all 0.3s;
+    pointer-events: none;
+    i {
+      display: inline-block;
+    }
+    .el-select__caret {
+      color: #c0c4cc;
+      font-size: 14px;
+      transition: transform 0.3s;
+      transform: rotateZ(180deg);
+      cursor: pointer;
+    }
+    .is-reverse {
+      transform: rotateZ(0deg);
+    }
+  }
+}
+
+.el-select-dropdown {
+  background: $navy;
+  border: 1px solid #02439d;
+  border-radius: 2px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.24);
+  &__list {
+    padding: 6px 0;
+    margin: 0;
+  }
+  &__item {
+    font-size: 14px;
+    padding: 0 20px;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: $azure;
+    height: 34px;
+    line-height: 34px;
+    box-sizing: border-box;
+    cursor: pointer;
+    &:hover {
+      background-color: #16325d;
+    }
+  }
+  .el-scrollbar {
+    overflow: hidden;
+    position: relative;
+  }
+  .el-scrollbar__wrap {
+    overflow: scroll;
+    height: 100%;
+    // &::-webkit-scrollbar {
+    //   display: none;
+    // }
+  }
+  .el-scrollbar__bar {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    z-index: 1;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 120ms ease-out;
+  }
+  .el-scrollbar__bar.is-horizontal {
+    height: 6px;
+    left: 2px;
+  }
+  .el-scrollbar__bar.is-vertical {
+    width: 6px;
+    top: 2px;
+  }
+}
+
+.el-dialog {
+  background: url(../assets/images/dialog-bg.png) repeat;
+  background-size: 100% 100%;
+  .dailog-title {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 25px;
+    .title {
+      margin: 0 20px;
+      font-size: 24px;
+      color: #63ACDF;
+    }
+  }
+  .el-dialog__headerbtn {
+    bottom: -70px;
+    right: 50%;
+    top: auto;
+    width: 58px;
+    height: 58px;
+    background-size: 100% 100%;
+    transform: translate(50%, 0);
+    background: url(../assets/images/icon-close-dialog.png);
+    i {
+      display: none;
+    }
+  }
+}
+
+.el-tree {
+  position: relative;
+  cursor: default;
+  background: transparent;
+  color: $azure;
+  &-node {
+    white-space: nowrap;
+    outline: none;
+    &__content {
+        display: flex;
+        align-items: center;
+        height: 26px;
+        cursor: pointer;
+        &:hover {
+          background-color: none;
+          color: $green;
+        }
+        & > .el-tree-node__expand-icon {
+            padding: 6px;
+            cursor: pointer;
+            color: #C0C4CC;
+            font-size: 12px;
+            transform: rotate(0deg);
+            transition: transform 0.3s ease-in-out;          
+        }
+        .is-leaf {
+          color: transparent;
+          cursor: default;
+        }
+        .expanded {
+          transform: rotate(90deg);
+        }
+    }
+    &__label {
+      font-size: 14px;
+    }
+  }
 }

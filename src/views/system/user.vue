@@ -7,48 +7,34 @@
       :model="fqForm"
       @afterFilter="handleFilter($event, getSysUserList)"
     ></FilterQueryForm>
+
     <div class="app-wrapper" style="display: flex;">
-      <div class="organization">
-        <div class="zzBox">
+      <div class="org-box">
+        <!-- <div class="zzBox">
           <span>组织结构</span>
           <div class="revise">
             <i class="comm revised"></i>
             <i class="comm refresh"></i>
             <i class="comm select"></i>
           </div>
+        </div> -->
+        <div class="org-box-header">
+          <label style="font-size: 14px;">组织机构</label>
         </div>
+        
         <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
       </div>
-      <div class="table-content">
-        <div class="tableHead">
-          <div class="button" @click="dialogFormVisible = true">新增</div>
-          <div class="button">删除</div>
-          <div class="button">修改</div>
-          <div class="button">导入</div>
-          <div class="button">导出</div>
-          <div class="operation">
-            <div>
-              <span></span>
-            </div>
-            <div @click="getSysUserList()">
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-            <div>
-              <span></span>
-            </div>
-          </div>
+
+      <div class="content-box">
+        <div class="content-box-tool">
+          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
+          <el-button type="tool" icon="el-icon-close">删除</el-button>
+          <el-button type="tool" icon="el-icon-editor">修改</el-button>
+          <el-button type="tool" icon="el-icon-import">导入</el-button>
+          <el-button type="tool" icon="el-icon-export">导出</el-button>
         </div>
-        <div class="table">
-          <el-table
-            ref="multipleTable"
-            :data="tableDataList"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-          >
+        <div class="content-box-table">
+          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column label="用户ID" prop="surUserId" width="120"></el-table-column>
             <el-table-column prop="surLoginName" label="登录名称" width="120"></el-table-column>
@@ -63,27 +49,36 @@
             <el-table-column prop="surCreateTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="220">
               <template slot-scope="scope">
-                <span @click="handleClick(scope.row)">查看</span>
-                <span>编辑</span>
-                <span>重置</span>
+                <el-button type="text" @click="handleClick(scope.row)">查看</el-button>
+                <el-button type="text">编辑</el-button>
+                <el-button type="text-warn">重置</el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
-        <el-pagination
-          style="text-align:right;margin-top:2%;"
-          background
-          layout="prev, pager, next"
-          @size-change="handleSizeChange($event, query)"
-          @current-change="handleCurrentChange($event, query)"
-          :current-page="queryList.pageNum"
-          :page-size="queryList.pageSize"
-          :total="total"
-        ></el-pagination>
+        <div class="content-box-pagination">
+          <el-pagination
+            style="text-align:right;"
+            background
+            layout="prev, pager, next"
+            @size-change="handleSizeChange($event, query)"
+            @current-change="handleCurrentChange($event, query)"
+            :current-page="queryList.pageNum"
+            :page-size="queryList.pageSize"
+            :total="total"
+          ></el-pagination>
+        </div>
       </div>
+
     </div>
-    <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
-      <el-form :model="form" style="height:308px;">
+
+    <el-dialog :visible.sync="dialogFormVisible">
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt="">
+        <span class="title">基本信息</span>
+        <img src="../../assets/images/icon-title-right.png" alt="">
+      </div>
+      <el-form :model="form" :inline="true">
         <el-form-item label="活动名称" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
@@ -120,11 +115,7 @@
           <el-radio v-model="radio" label="2">管理员</el-radio>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <div class="textarea">
-          <span>活动形式</span>
-          <input type="textarea" />
-        </div>
+      <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
@@ -180,20 +171,6 @@ export default {
       tableData: [],
       value1: true,
       multipleSelection: [],
-
-      //   sizeForm: {
-      //     surLoginName: "",
-      //     surPhoneNumber: "",
-      //     surStatus: "",
-      //     surBeginTime: "",
-      //     surEndTime: ""
-      //   },
-
-      //   queryList: {
-      // 	current: 1,
-      // 	pageSize: 10,
-      //   },
-
       radio: "1",
       dialogFormVisible: false,
       formLabelWidth: "120px",
@@ -237,333 +214,55 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .user {
   color: #fff;
+  height: 100%; 
+}
+.org-box {
+  width: 223px;
+  background: url(../../assets/images/org-bg.png);
+  background-size: 100% 100%;
+  padding: 20px;
+  &-header {
+    padding: 5px 0;
+    margin-bottom: 20px;
+    position: relative;
+  }
+}
+
+.content-box {
+  width: calc(100% - 238px);
   height: 100%;
-  .organization {
-    width: 223px;
-    height: 100%;
-    background: url(../../assets/images/organization-bg.png);
-    background-size: 100% 100%;
-    padding: 22px;
-    box-sizing: border-box;
-    .zzBox {
-      width: 100%;
-      margin-bottom: 14px;
-      span {
-        color: #fff;
-        font-size: 14px;
-      }
-      .revise {
-        width: 47%;
-        display: inline-block;
-        float: right;
-        .comm {
-          display: inline-block;
-          width: 18px;
-          height: 18px;
-          background: url(../../assets/images/revise.png);
-          background-size: 100% 100%;
-          vertical-align: middle;
-          margin-right: 10%;
-          cursor: pointer;
-        }
-        .revised {
-          background: url(../../assets/images/refresh.png);
-        }
-        .select {
-          background: url(../../assets/images/select.png);
-        }
-      }
-    }
+  padding: 20px;
+  margin-left: 15px;
+  background: url(../../assets/images/table-content-bg.png);
+  background-size: 100% 100%;
+  &-tool {
+    position: relative;
+    height: 38px;
   }
-  .table-content {
-    width: calc(100% - 239px);
-    height: 100%;
-    margin-left: 16px;
-    background: url(../../assets/images/table-content-bg.png);
-    background-size: 100% 100%;
-    padding: 22px 34px;
-    box-sizing: border-box;
-    .tableHead {
-      height: 70px;
-      .button {
-        width: 90px;
-        height: 36px;
-        line-height: 36px;
-        background: #05254b;
-        margin-right: 20px;
-        float: left;
-        border-radius: 4px;
-        text-align: right;
-        padding-right: 20px;
-        cursor: pointer;
-      }
-      .button::before {
-        content: "";
-        width: 14px;
-        height: 14px;
-        display: inline-block;
-        background-image: url(../../assets/icon.png);
-        background-position: -57px 792px;
-        margin-right: 6px;
-      }
-      .button:nth-child(2):before {
-        background-position: -57px 770px;
-      }
-      .button:nth-child(3):before {
-        background-position: -57px 749px;
-      }
-      .button:nth-child(4):before {
-        background-position: -57px 726px;
-      }
-      .button:nth-child(5):before {
-        background-position: -57px 704px;
-      }
-      .operation {
-        width: 210px;
-        height: 36px;
-        background: #05254b;
-        border: 1px solid #02439d;
-        float: right;
-        display: flex;
-        div {
-          width: 25%;
-          height: 28px;
-          margin-top: 4px;
-          position: relative;
-          cursor: pointer;
-          span {
-            width: 14px;
-            height: 14px;
-            display: inline-block;
-            background-image: url(../../assets/icon.png);
-            background-position: -57px 422px;
-            position: absolute;
-            left: 50%;
-            margin-left: -7px;
-            top: 50%;
-            margin-top: -7px;
-          }
-        }
-        div::before {
-          content: "";
-          width: 1px;
-          height: 28px;
-          display: inline-block;
-          background: linear-gradient(
-            0deg,
-            rgba(1, 84, 199, 0) 0%,
-            rgba(1, 84, 199, 1) 42%,
-            rgba(1, 84, 199, 0) 100%
-          );
-        }
-        div:nth-child(1):before {
-          width: 0;
-        }
-        div:nth-child(2) span {
-          background-position: -57px 376px;
-        }
-        div:nth-child(3) span {
-          background-position: -57px 331px;
-        }
-        div:nth-child(4) span {
-          background-position: -57px 288px;
-        }
-      }
-    }
-    .table {
-      width: 100%;
-      height: calc(100% - 165px);
-      overflow: auto;
-    }
+  &-table {
+    height: calc(100% - 148px);
+    margin-top: 35px;
+    overflow: auto;
   }
-}
-.login-user {
-  margin-bottom: 20px;
-  text-align: center;
-  span {
-    text-align: center;
-    font-size: 18px;
-    color: #63acdf;
-    margin: 0 5%;
+  &-pagination {
+    margin-top: 35px;
+    height: 32px;
   }
-  img {
-    vertical-align: bottom;
-  }
-}
-.el-dialog {
-  .el-dialog__header {
-    text-align: center;
-    .el-dialog__title {
-      text-align: center;
-      color: #4baefd;
-    }
-    .el-dialog__title:before {
-      content: "";
-      display: inline-block;
-      background-image: url(../../assets/login-left.png);
-      background-size: 100% 100%;
-      width: 91px;
-      height: 13px;
-      margin-right: 12px;
-    }
-    .el-dialog__title:after {
-      content: "";
-      display: inline-block;
-      background-image: url(../../assets/login-right.png);
-      background-size: 100% 100%;
-      width: 91px;
-      height: 13px;
-      margin-left: 12px;
-    }
-    .el-dialog__headerbtn {
-      top: 80px;
-      right: 80px;
-      .el-dialog__close {
-        color: #fff;
-        font-size: 30px;
-      }
-    }
-  }
-  .el-dialog__body {
-    padding: 10px 20px;
-    .el-form {
-      padding: 20px 0px 0px;
-      .el-radio {
-        color: #fff;
-        margin-right: 50px;
-      }
-    }
-  }
-}
-.el-dialog__body::before {
-  content: "基本信息";
-  width: 100%;
-  height: 34px;
-  display: inline-block;
-  border-bottom: 1px dashed rgba(75, 174, 253, 1);
-  color: #63acdf;
-  font-size: 13px;
-}
-.dialog-footer {
-  text-align: center;
-  .textarea {
-    text-align: left;
-    margin: 20px 0;
-    span {
-      margin-right: 22px;
-    }
-    input {
-      width: 920px;
-      height: 130px;
-      background: rgba(5, 37, 75, 1);
-      border: 1px solid rgba(2, 67, 157, 1);
-      border-radius: 2px;
-    }
-  }
-}
-.el-dialog__footer::before {
-  content: "其他信息";
-  width: 100%;
-  height: 34px;
-  display: inline-block;
-  border-bottom: 1px dashed rgba(75, 174, 253, 1);
-  color: #63acdf;
-  text-align: left;
-  font-size: 13px;
 }
 </style>
-<style>
-.el-switch {
-  display: inline-flex;
-  align-items: center;
-  position: relative;
-  font-size: 14px;
-  line-height: 24px;
-  height: 24px;
-  vertical-align: middle;
-}
-.el-switch__input {
-  position: absolute;
-  width: 0;
-  height: 0;
-  opacity: 0;
-  margin: 0;
-}
-.el-switch.is-checked .el-switch__core {
-  border-color: #4baefd;
-  background-color: #4baefd;
-}
-.el-switch.is-disabled .el-switch__core,
-.el-switch.is-disabled .el-switch__label {
-  cursor: not-allowed;
-}
-.el-switch__core {
-  margin: 0;
-  display: inline-block;
-  position: relative;
-  width: 50px !important;
-  height: 24px;
-  border: 1px solid #dcdfe6;
-  outline: none;
-  border-radius: 25px;
-  box-sizing: border-box;
-  background: #dcdfe6;
-  cursor: pointer;
-  transition: border-color 0.3s, background-color 0.3s;
-  vertical-align: middle;
-}
-.el-switch.is-checked .el-switch__core:after {
-  left: 88%;
-  margin-left: -17px;
-}
-.el-switch__core:after {
-  content: "";
-  position: absolute;
-  top: 0px;
-  left: 1px;
-  border-radius: 100%;
-  transition: all 0.3s;
-  width: 23px;
-  height: 23px;
-  background-color: #fff;
-}
-.cell span {
-  cursor: pointer;
-}
-.cell span:nth-child(1) {
-  color: #45eba7;
-}
-.cell span:nth-child(2) {
-  color: #cb3203;
-}
-.cell span:nth-child(3) {
-  color: #e6bf06;
-}
 
-*::-webkit-scrollbar {
-  width: 16px;
-}
-*::-webkit-scrollbar-track {
-  background-color: #05254b;
-  border: 1px solid #02439d;
-}
-
-*::-webkit-scrollbar-thumb {
-  background-color: #0154c7;
-}
-</style>
 <style>
-.el-input__inner {
+/* .el-input__inner {
   height: 30px !important;
 }
 .el-form-item__content {
   line-height: 30px !important;
-}
+} */
 /* x下拉框样式修改 */
-.el-input__inner {
+/* .el-input__inner {
   background: transparent !important;
   border: none !important;
   color: #fff !important;
@@ -582,23 +281,10 @@ export default {
   background-color: transparent !important;
   background: url(../../assets/head-select-hvoer.png);
   background-size: 100% 100%;
-}
-/* tree树样式修改 */
-.el-tree {
-  background: transparent;
-  color: #4baefd;
-}
-.el-icon-caret-right:before {
-  content: "el-icon-folder-add" !important;
-}
-.el-tree-node__content:hover {
-  background-color: transparent;
-}
-.el-tree-node:focus > .el-tree-node__content {
-  background-color: transparent;
-}
+} */
+
 /* 输入框样式修改 */
-.el-form-item {
+/* .el-form-item {
   width: 325px;
   color: #fff;
   float: left;
@@ -630,15 +316,7 @@ export default {
 .el-form-item--large {
   width: 660px;
 }
-.el-button {
-  margin-left: 514px;
-  width: 120px;
-  height: 35px;
-  background: url(../../assets/buttonbg.png);
-  background-size: 100% 100%;
-  border: none;
-  color: #fff;
-}
+
 .el-input__inner {
   background-color: #05254b !important;
   border: 1px solid #02439d !important;
@@ -747,5 +425,5 @@ export default {
 }
 .el-table__row td:last-child .cell span {
   padding: 10px;
-}
+} */
 </style>

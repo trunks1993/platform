@@ -161,16 +161,6 @@ export default {
         color: #5AC1FF;
         // margin-top: 40px;
       }
-      .login-input /deep/ .el-button{
-         background: url(../../assets/login.png) !important;
-         background-size: 100% 100%;
-         border: none;
-         height: 48px;
-         color: #FFFFFF;
-         outline:none;
-         cursor: pointer;
-         margin-left: 0 !important;
-      }
       .login-input /deep/ .inputfirst:before{
           content: '';
           background: url(../../assets/login-userName.png);
