@@ -51,7 +51,7 @@
               <template slot-scope="scope">
                 <el-button  type="text" @click="editor(scope.row)">编辑</el-button>
                 <el-button type="text" @click="deptAdd(scope.row)">新增</el-button>
-                <el-button type="text-warn" @click="deleted(scope.row)">删除</el-button>
+                <el-button type="text-warn" @click="deleted(scope.row.sdtDeptId)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -92,6 +92,19 @@
         <el-button @click="preservation" type="primary">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
+    </el-dialog>
+    <!-- 删除弹框 -->
+    <el-dialog :visible.sync="dialogVisible">
+        <div slot="title" class="dailog-title">
+            <img src="../../assets/images/icon-title-left.png" alt />
+            <span class="title">系统提示信息</span>
+            <img src="../../assets/images/icon-title-right.png" alt />
+        </div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div slot="footer" style="text-align: center;">
+            <el-button type="primary" @click="sure">确 定</el-button>
+            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+        </div>
     </el-dialog>
   </div>
 </template>
@@ -180,6 +193,8 @@ export default {
         sdtStatus: "",
         sdtDeptName: ""
       },
+      dialogVisible:false,
+      ids:'',
       isSearch: true
     };
   },
@@ -278,27 +293,19 @@ export default {
     },
     deleted(ids) {
       //删除
-      this.$confirm("确认删除该数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          deleteSysDeptRomove({ sdtDeptId: ids }).then(res => {
+      this.dialogVisible = true;
+      this.ids = ids;
+    },
+    sure(){//确认删除
+        deleteSysDeptRomove({ sdtDeptId: this.ids }).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
             });
-            this.queryDate();
+            this.dialogVisible = false;
+            this.query();
           });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    }
+    },
   }
 };
 </script>

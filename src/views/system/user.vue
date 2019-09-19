@@ -103,7 +103,7 @@
           <el-switch v-model="form.surStatus"></el-switch>
         </el-form-item>
         <el-form-item label="岗 位" :label-width="formLabelWidth">
-          <el-select v-model="form.postIds" multiple placeholder="请选择">
+          <el-select v-model="postIds" multiple placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -114,7 +114,7 @@
         </el-form-item>
         <el-form-item label="角 色" :label-width="formLabelWidth">
           <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
+            <el-checkbox v-for="item in cities" :label="item.key" :key="item">{{item.name}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item> 
       </el-form>
@@ -142,6 +142,19 @@
         <el-button type="primary" @click="dialogFormVisiblespass = false">关 闭</el-button>
       </div>
     </el-dialog>
+    <!-- 删除弹框 -->
+    <el-dialog :visible.sync="dialogVisible">
+        <div slot="title" class="dailog-title">
+            <img src="../../assets/images/icon-title-left.png" alt />
+            <span class="title">系统提示信息</span>
+            <img src="../../assets/images/icon-title-right.png" alt />
+        </div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div slot="footer" style="text-align: center;">
+            <el-button type="primary" @click="sure">确 定</el-button>
+            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+        </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -156,7 +169,6 @@ import {
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
-const cityOptions = ['管理员', '操作员'];
 export default {
   mixins: [mixin],
   data() {
@@ -201,7 +213,7 @@ export default {
         //   bindkey: "surStatus"
         // }
       ],
-      checkedCities: ['管理员', '操作员'],
+      checkedCities: [],
       options: [{
           value: '1',
           label: '董事长'
@@ -216,7 +228,7 @@ export default {
           label: '普通员工'
         }],
       valuefox: [],
-      cities: cityOptions,
+      cities:  [{name: '管理员', key: 0}, {name: '操作员', key: 1}],
       isIndeterminate: true,
       passWordForm:{
         surLoginName :"",
@@ -230,6 +242,7 @@ export default {
       dialogFormVisiblespass:false,
       formLabelWidth: "120px",
       data: [],
+      postIds:[],
       form: {
         surUserName: "",
         surDeptId: "",
@@ -238,14 +251,15 @@ export default {
         surLoginName: "",
         surPassword: "",
         resource: "",
-        postIds:[],
         surSex: '0',
         form:"0",
       },
       defaultProps: {
         children: "children",
         label: "sdtDeptName"
-      }
+      },
+      dialogVisible:false,
+      ids:'',
     };
   },
   components: {
@@ -276,6 +290,8 @@ export default {
       this.multipleSelection = val;
     },
     preservation(type) {
+      console.log(this.postIds)
+      console.log(this.checkedCities)
       if(JSON.stringify(this.obj) == '{}'){//新增
                this.addAsk();
          }else{//编辑
@@ -284,14 +300,21 @@ export default {
       this.dialogFormVisible = false;
     },
     addAsk(){
+        this.form.roleIds = this.checkedCities.toString();
+        this.form.postIds = this.postIds.toString();
+        this.form.surStatus = this.form.surStatus == true ? 0:1;
+        console.log(this.form)
         getSysUserAdd(this.form).then(res => {
-                this.$message({
-                  type: "success",
-                  message: "新增成功!"
-                });
-              });
+          this.$message({
+            type: "success",
+            message: "新增成功!"
+          });
+        });
     },
     saveAsk(){
+      let status = this.form.surStatus == true ? 0:1;
+      
+      let postIds = this.form.postIds
       let obj = {
           surLoginName:this.form.surUserName,
           surDeptId:this.form.surDeptId,
@@ -299,6 +322,9 @@ export default {
           surPhoneNumber:this.form.surPhoneNumber,
           surSex:this.form.surSex,
           surRemark:this.form.surRemark,
+          roleIds:roleIds,
+          postIds:this.form.postIds,
+          surStatus:status,
           // surUserId:
           // roleIds:
           // postIds:
@@ -366,26 +392,18 @@ export default {
     },
     deleted(ids) {
       //删除
-      this.$confirm("确认删除该数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          deleteUserGwPage({ ids: ids }).then(res => {
+      this.dialogVisible = true;
+      this.ids = ids;
+    },
+    sure(){//确认删除
+        deleteUserGwPage({ ids: this.ids }).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
             });
-            this.queryDate();
+            this.dialogVisible = false;
+            this.query();
           });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
     },
     roleAdds(){
       this.dialogFormVisible = true;
@@ -408,7 +426,13 @@ export default {
       //显示隐藏查询切换
       this.isSearch = !this.isSearch;
     },
-    handleNodeClick(data) {}
+    handleNodeClick(data) {
+      console.log(data.sdtDeptId)
+      getSysUserList(data.surDeptId).then(res=>{
+        console.log(res)
+        //  this.tableDataList = res.rows;
+      })
+    }
   }
 };
 </script>

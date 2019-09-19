@@ -84,12 +84,12 @@
           <el-tree
             :data="data"
             show-checkbox
-            default-expand-all
             node-key="id"
             width="500px"
             ref="tree"
             highlight-current
             :props="defaultProps"
+             @check-change="handleCheckChange"
           ></el-tree>
         </el-form-item>
       </el-form>
@@ -97,6 +97,19 @@
         <el-button @click="preservation" type="primary">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
+    </el-dialog>
+    <!-- 删除弹框 -->
+    <el-dialog :visible.sync="dialogVisible">
+        <div slot="title" class="dailog-title">
+            <img src="../../assets/images/icon-title-left.png" alt />
+            <span class="title">系统提示信息</span>
+            <img src="../../assets/images/icon-title-right.png" alt />
+        </div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div slot="footer" style="text-align: center;">
+            <el-button type="primary" @click="sure">确 定</el-button>
+            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+        </div>
     </el-dialog>
   </div>
 </template>
@@ -186,7 +199,8 @@ export default {
       pageShow: true,
       current: 1,
       pageSize: 5,
-
+      dialogVisible:false,
+      ids:'',
       total: 10,
       isSearch: true
     };
@@ -272,28 +286,19 @@ export default {
     },
     deleted(ids) {
       //删除
-      this.$confirm("确认删除该数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          deleteRoleGwPage({ roleId: ids }).then(res => {
+      this.dialogVisible = true;
+      this.ids = ids;
+    },
+    sure(){//确认删除
+        deleteRoleGwPage({ roleId: this.ids }).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
             });
-            this.queryDate();
+            this.dialogVisible = false;
+            this.query();
           });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
     },
-
     preservation() {
       // 新增保存
       if (JSON.stringify(this.obj) == "{}") {
@@ -364,6 +369,9 @@ export default {
     },
     resetChecked() {
       this.$refs.tree.setCheckedKeys([]);
+    },
+    handleCheckChange(data){
+      console.log(data);
     }
   }
 };
