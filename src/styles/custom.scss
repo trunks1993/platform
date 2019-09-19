@@ -348,3 +348,13 @@ $green: #0ebae1;
     }
   }
 }
+
+.el-popover {
+  border-radius: 2px;
+  padding: 0;
+  background: $navy;
+  border: 1px solid #02439d;
+  .popper__arrow {
+    display: none;
+  }
+}

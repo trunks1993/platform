@@ -229,6 +229,7 @@ export default {
 
 .content-box {
   width: calc(100% - 238px);
+  margin-left: 15px;
 }
 
 </style>
