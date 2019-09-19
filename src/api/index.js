@@ -48,6 +48,12 @@ export const deleteUserGwPage = params => request({
   method: 'delete',
   params,
 });
+// 修改用户管理列表
+export const putUserEdit = params => request({
+  url: '/v1/api/user/SysUser/edit',
+  method: 'put',
+  params,
+});
 // 重置用户管理密码
 export const postresetPwd = params => request({
   url: '/v1/api/user/SysUser/resetPwd',
@@ -63,6 +69,48 @@ export const getSysRoleList = params => request({
 // 删除角色管理列表
 export const deleteRoleGwPage = params => request({
   url: '/v1/role/delete',
+  method: 'delete',
+  params,
+});
+// 新增角色管理列表
+export const putRoleAdd = params => request({
+  url: '/v1/role/add',
+  method: 'put',
+  params,
+});
+// 修改角色管理列表
+export const putRoleEdit = params => request({
+  url: '/v1/role/edit',
+  method: 'put',
+  params,
+});
+// 搜索菜单管理列表
+export const getMenuList = params => request({
+  url: '/v1/menu/list',
+  method: 'get',
+  params,
+});
+// 根据条件搜索菜单管理列表
+export const getQueryByList = params => request({
+  url: '/v1/menu/queryByList',
+  method: 'get',
+  params,
+});
+// 新增菜单管理列表
+export const putMenuAdd = params => request({
+  url: '/v1/menu/add',
+  method: 'put',
+  params,
+});
+// 修改菜单管理列表
+export const putMenuEdit = params => request({
+  url: '/v1/menu/edit',
+  method: 'put',
+  params,
+});
+// 删除菜单管理列表
+export const getMenuDelete = params => request({
+  url: '/v1/menu/delete',
   method: 'delete',
   params,
 });
@@ -84,18 +132,19 @@ export const queryGwPage = params => request({
   method: 'get',
   params,
 });
-// 修改岗位管理列表
-export const putSysDeptEdit = params => request({
-  url: '/v1/api/dept/SysDept/edit',
-  method: 'put',
-  params,
-});
 // 删除部门管理列表
 export const deleteSysDeptRomove = params => request({
   url: '/v1/api/dept/SysDept/remove',
   method: 'delete',
   params,
 });
+// 修改部门管理列表
+export const putSysDeptEdit = params => request({
+  url: '/v1/api/dept/SysDept/edit',
+  method: 'put',
+  params,
+});
+
 // 删除岗位管理列表
 export const deleteGwPage = params => request({
   url: '/v1/manage/post/remove',
