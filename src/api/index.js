@@ -126,6 +126,12 @@ export const postSysDeptAdd = params => request({
   method: 'post',
   params,
 });
+// 查询岗位管理列表
+export const queryGwPage = params => request({
+  url: '/v1/manage/post/list',
+  method: 'get',
+  params,
+});
 // 删除部门管理列表
 export const deleteSysDeptRomove = params => request({
   url: '/v1/api/dept/SysDept/remove',
@@ -138,51 +144,46 @@ export const putSysDeptEdit = params => request({
   method: 'put',
   params,
 });
-// 查询岗位管理列表
-export const queryGwPage = params => request({
-  url: '/v1/manage/post/queryByPage',
-  method: 'get',
-  params,
-});
+
 // 删除岗位管理列表
 export const deleteGwPage = params => request({
-  url: '/v1/manage/post/delete',
+  url: '/v1/manage/post/remove',
   method: 'delete',
   params,
 });
 // 编辑岗位管理列表
 export const editorGwPage = params => request({
-  url: '/v1/manage/post/update/{postCode}',
+  url: '/v1/manage/post/edit/{postCode}',
   method: 'put',
   params,
 });
 // 新增岗位管理列表
 export const addGwPage = params => request({
-  url: '/v1/manage/post/insert',
+  url: '/v1/manage/post/add',
   method: 'post',
   params,
 });
 // 查询字典管理列表
 export const queryDictPage = params => request({
-  url: '/v1/dictionaries/dictType/queryByPage',
+  url: '/v1/dictionaries/dictType/list',
   method: 'get',
   params,
 });
 // 编辑字典管理列表
 export const editorDictPage = params => request({
-  url: '/v1/dictionaries/dictType/update/{dictId}',
+  url: '/v1/dictionaries/dictType/edit/{dictId}',
   method: 'put',
   params,
 });
 // 新增字典管理列表
 export const addDictPage = params => request({
-  url: '/v1/dictionaries/dictType/insert',
+  url: '/v1/dictionaries/dictType/add',
   method: 'post',
   params,
 });
 // 删除字典管理列表
 export const deleteDictPage = params => request({
-  url: '/v1/dictionaries/dictType/delete',
+  url: '/v1/dictionaries/dictType/remove',
   method: 'delete',
   params,
 });
@@ -204,6 +205,12 @@ export const clearOperLPage = params => request({
   method: 'post',
   params,
 });
+// 查询操作日志列表的操作类型条件
+export const selectTypePage = params => request({
+  url: '/v1/dictionaries/dictData/selectByDictType',
+  method: 'get',
+  params,
+});
 // 查询登录日志列表
 export const queryLoginPage = params => request({
   url: '/v1/logininfor/list',
@@ -221,4 +228,11 @@ export const clearLoginPage = params => request({
   url: '/v1/logininfor/clean',
   method: 'post',
   params,
+});
+
+// 清空登录日志列表
+export const downloadFile = url => request({
+  url,
+  method: 'get',
+  responseType: 'blob',
 });
