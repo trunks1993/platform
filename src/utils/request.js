@@ -23,6 +23,7 @@ service.interceptors.request.use((config) => {
 // respone拦截器
 service.interceptors.response.use(
   ({ data }) => {
+    if (data instanceof Blob) return data;
     if (data.code == '0') {
       return data.data;
     } if (data.code == 1) {

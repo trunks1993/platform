@@ -111,7 +111,7 @@ export default {
   mixins: [mixin],
   data() {
     return {
-      baseExpApi: "http://192.168.0.105:9091/uumsApi/v1/manage/post/export",
+      baseExpApi: "/v1/manage/post/export",
       fqForm: [
         {
           fiAttr: {

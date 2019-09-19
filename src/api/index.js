@@ -229,3 +229,10 @@ export const clearLoginPage = params => request({
   method: 'post',
   params,
 });
+
+// 清空登录日志列表
+export const downloadFile = url => request({
+  url,
+  method: 'get',
+  responseType: 'blob',
+});
