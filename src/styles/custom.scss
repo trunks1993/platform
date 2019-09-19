@@ -149,7 +149,7 @@ $green: #0ebae1;
     font-size: 13px;
     height: 28px;
     line-height: 28px;
-    vertical-align: top;
+    vertical-align: bottom;
     border: none;
     cursor: pointer;
     margin: 0;
@@ -165,7 +165,7 @@ $green: #0ebae1;
     display: inline-block;
     // user-select: none;
     // list-style: none;
-    vertical-align: top;
+    vertical-align: bottom;
     font-size: 0;
     padding: 0;
     margin: 0;
@@ -176,6 +176,7 @@ $green: #0ebae1;
       background-color: $navy;
       min-width: 30px;
       border-radius: 2px;
+      vertical-align: bottom;
       height: 28px;
       line-height: 28px;
       text-align: center;
@@ -346,5 +347,15 @@ $green: #0ebae1;
     &__label {
       font-size: 14px;
     }
+  }
+}
+
+.el-popover {
+  border-radius: 2px;
+  padding: 0;
+  background: $navy;
+  border: 1px solid #02439d;
+  .popper__arrow {
+    display: none;
   }
 }
