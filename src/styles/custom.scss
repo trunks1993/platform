@@ -101,6 +101,30 @@ $green: #0ebae1;
       }
     }
   }
+  .cell {
+    white-space: normal;
+    word-break: break-all;
+    line-height: 23px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__expand-icon {
+    position: relative;
+    cursor: pointer;
+    color: #c0c4cc;
+    transition: transform 0.2s ease-in-out;
+    height: 20px;
+    display: inline-block;
+    width: 20px;
+    line-height: 20px;
+    text-align: center;
+    margin-right: 3px;
+    &--expanded {
+      transform: rotate(90deg);
+    }
+  }
+  // &__expand-icon
 }
 
 // 表单样式
@@ -293,7 +317,7 @@ $green: #0ebae1;
     .title {
       margin: 0 20px;
       font-size: 24px;
-      color: #63ACDF;
+      color: #63acdf;
     }
   }
   .el-dialog__headerbtn {
@@ -320,29 +344,29 @@ $green: #0ebae1;
     white-space: nowrap;
     outline: none;
     &__content {
-        display: flex;
-        align-items: center;
-        height: 26px;
+      display: flex;
+      align-items: center;
+      height: 26px;
+      cursor: pointer;
+      &:hover {
+        background-color: none;
+        color: $green;
+      }
+      & > .el-tree-node__expand-icon {
+        padding: 6px;
         cursor: pointer;
-        &:hover {
-          background-color: none;
-          color: $green;
-        }
-        & > .el-tree-node__expand-icon {
-            padding: 6px;
-            cursor: pointer;
-            color: #C0C4CC;
-            font-size: 12px;
-            transform: rotate(0deg);
-            transition: transform 0.3s ease-in-out;          
-        }
-        .is-leaf {
-          color: transparent;
-          cursor: default;
-        }
-        .expanded {
-          transform: rotate(90deg);
-        }
+        color: #c0c4cc;
+        font-size: 12px;
+        transform: rotate(0deg);
+        transition: transform 0.3s ease-in-out;
+      }
+      .is-leaf {
+        color: transparent;
+        cursor: default;
+      }
+      .expanded {
+        transform: rotate(90deg);
+      }
     }
     &__label {
       font-size: 14px;
