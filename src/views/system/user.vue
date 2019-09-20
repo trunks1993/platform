@@ -17,16 +17,16 @@
             <i class="comm refresh"></i>
             <i class="comm select"></i>
           </div>
-        </div> -->
+        </div>-->
         <div class="org-box-header">
           <label style="font-size: 14px;">组织机构</label>
         </div>
-        
-        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+
+        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClicks"></el-tree>
       </div>
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus"  @click="roleAdds">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="roleAdds">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-import">导入</el-button>
@@ -49,7 +49,7 @@
             <el-table-column prop="surCreateTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="220">
               <template slot-scope="scope">
-                <el-button  type="text" @click="editor(scope.row)">编辑</el-button>
+                <el-button type="text" @click="editor(scope.row)">编辑</el-button>
                 <el-button type="text" @click="deleted(scope.row.surUserId)">删除</el-button>
                 <el-button type="text-warn" @click="resetPassword(scope.row)">重置</el-button>
               </template>
@@ -69,20 +69,19 @@
           ></el-pagination>
         </div>
       </div>
-
     </div>
-     <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible">
       <div slot="title" class="dailog-title">
-        <img src="../../assets/images/icon-title-left.png" alt="">
+        <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
-        <img src="../../assets/images/icon-title-right.png" alt="">
+        <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-       <el-form :model="form" :inline="true">
+      <el-form :model="form" :inline="true">
         <el-form-item label="用户名称" :label-width="formLabelWidth">
           <el-input v-model="form.surUserName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="归属部门" :label-width="formLabelWidth">
-          <el-input v-model="form.surDeptId" autocomplete="off"></el-input>
+          <el-input v-model="form.surDeptId" @focus="sectoralChoice = true" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机号码" :label-width="formLabelWidth">
           <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
@@ -102,8 +101,8 @@
               v-for="item in options"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="用户性别" :label-width="formLabelWidth">
@@ -113,25 +112,29 @@
         <el-form-item label="用户状态" :label-width="formLabelWidth">
           <el-switch v-model="form.surStatus"></el-switch>
         </el-form-item>
-        
+
         <el-form-item label="角 色" :label-width="formLabelWidth">
           <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="(item, index) in cities" :label="item.key" :key="index">{{item.name}}</el-checkbox>
+            <el-checkbox
+              v-for="(item, index) in cities"
+              :label="item.key"
+              :key="index"
+            >{{item.name}}</el-checkbox>
           </el-checkbox-group>
-        </el-form-item> 
+        </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary"  @click="preservation()">保 存</el-button>
+        <el-button type="primary" @click="preservation()">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
     </el-dialog>
     <el-dialog :visible.sync="dialogFormVisiblespass">
-       <div slot="title" class="dailog-title">
-        <img src="../../assets/images/icon-title-left.png" alt="">
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">重置密码</span>
-        <img src="../../assets/images/icon-title-right.png" alt="">
+        <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="passWordForm"  :inline="true">
+      <el-form :model="passWordForm" :inline="true">
         <el-form-item label="登录名称：" :label-width="formLabelWidth">
           <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
@@ -146,21 +149,35 @@
     </el-dialog>
     <!-- 删除弹框 -->
     <el-dialog :visible.sync="dialogVisible">
-        <div slot="title" class="dailog-title">
-            <img src="../../assets/images/icon-title-left.png" alt />
-            <span class="title">系统提示信息</span>
-            <img src="../../assets/images/icon-title-right.png" alt />
-        </div>
-        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
-        <div slot="footer" style="text-align: center;">
-            <el-button type="primary" @click="sure">确 定</el-button>
-            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
-        </div>
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt />
+        <span class="title">系统提示信息</span>
+        <img src="../../assets/images/icon-title-right.png" alt />
+      </div>
+      <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+      <div slot="footer" style="text-align: center;">
+        <el-button type="primary" @click="sure">确 定</el-button>
+        <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!-- 部门选择 -->
+    <el-dialog :visible.sync="sectoralChoice">
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt />
+        <span class="title">部门选择</span>
+        <img src="../../assets/images/icon-title-right.png" alt />
+      </div>
+      <div style="width:100%;color:#63ACDF;text-align:center;">
+        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+      </div>
+      <div slot="footer" style="text-align: center;">
+        <el-button type="primary" @click="sectoralChoice = false">确 定</el-button>
+        <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 <script>
-
 import {
   getSysUserList,
   getSysDeptTreeData,
@@ -176,7 +193,7 @@ export default {
   data() {
     return {
       baseExpApi: "/v1/api/user/SysUser/export",
-      type:0,
+      type: 0,
       fqForm: [
         {
           fiAttr: {
@@ -205,9 +222,13 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "surStatus",
-          option: [{ label: "正常", value: 0 }, { label: "禁用", value: 1 }]
+          option: [
+            { label: "所有", value: "" },
+            { label: "正常", value: 0 },
+            { label: "禁用", value: 1 }
+          ]
         }
-        
+
         // {
         //   fiAttr: {
         //     label: "创建时间"
@@ -217,35 +238,40 @@ export default {
         // }
       ],
       checkedCities: [],
-      options: [{
-          value: '1',
-          label: '董事长'
-        }, {
-          value: '2',
-          label: '项目经理'
-        }, {
-          value: '3',
-          label: '人力资源'
-        }, {
-          value: '4',
-          label: '普通员工'
-        }],
+      options: [
+        {
+          value: "1",
+          label: "董事长"
+        },
+        {
+          value: "2",
+          label: "项目经理"
+        },
+        {
+          value: "3",
+          label: "人力资源"
+        },
+        {
+          value: "4",
+          label: "普通员工"
+        }
+      ],
       valuefox: [],
-      cities:  [{name: '管理员', key: 0}, {name: '操作员', key: 1}],
+      cities: [{ name: "管理员", key: 0 }, { name: "操作员", key: 1 }],
       isIndeterminate: true,
-      passWordForm:{
-        surLoginName :"",
-        surPassword:"",
+      passWordForm: {
+        surLoginName: "",
+        surPassword: ""
       },
       tableData: [],
       value1: true,
       multipleSelection: [],
       radio: "1",
       dialogFormVisible: false,
-      dialogFormVisiblespass:false,
+      dialogFormVisiblespass: false,
       formLabelWidth: "120px",
       data: [],
-      postIds:[],
+      postIds: [],
       form: {
         surUserName: "",
         surDeptId: "",
@@ -254,15 +280,17 @@ export default {
         surLoginName: "",
         surPassword: "",
         resource: "",
-        surSex: '0',
-        form:"0",
+        surSex: "0",
+        form: "0"
       },
       defaultProps: {
         children: "children",
         label: "sdtDeptName"
       },
-      dialogVisible:false,
-      ids:'',
+      bmId: "",
+      sectoralChoice: false,
+      dialogVisible: false,
+      ids: ""
     };
   },
   components: {
@@ -281,63 +309,72 @@ export default {
   },
   methods: {
     handleCheckAllChange(val) {
-        this.checkedCities = val ? cityOptions : [];
-        this.isIndeterminate = false;
-      },
-      handleCheckedCitiesChange(value) {
-        let checkedCount = value.length;
-        this.checkAll = checkedCount === this.cities.length;
-        this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
-      },
+      this.checkedCities = val ? cityOptions : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedCitiesChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.cities.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.cities.length;
+    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     preservation(type) {
-      console.log(this.postIds)
-      console.log(this.checkedCities)
-      if(JSON.stringify(this.obj) == '{}'){//新增
-               this.addAsk();
-         }else{//编辑
-                this.saveAsk();
-         }  
+      console.log(this.postIds);
+      console.log(this.checkedCities);
+      if (JSON.stringify(this.obj) == "{}") {
+        //新增
+        this.addAsk();
+      } else {
+        //编辑
+        this.saveAsk();
+      }
       this.dialogFormVisible = false;
     },
-    addAsk(){
-        this.form.roleIds = this.checkedCities.toString();
-        this.form.postIds = this.postIds.toString();
-        this.form.surStatus = this.form.surStatus == true ? 0:1;
-        getSysUserAdd(this.form).then(res => {
-          this.$message({
-            type: "success",
-            message: "新增成功!"
-          });
+    addAsk() {
+      this.form.roleIds = this.checkedCities.toString();
+      this.form.postIds = this.postIds.toString();
+      this.form.surStatus = this.form.surStatus == true ? 0 : 1;
+      this.form.surDeptId = this.bmId;
+      getSysUserAdd(this.form).then(res => {
+        this.$message({
+          type: "success",
+          message: "新增成功!"
         });
+        this.query();
+        this.form = {};
+      });
     },
-    saveAsk(){
-      let status = this.form.surStatus == true ? 0:1;
+    saveAsk() {
+      let status = this.form.surStatus == true ? 0 : 1;
       let roleIds = this.checkedCities.toString();
       let postIds = this.postIds.toString();
+      let bmId = this.bmId;
       let obj = {
-          surLoginName:this.form.surUserName,
-          surDeptId:this.form.surDeptId,
-          surEmail:this.form.surEmail,
-          surPhoneNumber:this.form.surPhoneNumber,
-          surSex:this.form.surSex,
-          surRemark:this.form.surRemark,
-          roleIds:roleIds,
-          postIds:postIds,
-          surStatus:status,
-          surUserId:this.form.surUserId,
-          // surUserId:
-          // roleIds:
-          // postIds:
-        }
-        putUserEdit(obj).then(res => {
-          this.$message({
-            type: "success",
-            message: "修改成功!"
-          });
+        surLoginName: this.form.surUserName,
+        surDeptId: bmId,
+        surEmail: this.form.surEmail,
+        surPhoneNumber: this.form.surPhoneNumber,
+        surSex: this.form.surSex,
+        surRemark: this.form.surRemark,
+        roleIds: roleIds,
+        postIds: postIds,
+        surStatus: status,
+        surUserId: this.form.surUserId
+        // surUserId:
+        // roleIds:
+        // postIds:
+      };
+      putUserEdit(obj).then(res => {
+        this.$message({
+          type: "success",
+          message: "修改成功!"
         });
+        this.query();
+        this.form = {};
+      });
     },
     exported() {
       //导出
@@ -348,7 +385,10 @@ export default {
       //批量删除
       console.log(this.multipleSelection);
       let selectArr = [];
-      if (typeof this.multipleSelection == "undefined" || this.multipleSelection.length == 0) {
+      if (
+        typeof this.multipleSelection == "undefined" ||
+        this.multipleSelection.length == 0
+      ) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
@@ -381,7 +421,10 @@ export default {
       });
     },
     revise() {
-      if (typeof this.multipleSelection == "undefined" || this.multipleSelection.length == 0) {
+      if (
+        typeof this.multipleSelection == "undefined" ||
+        this.multipleSelection.length == 0
+      ) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
@@ -397,24 +440,25 @@ export default {
       this.dialogVisible = true;
       this.ids = ids;
     },
-    sure(){//确认删除
-        deleteUserGwPage({ ids: this.ids }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            this.dialogVisible = false;
-            this.query();
-          });
+    sure() {
+      //确认删除
+      deleteUserGwPage({ ids: this.ids }).then(res => {
+        this.$message({
+          type: "success",
+          message: "删除成功!"
+        });
+        this.dialogVisible = false;
+        this.query();
+      });
     },
-    roleAdds(){
+    roleAdds() {
       this.dialogFormVisible = true;
       this.form = {};
       this.obj = {};
     },
     editor(rows) {
       //编辑
-      console.log(rows)
+      console.log(rows);
       // this.checkedCities = rows.
       this.dialogFormVisible = true;
       this.form = rows;
@@ -430,12 +474,16 @@ export default {
       //显示隐藏查询切换
       this.isSearch = !this.isSearch;
     },
-    handleNodeClick(data) {
-      console.log(data.sdtDeptId)
-      getSysUserList(data.surDeptId).then(res=>{
-        console.log(res)
+    handleNodeClicks(data) {
+      console.log(data.sdtDeptId);
+      getSysUserList(data.surDeptId).then(res => {
+        console.log(res);
         //  this.tableDataList = res.rows;
-      })
+      });
+    },
+    handleNodeClick(data) {
+      this.form.surDeptId = data.sdtDeptName;
+      this.bmId = data.sdtDeptId;
     }
   }
 };
