@@ -1,5 +1,5 @@
-@import './element-variables.scss';
-@import './iconfont.scss';
+@import "./element-variables.scss";
+@import "./iconfont.scss";
 
 body {
   height: 100%;
@@ -30,10 +30,12 @@ html {
 *:focus {
   outline: none;
 }
-// ul {
-//   user-select: none;
-//   list-style: none;
-// }
+
+ul {
+  user-select: none;
+  list-style: none;
+}
+
 *::-webkit-scrollbar {
   width: 16px;
 }
@@ -46,43 +48,14 @@ html {
   background-color: #0154c7;
 }
 
-// sider-bar
 .sider-bar {
-  & > ul {
+  .el-menu {
     height: 100%;
     overflow-y: scroll;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-  .el-menu {
     background-color: transparent;
     border-right: none;
-    i {
+    &::-webkit-scrollbar {
       display: none;
-    }
-    li[class*="is-opened el-submenu-parent"] {
-      background: url("../assets/images/menu-title-bg-expand.png") no-repeat;
-      background-size: 100% 100%;
-      .sub-title-line {
-        display: block;
-        width: 80%;
-        height: 1px;
-        background: #00d6fd;
-        margin: auto;
-      }
-    }
-    .el-menu-item {
-      color: #fff;
-      // padding: 0 0!important;
-      &:hover,
-      &:focus {
-        background-color: transparent;
-      }
-      &:focus {
-        color: $azure;
-        background-color: transparent;
-      }
     }
     .el-submenu-parent {
       background: url("../assets/images/menu-title-bg.png") no-repeat;
@@ -96,22 +69,54 @@ html {
         text-align: center;
         height: 54px;
         line-height: 54px;
+        padding: 0 !important;
+        & > i {
+          display: none;
+        }
+        & + ul {
+          padding-left: 45px;
+        }
       }
-      & > ul > div > li {
-        padding-left: 0;
-        text-align: center;
+    }
+    .el-menu-item {
+      color: #fff;
+      &:hover,
+      &:focus {
+        background-color: transparent;
+      }
+      &:focus {
+        color: $azure;
+        background-color: transparent;
+      }
+    }
+
+    li[class*="is-opened el-submenu-parent"] {
+      background: url("../assets/images/menu-title-bg-expand.png") no-repeat;
+      background-size: 100% 100%;
+      .sub-title-line {
+        display: block;
+        width: 80%;
+        height: 1px;
+        background: #00d6fd;
+        margin: auto;
       }
     }
     .el-submenu__title {
       color: #fff;
-      // padding: 0 0!important;
       &:hover {
         background-color: transparent;
+      }
+      .el-submenu__icon-arrow {
+        position: absolute;
+        top: 8px;
+        color: #4baefd;
+        &:before {
+          content: "\eb6d";
+        }
       }
     }
   }
 }
-
 .common-container {
   height: 100%;
   color: #fff;

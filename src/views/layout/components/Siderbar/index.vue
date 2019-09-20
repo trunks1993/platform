@@ -29,7 +29,7 @@ export default {
   width: 269px;
   height: 100%;
   padding: 40px 20px 20px;
-  background: url(../../../../assets/sideBar-bgTwo.png);
+  background: url(../../../../assets/images/sideBar-bg.png);
   background-size: 100% 100%;
 }
 </style>
