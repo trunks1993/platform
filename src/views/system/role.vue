@@ -39,7 +39,7 @@
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row)">编辑</el-button>
                 <el-button type="text" @click="editdialog(scope.row)">数据权限</el-button>
-                <el-button type="text-warn" @click="resetPassword(scope.row)">分配用户</el-button>
+                <el-button type="text-warn" @click="assignUsers(scope.row)">分配用户</el-button>
                 <el-button type="text-warn" @click="deleted(scope.row.roleId)">删除</el-button>
               </template>
             </el-table-column>
@@ -122,7 +122,7 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;">
-        <el-form :model="editForm" :inline="true" style="height: 400px; overflow: auto;">
+        <el-form :model="editForm" :inline="true">
           <el-form-item label="角色名称" :label-width="formLabelWidth">
             <el-input v-model="editForm.roleName" autocomplete="off"></el-input>
           </el-form-item>
@@ -139,7 +139,7 @@
             </el-select>
           </el-form-item>
           <!-- <el-form-item label="数据权限" prop="region">
-            <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+            <el-tree :data="data" :props="defaultPropsTree" @node-click="handleNodeClick"></el-tree>
           </el-form-item>-->
         </el-form>
       </div>
@@ -211,6 +211,10 @@ export default {
       data: [],
       defaultProps: {
         children: "children",
+        label: "menuName"
+      },
+      defaultPropsTree: {
+        children: "children",
         label: "sdtDeptName"
       },
       tableData: [],
@@ -252,10 +256,6 @@ export default {
       total: 10,
       isSearch: true,
       deptIds: [],
-      defaultProps: {
-        children: "children",
-        label: "sdtDeptName"
-      }
     };
   },
   components: {
@@ -479,6 +479,9 @@ export default {
       console.log(data);
       // this.form.surDeptId = data.sdtDeptName;
       // this.bmId = data.sdtDeptId;
+    },
+    assignUsers(rows){ //分配用户
+      console.log(rows)
     }
   }
 };
