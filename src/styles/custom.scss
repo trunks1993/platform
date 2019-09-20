@@ -124,7 +124,10 @@ $green: #0ebae1;
       transform: rotate(90deg);
     }
   }
-  // &__expand-icon
+  &__placeholder {
+    display: inline-block;
+    width: 20px;
+  }
 }
 
 // 表单样式
@@ -134,6 +137,9 @@ $green: #0ebae1;
     margin-right: 120px;
     &__label {
       color: #fff !important;
+    }
+    &__content {
+      min-width: 250px;
     }
   }
 }
@@ -154,6 +160,31 @@ $green: #0ebae1;
     line-height: 30px;
     font-size: inherit;
     padding: 0 15px;
+    transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    &:focus {
+      border-color: $azure;
+    }
+  }
+}
+
+.el-textarea {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  vertical-align: bottom;
+  font-size: 14px;
+  &__inner {
+    display: block;
+    resize: vertical;
+    padding: 5px 15px;
+    line-height: 1.5;
+    width: 100%;
+    font-size: inherit;
+    color: #606266;
+    background-color: $navy;
+    background-image: none;
+    border: 1px solid #02439d;
+    border-radius: 4px;
     transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     &:focus {
       border-color: $azure;
