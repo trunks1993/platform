@@ -26,7 +26,7 @@
         <div class="content-box-tool">
           <el-button type="tool" icon="el-icon-plus" @click="addInfo">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <!-- <el-button type="tool" icon="el-icon-export">展开/折叠</el-button> -->
+          <el-button type="tool" icon="el-icon-export">展开/折叠</el-button>
         </div>
         <div class="content-box-table">
           <el-table
@@ -216,6 +216,8 @@ export default {
       dialogVisible: false,
       ids: "",
       data: [],
+      dialogVisible: false,
+      ids: "",
       isSearch: true
     };
   },
@@ -338,7 +340,7 @@ export default {
           message: "删除成功!"
         });
         this.dialogVisible = false;
-        this.queryDate();
+       this.queryDate();
       });
     },
     handleNodeClick(data) {

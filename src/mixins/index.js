@@ -15,7 +15,6 @@ const mixin = {
   methods: {
     doQuery(queryApi) {
       queryApi(this.queryList).then(({ rows, total }) => {
-        console.log(rows);
         this.tableDataList = rows;
         this.total = +total;
       });

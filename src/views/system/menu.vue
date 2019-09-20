@@ -1,26 +1,14 @@
 <template>
   <div class="common-container">
-    <div
-      class="filter-container"
-      style="height: 159px;background: url(../img/tabs-search-bg.e34485a0.png);background-size: 100% 100%;padding: 20px;"
-    >
-      <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-        <el-form-item label="菜单名称">
-          <el-input v-model="sizeForm.menuName"></el-input>
-        </el-form-item>
-        <el-form-item label="菜单状态">
-          <el-select v-model="sizeForm.visible" placeholder="所有" style="width:245px;">
-            <el-option label="所有" value></el-option>
-            <el-option label="显示" value="0"></el-option>
-            <el-option label="隐藏" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item size="large">
-          <el-button type="primary" @click="search">搜索</el-button>
-          <el-button type="primary" @click="onSubmit">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+
+    <FilterQueryForm
+      :fAttr="{'label-width': '80px'}"
+      :resetBtnVisible="true"
+      :searchBtnVisible="true"
+      :model="fqForm"
+      @afterReset="queryDate"
+      @afterFilter="handleFilter($event, query)"
+    ></FilterQueryForm>
     <div class="app-wrapper">
       <div class="content-box">
         <div class="content-box-tool">
@@ -38,6 +26,7 @@
             <el-table-column label="菜单名称" prop="menuName" />
             <el-table-column label="排序" prop="orderNum" />
             <el-table-column label="资源路径" prop="component" />
+            <el-table-column label="路由" prop="path" />
             <el-table-column label="类型" prop="menuType" />
             <el-table-column label="可见" prop="visible" />
             <el-table-column label="权限标识" prop="perms" />
@@ -49,6 +38,18 @@
               </template>
             </el-table-column>
           </el-table>
+        </div>
+        <div class="content-box-pagination">
+          <el-pagination
+            style="text-align:right;"
+            background
+            layout="prev, pager, next"
+            @size-change="handleSizeChange($event, query)"
+            @current-change="handleCurrentChange($event, query)"
+            :current-page="queryList.pageNum"
+            :page-size="queryList.pageSize"
+            :total="total"
+          ></el-pagination>
         </div>
       </div>
     </div>
@@ -132,7 +133,13 @@ import {
   putMenuEdit
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
+import { mixin } from "@/mixins";
+
 export default {
+  mixins: [mixin],
+  components: {
+    FilterQueryForm
+  },
   data() {
     return {
       baseExpApi:
@@ -140,25 +147,25 @@ export default {
       fqForm: [
         {
           fiAttr: {
-            label: "角色名称"
+            label: "菜单名称"
           },
           el: "input",
           elAttr: {
             type: "text"
           },
-          bindKey: "roleName"
+          bindKey: "menuName"
         },
         {
           fiAttr: {
-            label: "角色状态"
+            label: "菜单状态"
           },
           el: "select",
           elAttr: {},
-          bindKey: "status",
+          bindKey: "visible",
           option: [
             { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "停用", value: 1 }
+            { label: "显示", value: 0 },
+            { label: "隐藏", value: 1 }
           ]
         }
         // {
@@ -203,8 +210,10 @@ export default {
       data: []
     };
   },
-  components: {
-    FilterQueryForm
+  computed: {
+    query() {
+      return this.doQuery.bind(this, getQueryByList);
+    }
   },
   created() {
     this.queryDate();
@@ -258,26 +267,8 @@ export default {
       console.log(val);
       this.multipleSelection = val;
     },
-    onSubmit() {
-      this.queryDate();
-    },
-    search() {
-      getQueryByList(this.sizeForm).then(res => {
-        this.tableDataList = res.rows;
-        res.rows.forEach(item => {
-          console.log();
-          if (item.menuType == "M") {
-            this.tableDataList.menuType = "目录";
-          } else if (item.menuType == "C") {
-            this.tableDataList.menuType = "菜单";
-          } else if (item.menuType == "F") {
-            this.tableDataList.menuType = "按钮";
-          }
-        });
-        console.log(this.tableData);
-      });
-    },
     queryDate() {
+      this.total = 1;
       getMenuList(this.sizeForm).then(res => {
         console.log(res);
         res.forEach(item => {
