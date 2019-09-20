@@ -77,25 +77,25 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <el-form :model="form" :inline="true">
-        <el-form-item label="用户名称" :label-width="formLabelWidth">
+        <el-form-item label="用户名称" label-width="120px">
           <el-input v-model="form.surUserName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="归属部门" :label-width="formLabelWidth">
+        <el-form-item label="归属部门" label-width="120px">
           <el-input v-model="form.surDeptId" @focus="sectoralChoice = true" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="手机号码" :label-width="formLabelWidth">
+        <el-form-item label="手机号码" label-width="120px">
           <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮 箱" :label-width="formLabelWidth">
+        <el-form-item label="邮 箱" label-width="120px">
           <el-input v-model="form.surEmail" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录帐号" :label-width="formLabelWidth">
+        <el-form-item label="登录帐号" label-width="120px">
           <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录密码" :label-width="formLabelWidth">
+        <el-form-item label="登录密码" label-width="120px">
           <el-input v-model="form.surPassword" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="岗 位" :label-width="formLabelWidth">
+        <el-form-item label="岗 位" label-width="120px">
           <el-select v-model="postIds" multiple placeholder="请选择">
             <el-option
               v-for="item in options"
@@ -105,15 +105,15 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="用户性别" :label-width="formLabelWidth">
+        <el-form-item label="用户性别" label-width="120px">
           <el-radio v-model="form.surSex" label="1">男</el-radio>
           <el-radio v-model="form.surSex" label="2">女</el-radio>
         </el-form-item>
-        <el-form-item label="用户状态" :label-width="formLabelWidth">
+        <el-form-item label="用户状态" label-width="120px">
           <el-switch v-model="form.surStatus"></el-switch>
         </el-form-item>
 
-        <el-form-item label="角 色" :label-width="formLabelWidth">
+        <el-form-item label="角 色" label-width="120px">
           <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
             <el-checkbox
               v-for="(item, index) in cities"
@@ -135,10 +135,10 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <el-form :model="passWordForm" :inline="true">
-        <el-form-item label="登录名称：" :label-width="formLabelWidth">
+        <el-form-item label="登录名称：" label-width="120px">
           <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="输入密码：" :label-width="formLabelWidth">
+        <el-form-item label="输入密码：" label-width="120px">
           <el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -269,7 +269,6 @@ export default {
       radio: "1",
       dialogFormVisible: false,
       dialogFormVisiblespass: false,
-      formLabelWidth: "120px",
       data: [],
       postIds: [],
       form: {

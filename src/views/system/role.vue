@@ -66,20 +66,20 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <el-form :model="form" :inline="true" style="height: 400px; overflow: auto;">
-        <el-form-item label="角色名称：" :label-width="formLabelWidth">
+        <el-form-item label="角色名称：" label-width="120px">
           <el-input v-model="form.roleName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="权限字符：" :label-width="formLabelWidth">
+        <el-form-item label="权限字符：" label-width="120px">
           <el-input v-model="form.roleKey" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="显示顺序：" :label-width="formLabelWidth">
+        <el-form-item label="显示顺序：" label-width="120px">
           <el-input v-model="form.roleSort" autocomplete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="状态：" :label-width="formLabelWidth">
+        <el-form-item label="状态：" label-width="120px">
           <el-switch v-model="form.status"></el-switch>
         </el-form-item>
-        <el-form-item label="菜单权限" :label-width="formLabelWidth">
+        <el-form-item label="菜单权限" label-width="120px">
           <el-tree
             :data="data"
             show-checkbox
@@ -92,7 +92,7 @@
             style="top: 7px;"
           ></el-tree>
         </el-form-item>
-        <el-form-item label="备注：" :label-width="formLabelWidth">
+        <el-form-item label="备注：" label-width="120px">
           <el-input v-model="form.remark" autocomplete="off" type="textarea"></el-input>
         </el-form-item>
       </el-form>
@@ -121,28 +121,27 @@
         <span class="title">数据权限</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;">
-        <el-form :model="editForm" :inline="true" style="height: 400px; overflow: auto;">
-          <el-form-item label="角色名称" :label-width="formLabelWidth">
-            <el-input v-model="editForm.roleName" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="权限字符" :label-width="formLabelWidth">
-            <el-input v-model="editForm.roleKey" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="数据范围" prop="region" :label-width="formLabelWidth">
-            <el-select v-model="editForm.dataScope" placeholder="请选择活动区域">
-              <el-option label="全部数据权限" value="0"></el-option>
-              <el-option label="自定数据权限" value="1"></el-option>
-              <el-option label="本部门数据权限" value="2"></el-option>
-              <el-option label="本部门及以下数据权限" value="3"></el-option>
-              <el-option label="仅本人数据权限" value="4"></el-option>
-            </el-select>
-          </el-form-item>
-          <!-- <el-form-item label="数据权限" prop="region">
+      <el-form :model="editForm" :inline="true" style="height: 400px; overflow: auto;">
+        <el-form-item label="角色名称" label-width="120px">
+          <el-input v-model="editForm.roleName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="权限字符" label-width="120px">
+          <el-input v-model="editForm.roleKey" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="数据范围" prop="region" label-width="120px">
+          <el-select v-model="editForm.dataScope" placeholder="请选择活动区域">
+            <el-option label="全部数据权限" value="0"></el-option>
+            <el-option label="自定数据权限" value="1"></el-option>
+            <el-option label="本部门数据权限" value="2"></el-option>
+            <el-option label="本部门及以下数据权限" value="3"></el-option>
+            <el-option label="仅本人数据权限" value="4"></el-option>
+          </el-select>
+        </el-form-item>
+        <!-- <el-form-item label="数据权限" prop="region">
             <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-          </el-form-item>-->
-        </el-form>
-      </div>
+        </el-form-item>-->
+      </el-form>
+      <!-- </div> -->
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="sureEdit">确 定</el-button>
         <el-button type="primary" @click="editdialogVisible = false">取 消</el-button>
@@ -213,7 +212,6 @@ export default {
         children: "children",
         label: "sdtDeptName"
       },
-      tableData: [],
       editForm: {
         roleName: "",
         roleKey: "",
@@ -226,7 +224,6 @@ export default {
       },
       value1: true,
       multipleSelection: [],
-      formLabelWidth: "120px",
       dialogFormVisible: false,
       editdialogVisible: false,
       sizeForm: {
