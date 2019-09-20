@@ -226,7 +226,7 @@ export const deleteLoginPage = params => request({
 // 清空登录日志列表
 export const clearLoginPage = params => request({
   url: '/v1/logininfor/clean',
-  method: 'post',
+  method: 'put',
   params,
 });
 // 导出

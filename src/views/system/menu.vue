@@ -193,7 +193,7 @@ export default {
     handleClick(row) {
       console.log(row);
     },
-    toggleSelection(rows) {
+    toggleSelection(rows) {console.log(rows)
       if (rows) {
         rows.forEach(row => {
           this.$refs.multipleTable.toggleRowSelection(row);
