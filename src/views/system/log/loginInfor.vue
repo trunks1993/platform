@@ -55,7 +55,7 @@
             <span class="title">系统提示信息</span>
             <img src="../../../assets/images/icon-title-right.png" alt />
         </div>
-        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">{{content}}</div>
         <div slot="footer" style="text-align: center;">
             <el-button type="primary" @click="sure">确 定</el-button>
             <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
@@ -120,6 +120,8 @@ export default {
       formLabelWidth: "120px",
       dialogVisible:false,
       ids:'',
+      content:'',
+      isClear:true,
     };
   },
   components: {
@@ -130,65 +132,59 @@ export default {
   },
   computed: {
     query() {
-      return this.doQuery.bind(this, queryLoginPage);
+        return this.doQuery.bind(this, queryLoginPage);
     }
   },
   methods: {
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
+    handleSelectionChange(val) {//勾选数据
+        this.multipleSelection = val;
     },
-    batchDelete() {
-      //批量删除
-      let selectArr = [];
-      if (typeof this.multipleSelection == "undefined") {
-        this.$message({
-          message: "请选择需要删除的数据！",
-          type: "warning"
-        });
-      } else {
-        this.multipleSelection.forEach((v, i) => {
-          selectArr.push(v.slrInfoId);
-        });
-        this.deleted(selectArr.join(","));
-      }
-    },
-    deleted(ids) {
-      //删除
-      this.dialogVisible = true;
-      this.ids = ids;
-    },
-    sure(){//确认删除
-        deleteLoginPage({ ids: this.ids }).then(res => {
+    batchDelete() {//批量删除
+        let selectArr = [];
+        if (typeof this.multipleSelection == "undefined") {
             this.$message({
-              type: "success",
-              message: "删除成功!"
+                message: "请选择需要删除的数据！",
+                type: "warning"
             });
-            this.dialogVisible = false;
-            this.query();
-          });
+        } else {
+            this.multipleSelection.forEach((v, i) => {
+                selectArr.push(v.slrInfoId);
+            });
+            this.deleted(selectArr.join(","));
+        }
+    },
+    deleted(ids) { //删除
+        this.dialogVisible = true;
+        this.isClear = false;
+        this.content = '确定要删除数据吗？';
+        this.ids = ids;
     },
     clearLog() { //清空日志
-      this.$confirm("确认清除数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          clearLoginPage({}).then(res => {
-            this.$message({
-              type: "success",
-              message: "清除成功!"
+        this.dialogVisible = true;
+        this.isClear = true;
+        this.content = '确定要清空所有数据？';
+    },
+    sure(){//确认
+        if(this.isClear){//清空接口
+            clearLoginPage({}).then(res => {
+                this.$message({
+                type: "success",
+                message: "清除成功!"
+                });
+                this.dialogVisible = false;
+                this.query();
             });
-            this.query();
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消清除"
-          });
-        });
-    }
+        }else{//删除接口
+            deleteLoginPage({ ids: this.ids }).then(res => {
+                this.$message({
+                type: "success",
+                message: "删除成功!"
+                });
+                this.dialogVisible = false;
+                this.query();
+            });
+        } 
+    },
   }
 };
 </script>

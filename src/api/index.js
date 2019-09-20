@@ -226,13 +226,36 @@ export const deleteLoginPage = params => request({
 // 清空登录日志列表
 export const clearLoginPage = params => request({
   url: '/v1/logininfor/clean',
-  method: 'post',
+  method: 'put',
   params,
 });
-
-// 清空登录日志列表
+// 导出
 export const downloadFile = url => request({
   url,
   method: 'get',
   responseType: 'blob',
+});
+// 新增字典数据管理列表
+export const addDicDatePage = params => request({
+  url: '/v1/dictionaries/dictData/add',
+  method: 'post',
+  params,
+});
+// 编辑字典数据管理列表
+export const editorDicDatePage = params => request({
+  url: '/v1/dictionaries/dictData/edit/{dictCode}',
+  method: 'put',
+  params,
+});
+// 查询字典数据管理列表
+export const queryDicDatePage = params => request({
+  url: '/v1/dictionaries/dictData/list',
+  method: 'get',
+  params,
+});
+// 删除字典数据管理列表
+export const deleteDicDatePage = params => request({
+  url: '/v1/dictionaries/dictData/remove',
+  method: 'delete',
+  params,
 });

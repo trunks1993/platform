@@ -94,7 +94,7 @@
             <span class="title">系统提示信息</span>
             <img src="../../../assets/images/icon-title-right.png" alt />
         </div>
-        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">{{content}}？</div>
         <div slot="footer" style="text-align: center;">
             <el-button type="primary" @click="sure">确 定</el-button>
             <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
@@ -220,6 +220,8 @@ export default {
       options: [],
       dialogVisible:false,
       ids:'',
+      content:'',
+      isClear:true,
     };
   },
   components: {
@@ -255,54 +257,48 @@ export default {
     },
     deleted(ids) {
       //删除
-      this.dialogVisible = true;
-      this.ids = ids;
+        this.dialogVisible = true;
+        this.isClear = false;
+        this.content = '确定要删除数据吗？';
+        this.ids = ids;
     },
-    sure(){//确认删除
-        deleteOperLPage({ ids: this.ids }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
+    clearLog(){//清空
+        this.dialogVisible = true;
+        this.isClear = true;
+        this.content = '确定要清空所有数据？';
+    },
+    sure(){//确认
+        if(this.isClear){//清空接口
+            clearOperLPage({}).then(res => {
+                this.$message({
+                type: "success",
+                message: "清除成功!"
+                });
+                this.dialogVisible = false;
+                this.query();
             });
-            this.dialogVisible = false;
-            this.query();
-          });
-    },
-    clearLog() {
-      //清空日志
-      this.$confirm("确认清除数据?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          clearOperLPage({}).then(res => {
-            this.$message({
-              type: "success",
-              message: "清除成功!"
+        }else{//删除接口
+            deleteOperLPage({ ids: this.ids }).then(res => {
+                this.$message({
+                type: "success",
+                message: "删除成功!"
+                });
+                this.dialogVisible = false;
+                this.query();
             });
-            this.query();
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消清除"
-          });
-        });
+        }  
     },
-    selectType() {
-      //操作类型
-      selectTypePage({
-        dictType: "log_oper_type"
-      }).then(res => {
-        res.forEach((item, index) => {
-          var obj = {};
-          obj.label = item.dictLabel;
-          obj.value = item.dictValue;
-          this.options.push(obj);
+    selectType() { //操作类型
+        selectTypePage({
+            dictType: "log_oper_type"
+        }).then(res => {
+            res.forEach((item, index) => {
+            var obj = {};
+            obj.label = item.dictLabel;
+            obj.value = item.dictValue;
+            this.options.push(obj);
+            });
         });
-      });
     },
     lookUp() {
       //详情
