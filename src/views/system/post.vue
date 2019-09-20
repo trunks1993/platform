@@ -204,7 +204,6 @@ export default {
       this.dialogFormVisible = true;
       this.form = rows;
       this.obj = rows;
-      console.log(this.form);
       let status = this.obj.status == "0" ? true : false;
       this.$set(this.form, "state", status); //强制更新form中state的值
     },

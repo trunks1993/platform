@@ -22,7 +22,7 @@
             <el-table-column prop="dictName" label="字典名称"></el-table-column>
             <el-table-column prop label="字典类型" show-overflow-tooltip>
               <template slot-scope="scope">
-                <span class="type" style="color:#4baefd;cursor: pointer;">{{ scope.row.dictType }}</span>
+                <span class="type" style="color:#4baefd;cursor: pointer;" @click="handDictDate(scope.row)">{{ scope.row.dictType }}</span>
               </template>
             </el-table-column>
             <el-table-column label="状态" show-overflow-tooltip>
@@ -279,6 +279,10 @@ export default {
         this.dialogFormVisible = false;
         this.query();
       });
+    },
+    handDictDate(rows){
+        console.log(rows);
+        this.$router.push('dictDate');
     }
   }
 };
