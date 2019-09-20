@@ -159,7 +159,6 @@ export default {
       formLabelWidth: "120px",
       radio: "1",
       obj: {},
-      isSearch: true,
       dialogVisible:false,
       ids:'',
     };
@@ -176,10 +175,6 @@ export default {
     this.query();
   },
   methods: {
-    toggle() {
-      //显示隐藏查询切换
-      this.isSearch = !this.isSearch;
-    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -211,7 +206,7 @@ export default {
       this.obj = rows;
       console.log(this.form);
       let status = this.obj.status == "0" ? true : false;
-      this.$set(this.form, "state", status); //更新form中state的值
+      this.$set(this.form, "state", status); //强制更新form中state的值
     },
     save() {
       //编辑入参
@@ -237,7 +232,7 @@ export default {
     },
     addAsk() {
       //新增保存
-      this.form.status = this.form.state ? "0" : "1";console.log(this.form)
+      this.form.status = this.form.state ? "0" : "1";
       addGwPage(this.form).then(res => {
         this.$message({
           message: "新增成功！",
@@ -259,6 +254,13 @@ export default {
           type: "warning"
         });
       } else {
+        if(this.multipleSelection.length){
+            this.$message({
+                message: "只能选择一条数据进行修改",
+                type: "warning"
+            });
+            return;
+        }
         this.dialogFormVisible = true;
         this.form = this.multipleSelection.pop(); //获取最后一条
         this.obj = this.multipleSelection.pop();
@@ -277,7 +279,7 @@ export default {
             });
             this.dialogVisible = false;
             this.query();
-          });
+        });
     }
   }
 };

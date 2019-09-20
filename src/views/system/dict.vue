@@ -22,7 +22,7 @@
             <el-table-column prop="dictName" label="字典名称"></el-table-column>
             <el-table-column prop label="字典类型" show-overflow-tooltip>
               <template slot-scope="scope">
-                <span class="type">{{ scope.row.dictType }}</span>
+                <span class="type" style="color:#4baefd;cursor: pointer;">{{ scope.row.dictType }}</span>
               </template>
             </el-table-column>
             <el-table-column label="状态" show-overflow-tooltip>
@@ -38,7 +38,7 @@
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row)">编辑</el-button>
                 <el-button type="text-danger" @click="deleted(scope.row.dictId)">删除</el-button>
-                <el-button type="text" >列表</el-button>
+                <el-button type="text-warn" >列表</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -157,7 +157,6 @@ export default {
       ],
       value: true,
       form: {},
-      isSearch: true,
       dialogFormVisible: false,
       obj: {},
       formLabelWidth: "120px",
@@ -177,10 +176,6 @@ export default {
     }
   },
   methods: {
-    toggle() {
-      //显示隐藏查询切换
-      this.isSearch = !this.isSearch;
-    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -225,6 +220,13 @@ export default {
           type: "warning"
         });
       } else {
+        if(this.multipleSelection.length){
+            this.$message({
+                message: "只能选择一条数据进行修改",
+                type: "warning"
+            });
+            return;
+        }
         this.dialogFormVisible = true;
         this.form = this.multipleSelection.pop(); //获取最后一条
         this.obj = this.multipleSelection.pop();
@@ -242,7 +244,7 @@ export default {
       this.form = rows;
       this.obj = rows;
       let status = this.form.status == "0" ? true : false;
-      this.$set(this.form, "state", status); //更新form中state的值
+      this.$set(this.form, "state", status); //强制更新form中state的值
     },
     save() {
       //编辑入参
