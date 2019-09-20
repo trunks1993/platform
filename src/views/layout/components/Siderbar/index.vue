@@ -1,6 +1,6 @@
 <template>
   <div class="sider-bar">
-    <el-menu router>
+    <el-menu router :default-openeds="['/system']">
         <LoopMenu v-for="route in routers" :key="route.path" :item="route"/>
     </el-menu>
   </div>
