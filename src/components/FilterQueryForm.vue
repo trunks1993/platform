@@ -54,20 +54,10 @@ export default {
               </el-form-item>
             ))
           }
-          {this.resetBtnVisible && (
-            <el-form-item>
-              <el-button type="primary">
-                重置
-              </el-button>
-            </el-form-item>
-          )}
-          {this.searchBtnVisible && (
-            <el-form-item>
-              <el-button type="primary" {...{on: {'click': () => { this.$emit('afterFilter', this.queryFilter) } } }}>
-                查询
-              </el-button>
-            </el-form-item>
-          )}
+          <el-form-item>
+            {this.searchBtnVisible && <el-button type="primary" {...{on: {'click': () => { this.$emit('afterFilter', this.queryFilter) } } }}>查询</el-button> }
+            {this.resetBtnVisible && <el-button type="primary" {...{on: {'click': () => { this.$emit('afterReset') } } }}>重置</el-button> }
+          </el-form-item>
         </el-form>
       </div>
     );
