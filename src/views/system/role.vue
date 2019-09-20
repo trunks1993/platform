@@ -39,7 +39,7 @@
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row)">编辑</el-button>
                 <el-button type="text" @click="editdialog(scope.row)">数据权限</el-button>
-                <el-button type="text-warn" @click="resetPassword(scope.row)">分配用户</el-button>
+                <el-button type="text-warn" @click="assignUsers(scope.row)">分配用户</el-button>
                 <el-button type="text-warn" @click="deleted(scope.row.roleId)">删除</el-button>
               </template>
             </el-table-column>
@@ -210,6 +210,10 @@ export default {
       data: [],
       defaultProps: {
         children: "children",
+        label: "menuName"
+      },
+      defaultPropsTree: {
+        children: "children",
         label: "sdtDeptName"
       },
       editForm: {
@@ -249,10 +253,6 @@ export default {
       total: 10,
       isSearch: true,
       deptIds: [],
-      defaultProps: {
-        children: "children",
-        label: "sdtDeptName"
-      }
     };
   },
   components: {
@@ -476,6 +476,9 @@ export default {
       console.log(data);
       // this.form.surDeptId = data.sdtDeptName;
       // this.bmId = data.sdtDeptId;
+    },
+    assignUsers(rows){ //分配用户
+      console.log(rows)
     }
   }
 };
