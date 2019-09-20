@@ -22,7 +22,7 @@
         <div class="content-box-tool">
         <el-button type="tool" icon="el-icon-plus" @click="addInfo">新增</el-button>
         <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-        <el-button type="tool" icon="el-icon-export">展开/折叠</el-button>
+        <!-- <el-button type="tool" icon="el-icon-export">展开/折叠</el-button> -->
       </div>
         <div class="content-box-table">
           <el-table
@@ -279,7 +279,7 @@ export default {
     },
     revise(){//批量修改
         this.type = 1;
-        if(typeof(this.multipleSelection) == "undefined"){
+        if(typeof(this.multipleSelection) == "undefined"  || this.multipleSelection.length == 0){
             this.$message({
                 message: '请选择需要修改的数据！',
                 type: 'warning'

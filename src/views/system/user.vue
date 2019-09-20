@@ -30,7 +30,7 @@
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-import">导入</el-button>
-          <el-button type="tool" icon="el-icon-export">导出</el-button>
+          <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
         <div class="content-box-table">
           <el-table :data="tableDataList" @selection-change="handleSelectionChange">
@@ -42,14 +42,15 @@
             <el-table-column prop="surPhoneNumber" label="手机"></el-table-column>
             <el-table-column label="用户状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="scope.row.surStatus"></el-switch>
+                <el-switch v-model="value1" v-if="scope.row.surStatus == 0"></el-switch>
+                <el-switch v-else></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="surCreateTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="220">
               <template slot-scope="scope">
-                <el-button  type="text" @click="editor(scope.row)">查看</el-button>
-                <el-button type="text" @click="deleted(scope.row.surUserId)">编辑</el-button>
+                <el-button  type="text" @click="editor(scope.row)">编辑</el-button>
+                <el-button type="text" @click="deleted(scope.row.surUserId)">删除</el-button>
                 <el-button type="text-warn" @click="resetPassword(scope.row)">重置</el-button>
               </template>
             </el-table-column>
@@ -114,7 +115,7 @@
         </el-form-item>
         <el-form-item label="角 色" :label-width="formLabelWidth">
           <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="item in cities" :label="item.key" :key="item">{{item.name}}</el-checkbox>
+            <el-checkbox v-for="(item, index) in cities" :label="item.key" :key="index">{{item.name}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item> 
       </el-form>
@@ -173,6 +174,7 @@ export default {
   mixins: [mixin],
   data() {
     return {
+      baseExpApi: "/v1/api/user/SysUser/export",
       type:0,
       fqForm: [
         {
@@ -303,7 +305,6 @@ export default {
         this.form.roleIds = this.checkedCities.toString();
         this.form.postIds = this.postIds.toString();
         this.form.surStatus = this.form.surStatus == true ? 0:1;
-        console.log(this.form)
         getSysUserAdd(this.form).then(res => {
           this.$message({
             type: "success",
@@ -313,8 +314,8 @@ export default {
     },
     saveAsk(){
       let status = this.form.surStatus == true ? 0:1;
-      
-      let postIds = this.form.postIds
+      let roleIds = this.checkedCities.toString();
+      let postIds = this.postIds.toString();
       let obj = {
           surLoginName:this.form.surUserName,
           surDeptId:this.form.surDeptId,
@@ -323,8 +324,9 @@ export default {
           surSex:this.form.surSex,
           surRemark:this.form.surRemark,
           roleIds:roleIds,
-          postIds:this.form.postIds,
+          postIds:postIds,
           surStatus:status,
+          surUserId:this.form.surUserId,
           // surUserId:
           // roleIds:
           // postIds:
@@ -345,7 +347,7 @@ export default {
       //批量删除
       console.log(this.multipleSelection);
       let selectArr = [];
-      if (typeof this.multipleSelection == "undefined") {
+      if (typeof this.multipleSelection == "undefined" || this.multipleSelection.length == 0) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
@@ -378,8 +380,7 @@ export default {
       });
     },
     revise() {
-      this.type = 1;
-      if (typeof this.multipleSelection == "undefined") {
+      if (typeof this.multipleSelection == "undefined" || this.multipleSelection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"

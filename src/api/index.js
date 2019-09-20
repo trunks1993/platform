@@ -75,7 +75,7 @@ export const deleteRoleGwPage = params => request({
 // 新增角色管理列表
 export const putRoleAdd = params => request({
   url: '/v1/role/add',
-  method: 'put',
+  method: 'post',
   params,
 });
 // 修改角色管理列表

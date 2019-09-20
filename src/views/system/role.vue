@@ -13,7 +13,7 @@
         <el-button type="tool" icon="el-icon-plus" @click="roleAdds">新增</el-button>
         <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
         <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-        <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
+        <!-- <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button> -->
       </div>
       <div class="content-box-table">
         <el-table
@@ -29,16 +29,17 @@
           <el-table-column prop="roleKey" label="权限字符"></el-table-column>
           <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
           <el-table-column label="角色状态" width="120">
-            <template slot-scope="scope">
-              <el-switch v-model="scope.row.status"></el-switch>
+              <template slot-scope="scope">
+                <el-switch v-model="value1" v-if="scope.row.status == 0"></el-switch>
+                <el-switch v-else></el-switch>
             </template>
           </el-table-column>
           <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
           <el-table-column label="操作" width="280">
             <template slot-scope="scope">
               <el-button  type="text" @click="editor(scope.row)">编辑</el-button>
-                <el-button type="text" @click="deleted(scope.row.surUserId)">数据权限</el-button>
-                <el-button type="text-warn" @click="resetPassword(scope.row)">分配用户</el-button>
+                <!-- <el-button type="text" @click="deleted(scope.row.surUserId)">数据权限</el-button> -->
+                <!-- <el-button type="text-warn" @click="resetPassword(scope.row)">分配用户</el-button> -->
                  <el-button type="text-warn" @click="deleted(scope.row.roleId)">删除</el-button>
             </template>
           </el-table-column>
@@ -127,8 +128,7 @@ export default {
   mixins: [mixin],
   data() {
     return {
-      baseExpApi:
-        "http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel",
+      baseExpApi:"http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel",
       fqForm: [
         {
           fiAttr: {
@@ -202,7 +202,8 @@ export default {
       dialogVisible:false,
       ids:'',
       total: 10,
-      isSearch: true
+      isSearch: true,
+      deptIds:[],
     };
   },
   components: {
@@ -273,7 +274,7 @@ export default {
       }
     },
     revise() {
-      if (typeof this.multipleSelection == "undefined") {
+      if (typeof this.multipleSelection == "undefined"  || this.multipleSelection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
@@ -291,6 +292,7 @@ export default {
     },
     sure(){//确认删除
         deleteRoleGwPage({ roleId: this.ids }).then(res => {
+          console.log(res)
             this.$message({
               type: "success",
               message: "删除成功!"
@@ -310,21 +312,37 @@ export default {
       }
     },
     addAsk() {
+      this.form.deptIds = this.deptIds.toString();
+      this.form.status = this.form.status == true ? 0:1;
       putRoleAdd(this.form).then(res => {
         this.$message({
           type: "success",
           message: "新增成功!"
         });
         this.dialogFormVisible = false;
+        this.query();
       });
     },
     saveAsk() {
-      putRoleEdit(this.form).then(res => {
+      this.form.deptIds = this.deptIds.toString();
+      this.form.status = this.form.status == true ? 0:1;
+      let obj = {
+        roleName:this.form.roleName,
+        roleKey:this.form.roleKey,
+        roleSort:this.form.roleSort,
+        status:this.form.status,
+        remark:this.form.remark,
+        deptIds:this.form.deptIds,
+        roleId:this.form.roleId
+      }
+      console.log(this.form)
+      putRoleEdit(obj).then(res => {
         this.$message({
           type: "success",
           message: "修改成功!"
         });
         this.dialogFormVisible = false;
+        this.query();
       });
     },
     handleSizeChange: function(current) {
@@ -370,8 +388,15 @@ export default {
     resetChecked() {
       this.$refs.tree.setCheckedKeys([]);
     },
-    handleCheckChange(data){
-      console.log(data);
+    handleCheckChange(){
+      // console.log(data);
+      let res = this.$refs.tree.getCheckedNodes()
+      let arr = []
+      res.forEach((item) => {
+        arr.push(item.menuId)
+      })
+      console.log(arr)
+      this.deptIds = arr;
     }
   }
 };
