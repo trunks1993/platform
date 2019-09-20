@@ -203,7 +203,7 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "surStatus",
-          option: [{ label: "正常", value: 0 }, { label: "禁用", value: 1 }]
+          option: [{ label: "所有", value: '' }, { label: "正常", value: 0 }, { label: "禁用", value: 1 }]
         }
         
         // {

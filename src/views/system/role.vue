@@ -64,7 +64,7 @@
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt="">
       </div>
-      <el-form :model="form" :inline="true">
+      <el-form :model="form" :inline="true" style="height: 400px; overflow: auto;">
         <el-form-item label="角色名称：" :label-width="formLabelWidth">
           <el-input v-model="form.roleName" autocomplete="off"></el-input>
         </el-form-item>
@@ -74,11 +74,9 @@
         <el-form-item label="显示顺序：" :label-width="formLabelWidth">
           <el-input v-model="form.roleSort" autocomplete="off"></el-input>
         </el-form-item>
+        
         <el-form-item label="状态：" :label-width="formLabelWidth">
           <el-switch v-model="form.status"></el-switch>
-        </el-form-item>
-        <el-form-item label="备注：" :label-width="formLabelWidth">
-          <el-input v-model="form.remark" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="菜单权限" :label-width="formLabelWidth">
           <el-tree
@@ -90,7 +88,11 @@
             highlight-current
             :props="defaultProps"
              @check-change="handleCheckChange"
+             style="top: 7px;"
           ></el-tree>
+        </el-form-item>
+        <el-form-item label="备注：" :label-width="formLabelWidth">
+          <el-input v-model="form.remark" autocomplete="off" type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer"  style="text-align: center;">
