@@ -96,13 +96,6 @@
         <el-form-item label="登录密码" :label-width="formLabelWidth">
           <el-input v-model="form.surPassword" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户性别" :label-width="formLabelWidth">
-          <el-radio v-model="form.surSex" label="1">男</el-radio>
-          <el-radio v-model="form.surSex" label="2">女</el-radio>
-        </el-form-item>
-        <el-form-item label="用户状态" :label-width="formLabelWidth">
-          <el-switch v-model="form.surStatus"></el-switch>
-        </el-form-item>
         <el-form-item label="岗 位" :label-width="formLabelWidth">
           <el-select v-model="postIds" multiple placeholder="请选择">
             <el-option
@@ -113,6 +106,14 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="用户性别" :label-width="formLabelWidth">
+          <el-radio v-model="form.surSex" label="1">男</el-radio>
+          <el-radio v-model="form.surSex" label="2">女</el-radio>
+        </el-form-item>
+        <el-form-item label="用户状态" :label-width="formLabelWidth">
+          <el-switch v-model="form.surStatus"></el-switch>
+        </el-form-item>
+        
         <el-form-item label="角 色" :label-width="formLabelWidth">
           <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
             <el-checkbox v-for="(item, index) in cities" :label="item.key" :key="index">{{item.name}}</el-checkbox>
@@ -138,7 +139,7 @@
           <el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="preservationpassWord()">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisiblespass = false">关 闭</el-button>
       </div>
