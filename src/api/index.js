@@ -126,6 +126,30 @@ export const postSysDeptAdd = params => request({
   method: 'post',
   params,
 });
+// 获取系统管理列表
+export const getSystemList = params => request({
+  url: '/v1/system/list',
+  method: 'get',
+  params,
+});
+// 删除系统管理列表
+export const deleteSystemDelete = params => request({
+  url: '/v1/system/delete',
+  method: 'delete',
+  params,
+});
+// 新增系统管理列表
+export const putSystemAdd = params => request({
+  url: '/v1/system/add',
+  method: 'post',
+  params,
+});
+// 修改系统管理列表
+export const putSystemEdit = params => request({
+  url: '/v1/system/edit',
+  method: 'put',
+  params,
+});
 // 查询岗位管理列表
 export const queryGwPage = params => request({
   url: '/v1/manage/post/list',

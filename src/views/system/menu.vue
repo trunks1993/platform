@@ -149,7 +149,7 @@ export default {
         },
         {
           label: "排序",
-          prop: "name"
+          prop: "orderNum"
         },
         {
           label: "请求地址",
@@ -157,7 +157,7 @@ export default {
         },
         {
           label: "类型",
-          prop: "operator"
+          prop: "menuType"
         },
         {
           label: "可见",
@@ -165,7 +165,7 @@ export default {
         },
         {
           label: "权限标识",
-          prop: "state"
+          prop: "perms"
         }
       ],
       tableDataList: [],
@@ -254,13 +254,33 @@ export default {
       getQueryByList(this.sizeForm).then(res => {
         console.log(res)
         this.tableDataList = res.rows;
+        res.rows.forEach((item)=>{
+          console.log() 
+          if(item.menuType == "M"){
+             this.tableDataList.menuType = "目录";
+          }else if(item.menuType == "C"){
+             this.tableDataList.menuType = "菜单";
+          }else if(item.menuType == "F"){
+             this.tableDataList.menuType = "按钮";
+          }
+        })
         console.log(this.tableData);
       });
     },
     queryDate() {
 		  getMenuList(this.sizeForm).then(res => {
 			  console.log(res)
-				this.tableDataList = res;
+        res.forEach((item)=>{
+          console.log() 
+          if(item.menuType == "M"){
+             res.menuType = "目录";
+          }else if(item.menuType == "C"){
+             res.menuType = "菜单";
+          }else if(item.menuType == "F"){
+             res.menuType = "按钮";
+          }
+        })
+        this.tableDataList = res;
 		  });
     },
     preservation(){
@@ -320,7 +340,7 @@ export default {
     editor(rows) {
       console.log(rows)
       //编辑
-      this.dialogFormVisible = true;
+      this.dialogFormVisible = true;  
       this.form = rows;
       this.obj = rows;
     }

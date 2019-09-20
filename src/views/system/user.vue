@@ -414,6 +414,8 @@ export default {
     },
     editor(rows) {
       //编辑
+      console.log(rows)
+      // this.checkedCities = rows.
       this.dialogFormVisible = true;
       this.form = rows;
       this.obj = rows;
