@@ -21,6 +21,7 @@
             <el-table-column label="菜单名称" prop="menuName" />
             <el-table-column label="排序" prop="orderNum" />
             <el-table-column label="资源路径" prop="component" />
+            <el-table-column label="路由" prop="path" />
             <el-table-column label="类型" prop="menuType" />
             <el-table-column label="可见" prop="visible" />
             <el-table-column label="权限标识" prop="perms" />

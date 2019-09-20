@@ -17,7 +17,7 @@
       </span>
       <span class="item" v-popover:pannel>
         <i class="el-icon-user" />
-        <span>{{userInfo.surLoginName }}</span>
+        <span>{{userInfo.surUserName }}</span>
         <i class="el-icon-down" />
         <!-- <el-button v-popover:popover4 icon="el-icon-down"></el-button> -->
       </span>

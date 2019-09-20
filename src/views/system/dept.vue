@@ -1,29 +1,32 @@
 <template>
   <div class="common-container">
-    <div class="filter-container" style="height: 159px;background: url(../img/tabs-search-bg.e34485a0.png);background-size: 100% 100%;padding: 20px;">
-				<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-					<el-form-item label="部门名称">
-						<el-input v-model="sizeForm.sdtDeptName"></el-input>
-					</el-form-item>
-					<el-form-item label="部门状态">
-						<el-select v-model="sizeForm.sdtStatus" placeholder="所有"  style="width:245px;">
-						<el-option label="正常" value="0"></el-option>
-						<el-option label="停用" value="1"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item size="large">
-						<el-button type="primary" @click="onSubmit">搜索</el-button>
-						<el-button type="primary" @click="reset">重置</el-button>
-					</el-form-item>
-				</el-form>
+    <div
+      class="filter-container"
+      style="height: 159px;background: url(../img/tabs-search-bg.e34485a0.png);background-size: 100% 100%;padding: 20px;"
+    >
+      <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
+        <el-form-item label="部门名称">
+          <el-input v-model="sizeForm.sdtDeptName"></el-input>
+        </el-form-item>
+        <el-form-item label="部门状态">
+          <el-select v-model="sizeForm.sdtStatus" placeholder="所有" style="width:245px;">
+            <el-option label="正常" value="0"></el-option>
+            <el-option label="停用" value="1"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item size="large">
+          <el-button type="primary" @click="onSubmit">搜索</el-button>
+          <el-button type="primary" @click="reset">重置</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <div class="app-wrapper">
       <div class="content-box">
         <div class="content-box-tool">
-        <el-button type="tool" icon="el-icon-plus" @click="addInfo">新增</el-button>
-        <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-        <el-button type="tool" icon="el-icon-export">展开/折叠</el-button>
-      </div>
+          <el-button type="tool" icon="el-icon-plus" @click="addInfo">新增</el-button>
+          <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
+          <el-button type="tool" icon="el-icon-export">展开/折叠</el-button>
+        </div>
         <div class="content-box-table">
           <el-table
             :data="tableDataList"
@@ -38,18 +41,20 @@
               :key="index"
               :label="item.label"
               :prop="item.prop"
-            ></el-table-column> -->
+            ></el-table-column>-->
             <el-table-column label="菜单名称" prop="sdtDeptName"></el-table-column>
             <el-table-column prop="sdtDelFlag" label="排序"></el-table-column>
             <el-table-column label="状态" show-overflow-tooltip>
-                <template slot-scope="scope">
-                    <span :class="[scope.row.sdtStatus == '0'  ? 'normal' : 'stop']">{{scope.row.sdtStatus == '0' ? '正常' : '停用'}}</span>
-                </template>
+              <template slot-scope="scope">
+                <span
+                  :class="[scope.row.sdtStatus == '0'  ? 'normal' : 'stop']"
+                >{{scope.row.sdtStatus == '0' ? '正常' : '停用'}}</span>
+              </template>
             </el-table-column>
             <el-table-column prop="sdtCreateTime" label="创建时间"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button  type="text" @click="editor(scope.row)">编辑</el-button>
+                <el-button type="text" @click="editor(scope.row)">编辑</el-button>
                 <el-button type="text" @click="deptAdd(scope.row)">新增</el-button>
                 <el-button type="text-warn" @click="deleted(scope.row.sdtDeptId)">删除</el-button>
               </template>
@@ -60,9 +65,9 @@
     </div>
     <el-dialog :visible.sync="dialogFormVisible">
       <div slot="title" class="dailog-title">
-        <img src="../../assets/images/icon-title-left.png" alt="">
+        <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
-        <img src="../../assets/images/icon-title-right.png" alt="">
+        <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <el-form :model="form" :inline="true">
         <el-form-item label="上级部门：" :label-width="formLabelWidth">
@@ -95,16 +100,16 @@
     </el-dialog>
     <!-- 删除弹框 -->
     <el-dialog :visible.sync="dialogVisible">
-        <div slot="title" class="dailog-title">
-            <img src="../../assets/images/icon-title-left.png" alt />
-            <span class="title">系统提示信息</span>
-            <img src="../../assets/images/icon-title-right.png" alt />
-        </div>
-        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
-        <div slot="footer" style="text-align: center;">
-            <el-button type="primary" @click="sure">确 定</el-button>
-            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
-        </div>
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt />
+        <span class="title">系统提示信息</span>
+        <img src="../../assets/images/icon-title-right.png" alt />
+      </div>
+      <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+      <div slot="footer" style="text-align: center;">
+        <el-button type="primary" @click="sure">确 定</el-button>
+        <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -114,7 +119,7 @@ import {
   searchSysDeptList,
   postSysDeptAdd,
   deleteSysDeptRomove,
-  putSysDeptEdit 
+  putSysDeptEdit
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -183,7 +188,7 @@ export default {
         sdtEmail: "",
         sdtStatus: "1"
       },
-      type:0,
+      type: 0,
       tableData: [],
       formLabelWidth: "120px",
       dialogFormVisible: false,
@@ -193,8 +198,8 @@ export default {
         sdtStatus: "",
         sdtDeptName: ""
       },
-      dialogVisible:false,
-      ids:'',
+      dialogVisible: false,
+      ids: "",
       isSearch: true
     };
   },
@@ -224,24 +229,27 @@ export default {
         console.log(this.tableData);
       });
     },
-    queryDate() { //获取分页数据
+    queryDate() {
+      //获取分页数据
       getSysDeptTreeData().then(res => {
         this.tableDataList = res;
       });
-	  },
+    },
     reset() {
       //重置输入框数据
       this.sizeForm.sdtDeptName = "";
       this.sizeForm.sdtStatus = "";
     },
     preservation() {
-       if(JSON.stringify(this.obj) == '{}'){//新增
-                this.addAsk();
-         }else{//编辑
-                this.saveAsk();
-         }  
+      if (JSON.stringify(this.obj) == "{}") {
+        //新增
+        this.addAsk();
+      } else {
+        //编辑
+        this.saveAsk();
+      }
     },
-    addAsk(){
+    addAsk() {
       //新增保存
       postSysDeptAdd(this.form).then(res => {
         this.$message({
@@ -251,7 +259,7 @@ export default {
         this.dialogFormVisible = false;
       });
     },
-    saveAsk(){
+    saveAsk() {
       //修改保存
       putSysDeptEdit(this.form).then(res => {
         this.$message({
@@ -267,45 +275,48 @@ export default {
       this.form = rows;
       this.obj = rows;
     },
-    addInfo(){
+    addInfo() {
       this.dialogFormVisible = true;
       this.form = {};
       this.obj = {};
     },
-    deptAdd(rows){ //具体行新增
+    deptAdd(rows) {
+      //具体行新增
       this.dialogFormVisible = true;
       this.form.sdtDeptPid = rows.sdtDeptId;
       this.obj = {};
     },
-    revise(){//批量修改
-        this.type = 1;
-        if(typeof(this.multipleSelection) == "undefined"){
-            this.$message({
-                message: '请选择需要修改的数据！',
-                type: 'warning'
-            });
-        }else{
-          console.log(this.multipleSelection)
-            this.dialogFormVisible = true;
-            this.form = this.multipleSelection.pop();//获取最后一条
-            this.obj = this.multipleSelection.pop();
-        }
+    revise() {
+      //批量修改
+      this.type = 1;
+      if (typeof this.multipleSelection == "undefined") {
+        this.$message({
+          message: "请选择需要修改的数据！",
+          type: "warning"
+        });
+      } else {
+        console.log(this.multipleSelection);
+        this.dialogFormVisible = true;
+        this.form = this.multipleSelection.pop(); //获取最后一条
+        this.obj = this.multipleSelection.pop();
+      }
     },
     deleted(ids) {
       //删除
       this.dialogVisible = true;
       this.ids = ids;
     },
-    sure(){//确认删除
-        deleteSysDeptRomove({ sdtDeptId: this.ids }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            this.dialogVisible = false;
-            this.query();
-          });
-    },
+    sure() {
+      //确认删除
+      deleteSysDeptRomove({ sdtDeptId: this.ids }).then(res => {
+        this.$message({
+          type: "success",
+          message: "删除成功!"
+        });
+        this.dialogVisible = false;
+        this.query();
+      });
+    }
   }
 };
 </script>

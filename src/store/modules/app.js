@@ -228,8 +228,6 @@ export default {
     GenerateRoutes({ commit }) {
       return new Promise((resolve) => {
         getMenuTree().then((res) => {
-          // commit('SET_SIDEBAR', res);
-          // resolve(res);
           const asyncRouterMap = getRouterMap(res);
           commit('SET_ROUTERS', asyncRouterMap);
           const asyncRouterMapCopy = _.clone(asyncRouterMap);
