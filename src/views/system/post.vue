@@ -16,7 +16,7 @@
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
         <div class="content-box-table">
-          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
+          <el-table :data="tableDataList" ref="multipleTable">
             <el-table-column type="selection"></el-table-column>
             <el-table-column prop="postId" label="岗位编号"></el-table-column>
             <el-table-column prop="postCode" label="岗位编码"></el-table-column>
@@ -54,7 +54,7 @@
     </div>
 
     <!-- 弹框 -->
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible" @close="close">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">岗位管理基本信息</span>
@@ -79,7 +79,7 @@
       </el-form>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="save">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+        <el-button type="primary" @click="close">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -161,7 +161,6 @@ export default {
       obj: {},
       dialogVisible:false,
       ids:'',
-      multipleSelection: [], // 选中的数据二维数组
     };
   },
   components: {
@@ -176,19 +175,16 @@ export default {
     this.query();
   },
   methods: {
-    // handleSelectionChange(val) {
-    //   this.multipleSelection = val;
-    // },
     batchDelete() {
       //批量删除
       let selectArr = [];
-      if (typeof this.multipleSelection == "undefined") {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
         });
       } else {
-        this.multipleSelection.forEach((v, i) => {
+        this.$refs.multipleTable.selection.forEach((v, i) => {
           selectArr.push(v.postId);
         });
         this.deleted(selectArr.join(","));
@@ -242,19 +238,15 @@ export default {
         this.query();
       });
     },
-    handleSelectionChange(val) {console.log(val)
-      //多选
-      this.multipleSelection = val;
-    },
     revise() {
       //批量修改
-      if (typeof this.multipleSelection == "undefined") {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
         });
       } else {
-        if(this.multipleSelection.length > 1){
+        if(this.$refs.multipleTable.selection.length > 1){
             this.$message({
                 message: "只能选择一条数据进行修改",
                 type: "warning"
@@ -262,10 +254,10 @@ export default {
             return;
         }
         this.dialogFormVisible = true;
-        let status = this.obj.status == "0" ? true : false;console.log(this.form);
+        this.form = this.$refs.multipleTable.selection[0]; //获取最后一条
+        this.obj = this.$refs.multipleTable.selection[0];
+        let status = this.form.status == "0" ? true : false;
         this.$set(this.form, "state", status); //强制更新form中state的值
-        this.form = this.multipleSelection.pop(); //获取最后一条
-        this.obj = this.multipleSelection.pop();
       }
     },
     deleted(ids) {
@@ -282,6 +274,10 @@ export default {
             this.dialogVisible = false;
             this.query();
         });
+    },
+    close(){//关闭事件
+      this.dialogFormVisible = false;
+      this.query();
     }
   }
 };

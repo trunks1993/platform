@@ -15,7 +15,7 @@
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
         <div class="content-box-table">
-          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
+          <el-table :data="tableDataList" ref="multipleTable">
             <el-table-column type="selection"></el-table-column>
             <el-table-column prop="slrInfoId" label="访问编码"></el-table-column>
             <el-table-column prop="slrLoginName" label="登录名称"></el-table-column>
@@ -122,7 +122,6 @@ export default {
       ids:'',
       content:'',
       isClear:true,
-      multipleSelection: [], // 选中的数据二维数组
     };
   },
   components: {
@@ -137,18 +136,15 @@ export default {
     }
   },
   methods: {
-    handleSelectionChange(val) {//勾选数据
-        this.multipleSelection = val;
-    },
     batchDelete() {//批量删除
         let selectArr = [];
-        if (typeof this.multipleSelection == "undefined") {
+        if (this.$refs.multipleTable.selection.length == 0) {
             this.$message({
                 message: "请选择需要删除的数据！",
                 type: "warning"
             });
         } else {
-            this.multipleSelection.forEach((v, i) => {
+            this.$refs.multipleTable.selection.forEach((v, i) => {
                 selectArr.push(v.slrInfoId);
             });
             this.deleted(selectArr.join(","));

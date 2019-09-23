@@ -16,7 +16,7 @@
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
         <div class="content-box-table">
-          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
+          <el-table :data="tableDataList" ref="multipleTable">
             <el-table-column type="selection"></el-table-column>
             <el-table-column prop="dictCode" label="字典编码"></el-table-column>
             <el-table-column prop="dictLabel" label="字典标签"></el-table-column>
@@ -54,7 +54,7 @@
       </div>
     </div>
     <!-- 弹框 -->
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible" @close="close">
         <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">字典数据基本信息</span>
@@ -86,10 +86,10 @@
                 </el-option> -->
             <!-- </el-select>
         </el-form-item> -->
-        <!-- <el-form-item label="系统默认" :label-width="formLabelWidth">
+        <el-form-item label="系统默认" :label-width="formLabelWidth">
           <el-radio v-model="form.isDefault" label="1" @change="changeSelect">是</el-radio>
           <el-radio v-model="form.isDefault" label="0" @change="changeSelect">否</el-radio>
-        </el-form-item> -->
+        </el-form-item>
         <el-form-item label="状态" :label-width="formLabelWidth">
           <el-switch v-model="form.state"></el-switch>
         </el-form-item>
@@ -99,7 +99,7 @@
       </el-form>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="save()">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+        <el-button type="primary" @click="close">关 闭</el-button>
       </div>
     </el-dialog>
      <!-- 删除弹框 -->
@@ -122,7 +122,8 @@ import {
   queryDicDatePage,
   deleteDicDatePage,
   editorDicDatePage,
-  addDicDatePage
+  addDicDatePage,
+  queryDicDateSelect
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -139,7 +140,7 @@ export default {
           },
           el: "select",
           elAttr: {},
-          bindKey: "dictName",
+          bindKey: "dictValue",
           option: [
             { label: "所有", value: "" },
             { label: "字典名称", value: 1 },
@@ -154,7 +155,7 @@ export default {
           elAttr: {
             type: "number"
           },
-          bindKey: "dictValue"
+          bindKey: "dictLabel"
         },
         {
           fiAttr: {
@@ -180,13 +181,14 @@ export default {
     //   value: true,
       form: {
           isDefault:'',
+          state:false,
       },
       dialogFormVisible: false,
       obj: {},
       formLabelWidth: "120px",
       dialogVisible:false,
       ids:'',
-      multipleSelection: [], // 选中的数据二维数组
+      type:'',
     };
   },
   components: {
@@ -194,6 +196,8 @@ export default {
   },
   created() {
     this.query();
+    this.queryList.dictType = this.$route.query.type;
+    console.log(this.queryList);
   },
   computed: {
     query() {
@@ -204,10 +208,6 @@ export default {
     changeSelect(value){
         //int类型转换为string
         this.radioData=value.toString();
-        console.log(this.radioData);
-    },
-    handleSelectionChange(val) {console.log(val);
-      this.multipleSelection = val;
     },
     change(data) {
       console.log(data);
@@ -215,13 +215,13 @@ export default {
     batchDelete() {
       //批量删除
       let selectArr = [];
-      if (typeof this.multipleSelection == "undefined") {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
         });
       } else {
-        this.multipleSelection.forEach((v, i) => {
+        this.$refs.multipleTable.selection.forEach((v, i) => {
           selectArr.push(v.dictCode);
         });
         this.deleted(selectArr.join(","));
@@ -233,7 +233,7 @@ export default {
       this.ids = ids;
     },
     sure(){//确认删除
-        deleteDicDatePage({ str: this.dictCode }).then(res => {
+        deleteDicDatePage({ str: this.ids }).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
@@ -244,13 +244,13 @@ export default {
     },
     revise() {
       //批量修改
-      if (typeof this.multipleSelection == "undefined") {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
         });
       } else {
-        if(this.multipleSelection.length > 1){
+        if(this.$refs.multipleTable.selection.length > 1){
             this.$message({
                 message: "只能选择一条数据进行修改",
                 type: "warning"
@@ -258,11 +258,11 @@ export default {
             return;
         }
         this.dialogFormVisible = true;
+        this.form = this.$refs.multipleTable.selection[0]; //获取最后一条
+        this.obj = this.$refs.multipleTable.selection[0];
+        delete this.form.params;
         let status = this.form.status == "0" ? true : false;
         this.$set(this.form, "state", status); //强制更新form中state的值
-        this.form = this.multipleSelection.pop(); //获取最后一条
-        this.obj = this.multipleSelection.pop();
-         console.log(this.multipleSelection.pop());
       }
     },
     addInfo() {
@@ -276,16 +276,16 @@ export default {
       this.dialogFormVisible = true;
       this.form = rows;
       this.obj = rows;
+      delete this.form.params;
       let status = this.form.status == "0" ? true : false;
       this.$set(this.form, "state", status); //强制更新form中state的值
-      console.log(this.form);
     },
     save() {
       //编辑入参
       if (JSON.stringify(this.obj) == "{}") {
         //新增
         this.addAsk();
-      } else {
+      } else {console.log(this.form);
         //编辑
         this.saveAsk();
       }
@@ -299,6 +299,8 @@ export default {
           type: "success"
         });
         this.dialogFormVisible = false;
+        let status = this.form.status == "0" ? true : false;
+        this.$set(this.form, "state", status); //强制更新form中state的值
         this.query();
       });
     },
@@ -314,9 +316,18 @@ export default {
         this.query();
       });
     },
+    close(){//关闭事件
+      this.dialogFormVisible = false;
+      this.query();
+    },
     handDictDate(rows){
         console.log(rows);
         // this.$router.push('dictDate');
+    },
+    selectQuery(){//字典名称查询
+        queryDicDateSelect().then(res => {
+            console.log(res);
+        });
     }
   }
 };

@@ -283,3 +283,9 @@ export const deleteDicDatePage = params => request({
   method: 'delete',
   params,
 });
+// 删除字典数据字典名称下拉框数据
+export const queryDicDateSelect = params => request({
+  url: '/v1/dictionaries/dictType/down',
+  method: 'get',
+  params,
+});
