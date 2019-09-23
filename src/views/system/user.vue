@@ -135,10 +135,10 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <el-form :model="passWordForm" :inline="true">
-        <el-form-item label="登录名称：" :label-width="formLabelWidth">
+        <el-form-item label="登录名称" :label-width="formLabelWidth">
           <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="输入密码：" :label-width="formLabelWidth">
+        <el-form-item label="输入密码" :label-width="formLabelWidth">
           <el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>

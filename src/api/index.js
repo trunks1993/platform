@@ -84,6 +84,24 @@ export const putRoleEdit = params => request({
   method: 'put',
   params,
 });
+// 获取分配用户管理列表
+export const getSelectByUser = params => request({
+  url: '/v1/role/selectByUser',
+  method: 'get',
+  params,
+});
+// 获取分配用户管理列表
+export const getInsertUserRole = params => request({
+  url: '/v1/role/insertUserRole',
+  method: 'put',
+  params,
+});
+// 批量删除分配用户管理列表
+export const getDeleteUserRole = params => request({
+  url: '/v1/role/deleteUserRole',
+  method: 'delete',
+  params,
+});
 // 搜索菜单管理列表
 export const getMenuList = params => request({
   url: '/v1/menu/list',

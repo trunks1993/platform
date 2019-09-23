@@ -481,7 +481,7 @@ export default {
       // this.bmId = data.sdtDeptId;
     },
     assignUsers(rows){ //分配用户
-      console.log(rows)
+      this.$router.push({path:'/system/assignUsers',query:{roleId:rows.roleId}});
     }
   }
 };
