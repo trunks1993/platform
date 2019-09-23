@@ -122,6 +122,7 @@ export default {
       ids:'',
       content:'',
       isClear:true,
+      multipleSelection: [], // 选中的数据二维数组
     };
   },
   components: {

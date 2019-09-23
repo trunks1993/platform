@@ -64,14 +64,14 @@
         <span class="title">字典管理基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form">
+      <el-form :model="form" :inline="true">
         <el-form-item label="字典名称" :label-width="formLabelWidth">
           <el-input v-model="form.dictName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="字典类型" :label-width="formLabelWidth">
           <el-input v-model="form.dictType" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="状态" :label-width="formLabelWidth" style="width: 325px;">
+        <el-form-item label="状态" :label-width="formLabelWidth">
           <el-switch v-model="form.state"></el-switch>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" class="inputTextarea">
@@ -155,13 +155,14 @@ export default {
         //   bindkey: "surStatus"
         // }
       ],
-      value: true,
+    //   value: true,
       form: {},
       dialogFormVisible: false,
       obj: {},
       formLabelWidth: "120px",
       dialogVisible:false,
       ids:'',
+      multipleSelection: [], // 选中的数据二维数组
     };
   },
   components: {
@@ -220,7 +221,7 @@ export default {
           type: "warning"
         });
       } else {
-        if(this.multipleSelection.length){
+        if(this.multipleSelection.length > 1){
             this.$message({
                 message: "只能选择一条数据进行修改",
                 type: "warning"
@@ -282,7 +283,7 @@ export default {
     },
     handDictDate(rows){
         console.log(rows);
-        this.$router.push('dictDate');
+        // this.$router.push('dictDate');
     }
   }
 };
