@@ -9,7 +9,8 @@
           <el-input v-model="sizeForm.sdtDeptName"></el-input>
         </el-form-item>
         <el-form-item label="部门状态">
-          <el-select v-model="sizeForm.sdtStatus" placeholder="所有" style="width:245px;">
+          <el-select v-model="sizeForm.sdtStatus" placeholder="请选择" style="width:245px;">
+            <el-option label="所有" value></el-option>
             <el-option label="正常" value="0"></el-option>
             <el-option label="停用" value="1"></el-option>
           </el-select>
@@ -71,7 +72,7 @@
       </div>
       <el-form :model="form" :inline="true">
         <el-form-item label="上级部门：" :label-width="formLabelWidth">
-          <el-input v-model="form.sdtDeptPid" autocomplete="off"></el-input>
+          <el-input v-model="form.sdtDeptPid" @focus="sectoralChoice = true" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="部门名称：" :label-width="formLabelWidth">
           <el-input v-model="form.sdtDeptName" autocomplete="off"></el-input>
@@ -109,6 +110,21 @@
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="sure">确 定</el-button>
         <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!-- 部门选择 -->
+    <el-dialog :visible.sync="sectoralChoice">
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt />
+        <span class="title">部门选择</span>
+        <img src="../../assets/images/icon-title-right.png" alt />
+      </div>
+      <div style="width:100%;color:#63ACDF;text-align:center;">
+        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+      </div>
+      <div slot="footer" style="text-align: center;">
+        <el-button type="primary" @click="sectoralChoice = false">确 定</el-button>
+        <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -153,13 +169,6 @@ export default {
             { label: "停用", value: 1 }
           ]
         }
-        // {
-        //   fiAttr: {
-        //     label: "创建时间"
-        //   },
-        //   el: "date-picker",
-        //   bindkey: "surStatus"
-        // }
       ],
       tableList: [
         {
@@ -188,16 +197,25 @@ export default {
         sdtEmail: "",
         sdtStatus: "1"
       },
+      bmId: "",
       type: 0,
       tableData: [],
       formLabelWidth: "120px",
       dialogFormVisible: false,
+      sectoralChoice: false,
       value1: true,
       multipleSelection: [],
       sizeForm: {
         sdtStatus: "",
         sdtDeptName: ""
       },
+      defaultProps: {
+        children: "children",
+        label: "sdtDeptName"
+      },
+      dialogVisible: false,
+      ids: "",
+      data: [],
       dialogVisible: false,
       ids: "",
       isSearch: true
@@ -232,6 +250,7 @@ export default {
     queryDate() {
       //获取分页数据
       getSysDeptTreeData().then(res => {
+        this.data = res;
         this.tableDataList = res;
       });
     },
@@ -251,22 +270,26 @@ export default {
     },
     addAsk() {
       //新增保存
+      this.form.sdtDeptPid = this.bmId;
       postSysDeptAdd(this.form).then(res => {
         this.$message({
           type: "success",
           message: "新增成功!"
         });
         this.dialogFormVisible = false;
+        this.queryDate();
       });
     },
     saveAsk() {
       //修改保存
+      this.form.sdtDeptPid = this.bmId;
       putSysDeptEdit(this.form).then(res => {
         this.$message({
           type: "success",
           message: "修改成功!"
         });
         this.dialogFormVisible = false;
+        this.queryDate();
       });
     },
     editor(rows) {
@@ -289,7 +312,10 @@ export default {
     revise() {
       //批量修改
       this.type = 1;
-      if (typeof this.multipleSelection == "undefined") {
+      if (
+        typeof this.multipleSelection == "undefined" ||
+        this.multipleSelection.length == 0
+      ) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
@@ -314,8 +340,12 @@ export default {
           message: "删除成功!"
         });
         this.dialogVisible = false;
-        this.query();
+       this.queryDate();
       });
+    },
+    handleNodeClick(data) {
+      this.form.sdtDeptPid = data.sdtDeptName;
+      this.bmId = data.sdtDeptId;
     }
   }
 };

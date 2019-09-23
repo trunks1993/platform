@@ -60,7 +60,7 @@
         <span class="title">岗位管理基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" inline>
+      <el-form :model="form">
         <el-form-item label="岗位名称" :label-width="formLabelWidth">
           <el-input v-model="form.postName" autocomplete="off"></el-input>
         </el-form-item>
@@ -70,7 +70,7 @@
         <el-form-item label="显示顺序" :label-width="formLabelWidth">
           <el-input v-model="form.postSort" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="岗位状态" :label-width="formLabelWidth">
+        <el-form-item label="岗位状态" :label-width="formLabelWidth" style="width: 325px;">
           <el-switch v-model="form.state"></el-switch>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" class="inputTextarea">

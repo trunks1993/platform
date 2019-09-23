@@ -1,5 +1,6 @@
 <template>
   <div class="common-container">
+
     <FilterQueryForm
       :fAttr="{'label-width': '80px'}"
       :resetBtnVisible="true"
@@ -13,10 +14,14 @@
         <div class="content-box-tool">
           <el-button type="tool" icon="el-icon-plus" @click="saveAskfather">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <el-button type="tool" icon="el-icon-export">展开/折叠</el-button>
+          <!-- <el-button type="tool" icon="el-icon-export">展开/折叠</el-button> -->
         </div>
         <div class="content-box-table">
-          <el-table :data="tableDataList" row-key="menuId" @selection-change="handleSelectionChange">
+          <el-table
+            :data="tableDataList"
+            row-key="menuId"
+            @selection-change="handleSelectionChange"
+          >
             <el-table-column type="selection"></el-table-column>
             <el-table-column label="菜单名称" prop="menuName" />
             <el-table-column label="排序" prop="orderNum" />
@@ -28,7 +33,7 @@
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row)">编辑</el-button>
-                <el-button type="text" @click="saveAskhz(scope.row.surUserId)">新增</el-button>
+                <el-button type="text" @click="saveAskhz(scope.row.menuId)">新增</el-button>
                 <el-button type="text-warn" @click="deleted(scope.row.menuId)">删除</el-button>
               </template>
             </el-table-column>
@@ -56,7 +61,7 @@
       </div>
       <el-form :model="form" :inline="true">
         <el-form-item label="上级菜单" label-width="120px">
-          <el-input v-model="form.parentId" autocomplete="off"></el-input>
+          <el-input v-model="form.parentId" @focus="sectoralChoice = true" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="菜单类型" label-width="120px">
           <el-input v-model="form.menuType" autocomplete="off"></el-input>
@@ -85,7 +90,7 @@
       </el-form>
       <div slot="footer" style="text-align: center;">
         <el-button @click="preservation" type="primary">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+        <el-button type="primary" @click="close">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -99,6 +104,21 @@
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="sure">确 定</el-button>
         <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!-- 部门选择 -->
+    <el-dialog :visible.sync="sectoralChoice">
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt />
+        <span class="title">菜单选择</span>
+        <img src="../../assets/images/icon-title-right.png" alt />
+      </div>
+      <div style="width:100%;color:#63ACDF;text-align:center;">
+        <el-tree :data="tableDataList" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+      </div>
+      <div slot="footer" style="text-align: center;">
+        <el-button type="primary" @click="sectoralChoice = false">确 定</el-button>
+        <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -171,15 +191,23 @@ export default {
         visible: "",
         perms: "",
         icon: "",
+        menuId: "",
         component: ""
       },
+      cdId: "",
       sizeForm: {
         menuName: "",
         visible: ""
       },
       dialogVisible: false,
+      sectoralChoice: false,
       ids: "",
-      isSearch: true
+      isSearch: true,
+      defaultProps: {
+        children: "children",
+        label: "menuName"
+      },
+      data: []
     };
   },
   computed: {
@@ -216,11 +244,14 @@ export default {
           message: "删除成功!"
         });
         this.dialogVisible = false;
-        this.query();
+        this.queryDate();
       });
     },
     revise() {
-      if (typeof this.multipleSelection == "undefined") {
+      if (
+        typeof this.multipleSelection == "undefined" ||
+        this.multipleSelection.length == 0
+      ) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
@@ -239,7 +270,19 @@ export default {
     queryDate() {
       this.total = 1;
       getMenuList(this.sizeForm).then(res => {
+        console.log(res);
+        res.forEach(item => {
+          console.log();
+          if (item.menuType == "M") {
+            res.menuType = "目录";
+          } else if (item.menuType == "C") {
+            res.menuType = "菜单";
+          } else if (item.menuType == "F") {
+            res.menuType = "按钮";
+          }
+        });
         this.tableDataList = res;
+        this.data = res.rows;
       });
     },
     preservation() {
@@ -253,12 +296,14 @@ export default {
     },
     addAsk() {
       this.form.visible = this.form.visible == true ? 0 : 1;
+      this.form.parentId = this.cdId;
       putMenuAdd(this.form).then(res => {
         this.$message({
           type: "success",
           message: "新增成功!"
         });
         this.dialogFormVisible = false;
+        this.queryDate();
       });
     },
     saveAsk() {
@@ -286,6 +331,7 @@ export default {
           message: "修改成功!"
         });
         this.dialogFormVisible = false;
+        this.queryDate();
       });
     },
     saveAskfather() {
@@ -304,6 +350,14 @@ export default {
       this.dialogFormVisible = true;
       this.form = rows;
       this.obj = rows;
+    },
+    handleNodeClick(data) {
+      this.form.parentId = data.menuName;
+      this.cdId = data.menuId;
+    },
+    close() {
+      this.dialogFormVisible = false;
+      this.form = {};
     }
   }
 };
