@@ -90,10 +90,22 @@ export const getSelectByUser = params => request({
   method: 'get',
   params,
 });
-// 获取分配用户管理列表
+// 批量新增分配用户角色
 export const getInsertUserRole = params => request({
   url: '/v1/role/insertUserRole',
   method: 'put',
+  params,
+});
+// 查询已授权的分配用户角色
+export const getAllocatedList = params => request({
+  url: '/v1/role/authUser/allocatedList',
+  method: 'get',
+  params,
+});
+// 查询未授权的分配用户角色
+export const getUnallocatedList = params => request({
+  url: '/v1/role/authUser/unallocatedList',
+  method: 'get',
   params,
 });
 // 批量删除分配用户管理列表
@@ -299,5 +311,11 @@ export const queryDicDatePage = params => request({
 export const deleteDicDatePage = params => request({
   url: '/v1/dictionaries/dictData/remove',
   method: 'delete',
+  params,
+});
+// 根据字典类型查询相关字典值数据
+export const getSelectByDictType = params => request({
+  url: '/v1/dictionaries/dictData/selectByDictType',
+  method: 'get',
   params,
 });

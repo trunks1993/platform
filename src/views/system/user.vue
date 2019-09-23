@@ -29,7 +29,7 @@
           <el-button type="tool" icon="el-icon-plus" @click="roleAdds">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <el-button type="tool" icon="el-icon-import">导入</el-button>
+          <!-- <el-button type="tool" icon="el-icon-import">导入</el-button> -->
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
         <div class="content-box-table">
@@ -38,7 +38,7 @@
             <el-table-column label="用户ID" prop="surUserId" width="120"></el-table-column>
             <el-table-column prop="surLoginName" label="登录名称" width="120"></el-table-column>
             <el-table-column prop="surUserName" label="用户名称"></el-table-column>
-            <el-table-column prop="surDeptId" label="部门"></el-table-column>
+            <el-table-column prop="dept.sdtDeptName" label="部门"></el-table-column>
             <el-table-column prop="surPhoneNumber" label="手机"></el-table-column>
             <el-table-column label="用户状态" width="120">
               <template slot-scope="scope">
@@ -77,25 +77,25 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <el-form :model="form" :inline="true">
-        <el-form-item label="用户名称" :label-width="formLabelWidth">
+        <el-form-item label="用户名称" label-width="120px">
           <el-input v-model="form.surUserName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="归属部门" :label-width="formLabelWidth">
+        <el-form-item label="归属部门" label-width="120px">
           <el-input v-model="form.surDeptId" @focus="sectoralChoice = true" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="手机号码" :label-width="formLabelWidth">
+        <el-form-item label="手机号码" label-width="120px">
           <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮 箱" :label-width="formLabelWidth">
+        <el-form-item label="邮 箱" label-width="120px">
           <el-input v-model="form.surEmail" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录帐号" :label-width="formLabelWidth">
+        <el-form-item label="登录帐号" label-width="120px">
           <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录密码" :label-width="formLabelWidth">
+        <el-form-item label="登录密码" label-width="120px">
           <el-input v-model="form.surPassword" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="岗 位" :label-width="formLabelWidth">
+        <el-form-item label="岗 位" label-width="120px">
           <el-select v-model="postIds" multiple placeholder="请选择">
             <el-option
               v-for="item in options"
@@ -105,15 +105,15 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="用户性别" :label-width="formLabelWidth">
+        <el-form-item label="用户性别" label-width="120px">
           <el-radio v-model="form.surSex" label="1">男</el-radio>
           <el-radio v-model="form.surSex" label="2">女</el-radio>
         </el-form-item>
-        <el-form-item label="用户状态" :label-width="formLabelWidth">
+        <el-form-item label="用户状态" label-width="120px">
           <el-switch v-model="form.surStatus"></el-switch>
         </el-form-item>
 
-        <el-form-item label="角 色" :label-width="formLabelWidth">
+        <el-form-item label="角 色" label-width="120px">
           <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
             <el-checkbox
               v-for="(item, index) in cities"
@@ -124,27 +124,27 @@
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="preservation()">保 存</el-button>
+        <el-button type="primary" @click="preservation">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="dialogFormVisiblespass">
+    <el-dialog :visible.sync="dialogFormVisiblespass" @close="close">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">重置密码</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <el-form :model="passWordForm" :inline="true">
-        <el-form-item label="登录名称" :label-width="formLabelWidth">
+        <el-form-item label="登录名称：" label-width="120px">
           <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="输入密码" :label-width="formLabelWidth">
+        <el-form-item label="输入密码：" label-width="120px">
           <el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="preservationpassWord()">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisiblespass = false">关 闭</el-button>
+        <el-button type="primary" @click="preservationpassWord">保 存</el-button>
+        <el-button type="primary" @click="close">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -184,7 +184,8 @@ import {
   deleteUserGwPage,
   postresetPwd,
   getSysUserAdd,
-  putUserEdit
+  putUserEdit,
+  getSelectByDictType
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -269,7 +270,6 @@ export default {
       radio: "1",
       dialogFormVisible: false,
       dialogFormVisiblespass: false,
-      formLabelWidth: "120px",
       data: [],
       postIds: [],
       form: {
@@ -306,6 +306,9 @@ export default {
     getSysDeptTreeData().then(res => {
       this.data = res;
     });
+    getSelectByDictType({dictType:"sys_user_status"}).then(res=>{
+      console.log(res)
+    })
   },
   methods: {
     handleCheckAllChange(val) {
@@ -353,7 +356,8 @@ export default {
       let postIds = this.postIds.toString();
       let bmId = this.bmId;
       let obj = {
-        surLoginName: this.form.surUserName,
+        surUserName: this.form.surUserName,
+        surLoginName: this.form.surLoginName,
         surDeptId: bmId,
         surEmail: this.form.surEmail,
         surPhoneNumber: this.form.surPhoneNumber,
@@ -363,9 +367,6 @@ export default {
         postIds: postIds,
         surStatus: status,
         surUserId: this.form.surUserId
-        // surUserId:
-        // roleIds:
-        // postIds:
       };
       putUserEdit(obj).then(res => {
         this.$message({
@@ -475,15 +476,22 @@ export default {
       this.isSearch = !this.isSearch;
     },
     handleNodeClicks(data) {
-      console.log(data.sdtDeptId);
-      getSysUserList(data.surDeptId).then(res => {
-        console.log(res);
-        //  this.tableDataList = res.rows;
+      let sdtDeptId = parseInt(data.sdtDeptId);
+      getSysUserList({
+        surDeptId: sdtDeptId,
+        pageNum: this.queryList.pageNum,
+        pageSize: this.queryList.pageSize
+      }).then(res => {
+         this.tableDataList = res.rows;
       });
     },
     handleNodeClick(data) {
       this.form.surDeptId = data.sdtDeptName;
       this.bmId = data.sdtDeptId;
+    },
+    close(){ //关闭
+      this.dialogFormVisiblespass = false;
+      this.query();
     }
   }
 };

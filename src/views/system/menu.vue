@@ -53,7 +53,7 @@
         </div>
       </div>
     </div>
-    <el-dialog title="基本信息" :visible.sync="dialogFormVisible">
+    <el-dialog title="基本信息" :visible.sync="dialogFormVisible"  @close="close">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
@@ -219,10 +219,7 @@ export default {
     this.queryDate();
   },
   methods: {
-    handleClick(row) {
-      console.log(row);
-    },
-    toggleSelection(rows) {console.log(rows)
+    toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
           this.$refs.multipleTable.toggleRowSelection(row);
@@ -248,6 +245,7 @@ export default {
       });
     },
     revise() {
+      //修改
       if (
         typeof this.multipleSelection == "undefined" ||
         this.multipleSelection.length == 0
@@ -267,7 +265,7 @@ export default {
       console.log(val);
       this.multipleSelection = val;
     },
-    queryDate() {
+    queryDate() { //数据获取
       this.total = 1;
       getMenuList(this.sizeForm).then(res => {
         console.log(res);
@@ -294,7 +292,7 @@ export default {
         this.saveAsk();
       }
     },
-    addAsk() {
+    addAsk() { //新增
       this.form.visible = this.form.visible == true ? 0 : 1;
       this.form.parentId = this.cdId;
       putMenuAdd(this.form).then(res => {
@@ -306,7 +304,7 @@ export default {
         this.queryDate();
       });
     },
-    saveAsk() {
+    saveAsk() { // 编辑
       // console.log(this.form)
       this.form.visible = this.form.visible == true ? 0 : 1;
       // this.form.systemId = this.form.systemId;
@@ -334,12 +332,12 @@ export default {
         this.queryDate();
       });
     },
-    saveAskfather() {
+    saveAskfather() { //打开新增弹框
       this.dialogFormVisible = true;
       this.form = {};
       this.obj = {};
     },
-    saveAskhz(rows) {
+    saveAskhz(rows) { //打开新增弹框
       this.dialogFormVisible = true;
       this.form.parentId = rows.menuId;
       this.obj = {};
@@ -351,11 +349,12 @@ export default {
       this.form = rows;
       this.obj = rows;
     },
-    handleNodeClick(data) {
+    handleNodeClick(data) { //获取菜单选择树
       this.form.parentId = data.menuName;
       this.cdId = data.menuId;
     },
-    close() {
+    close() { //关闭
+      this.queryDate();
       this.dialogFormVisible = false;
       this.form = {};
     }

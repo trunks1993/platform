@@ -1,12 +1,17 @@
 <template>
   <div class="common-container">
-    <FilterQueryForm
-      :fAttr="{'label-width': '80px'}"
-      :resetBtnVisible="false"
-      :searchBtnVisible="true"
-      :model="fqForm"
-      @afterFilter="handleFilter($event, query)"
-    ></FilterQueryForm>
+     <el-form :model="allocatedListForm" :inline="true" style="height: 159px;background: url(../img/tabs-search-bg.e34485a0.png);background-size: 100% 100%;padding: 20px;">
+      <el-form-item label="登录名称" :label-width="'120px'">
+        <el-input v-model="allocatedListForm.surLoginName" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="手机号码" :label-width="'120px'">
+        <el-input v-model="allocatedListForm.surPhoneNumber" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item size="large">
+        <el-button type="primary" @click="allocatedListSearch">搜索</el-button>
+        <el-button type="primary" @click="reset">重置</el-button>
+      </el-form-item>
+    </el-form>
     <div class="app-wrapper">
       <div class="content-box">
         <div class="content-box-tool">
@@ -61,17 +66,18 @@
         <el-form-item label="登录名称" :label-width="'120px'">
           <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="权限字符" :label-width="'120px'">
+        <el-form-item label="手机号码" :label-width="'120px'">
           <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item size="large">
-          <el-button type="primary" @click="onSubmit">搜索</el-button>
+        <el-form-item size="large" style="margin-left:120px">
+          <el-button type="primary" @click="unSearch">搜索</el-button>
           <el-button type="primary" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table
+      <div style="padding: 0px 40px">
+        <el-table
         ref="multipleTable"
-        :data="tableDataList"
+        :data="unTableDataList"
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change="handleSelectionChangeSon"
@@ -84,6 +90,7 @@
         <el-table-column label="用户状态" prop="surStatus"></el-table-column>
         <el-table-column prop="surCreateTime" label="创建时间" show-overflow-tooltip></el-table-column>
       </el-table>
+      </div>
       <div slot="footer" style="text-align: center;">
         <el-button @click="preservation" type="primary">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
@@ -111,7 +118,9 @@ import {
   getSysRoleList,
   getMenuList,
   deleteRoleGwPage,
-  getDeleteUserRole
+  getDeleteUserRole,
+  getAllocatedList,
+  getUnallocatedList,
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -120,34 +129,17 @@ export default {
   data() {
     return {
       tableDataList: [],
+      unTableDataList:[],
       baseExpApi:
         "http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel",
-      fqForm: [
-        {
-          fiAttr: {
-            label: "角色名称"
-          },
-          el: "input",
-          elAttr: {
-            type: "text"
-          },
-          bindKey: "roleName"
-        },
-        {
-          fiAttr: {
-            label: "手机号码"
-          },
-          el: "input",
-          elAttr: {
-            type: "number"
-          },
-          bindKey: "roleKey"
-        }
-      ],
       data: [],
       dialogFormVisible: false,
       dialogVisible: false,
       form: {
+        surLoginName: "",
+        surPhoneNumber: "",
+      },
+      allocatedListForm: {
         surLoginName: "",
         surPhoneNumber: "",
       },
@@ -170,6 +162,7 @@ export default {
   },
   computed: {},
   created() {
+    console.log(this.$route.query.roleId)
     this.roleId = this.$route.query.roleId;
     this.query();
     getMenuList(this.sizeForm).then(res => {
@@ -239,9 +232,26 @@ export default {
     },
     roleAdds(){ //添加用户
         this.dialogFormVisible = true;
+        getUnallocatedList({surRoleId:this.roleId}).then(res=>{
+          console.log(res)
+          this.unTableDataList = res.rows;
+        })
     },
     preservation(){ //保存
-
+        let selectArr = [];
+        this.multipleSelectionSon.forEach((v, i) => {
+          selectArr.push(v.surUserId);
+        });
+        selectArr.join(",")
+        let selectArrSon = selectArr.toString();
+        getInsertUserRole({roleId:this.roleId,userIds:selectArrSon}).then(res=>{
+          this.dialogFormVisible = false;
+          this.$message({
+              type: "success",
+              message: "添加用户成功!"
+          });
+          this.query()
+        })
     },
     sure(){ //删除
         console.log(this.ids);
@@ -263,12 +273,22 @@ export default {
                 });
             })
         }
+        this.query()
     },
-    onSubmit(){
-
+    allocatedListSearch(){
+      this.allocatedListForm.surRoleId = this.roleId;
+      getAllocatedList(this.allocatedListForm).then(res=>{
+        this.tableDataList = res.rows;
+      })
     },
-    reset(){
-
+    unSearch(){
+      getUnallocatedList({
+        surRoleId:this.roleId,
+        surLoginName:this.form.surLoginName,
+        surPhoneNumber:this.form.surPhoneNumber,
+      }).then(res=>{
+        this.unTableDataList = res.rows;
+      })
     }
   }
 };
