@@ -30,8 +30,7 @@
             <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
             <el-table-column label="角色状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="value1" v-if="scope.row.status == 0"></el-switch>
-                <el-switch v-else></el-switch>
+                <el-switch v-model="scope.row.status" active-value="0" inactive-value="1"></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
@@ -75,19 +74,19 @@
         <el-form-item label="显示顺序：" label-width="120px">
           <el-input v-model="form.roleSort" autocomplete="off"></el-input>
         </el-form-item>
-
         <el-form-item label="状态：" label-width="120px">
-          <el-switch v-model="form.status"></el-switch>
+         <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
         </el-form-item>
         <el-form-item label="菜单权限" label-width="120px">
           <el-tree
             :data="data"
             show-checkbox
-            node-key="id"
+            node-key="menuId"
             width="500px"
             ref="tree"
             highlight-current
             :props="defaultProps"
+            :default-checked-keys="treeSelection"
             @check-change="handleCheckChange"
             style="top: 7px;"
           ></el-tree>
@@ -253,6 +252,7 @@ export default {
       total: 10,
       isSearch: true,
       deptIds: [],
+      treeSelection:[],
     };
   },
   components: {
@@ -366,7 +366,6 @@ export default {
     },
     addAsk() {
       this.form.deptIds = this.deptIds.toString();
-      this.form.status = this.form.status == true ? 0 : 1;
       putRoleAdd(this.form).then(res => {
         this.$message({
           type: "success",
@@ -378,7 +377,6 @@ export default {
     },
     saveAsk() {
       this.form.deptIds = this.deptIds.toString();
-      this.form.status = this.form.status == true ? 0 : 1;
       let obj = {
         roleName: this.form.roleName,
         roleKey: this.form.roleKey,
@@ -422,6 +420,8 @@ export default {
     editor(rows) {
       //编辑
       this.dialogFormVisible = true;
+      this.treeSelection.push(Number(rows.dataScope));
+      console.log(this.treeSelection)
       console.log(rows);
       this.form = rows;
       this.obj = rows;
@@ -483,128 +483,4 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.role {
-  color: #fff;
-  height: 100%;
-  .tabs-search {
-    height: 175px;
-    margin-bottom: 12px;
-    background: url(../../assets/images/tabs-search-bg.png);
-    background-size: 100% 100%;
-    .search {
-      width: 100%;
-      height: 150px;
-      padding: 28px 20px;
-    }
-  }
-  .dashboard-content {
-    height: calc(100% - 187px);
-    width: 100%;
-    display: flex;
-    .organization {
-      width: 223px;
-      height: 100%;
-    }
-    .table-content {
-      width: 100%;
-      height: 100%;
-      background: url(../../assets/images/table-content-bg.png);
-      background-size: 100% 100%;
-      padding: 22px 34px;
-      box-sizing: border-box;
-      .tableHead {
-        height: 70px;
-        .button {
-          width: 90px;
-          height: 36px;
-          line-height: 36px;
-          background: #05254b;
-          margin-right: 20px;
-          float: left;
-          border-radius: 4px;
-          text-align: right;
-          padding-right: 20px;
-          cursor: pointer;
-        }
-        .button::before {
-          content: "";
-          width: 14px;
-          height: 14px;
-          display: inline-block;
-          background-image: url(../../assets/icon.png);
-          background-position: -57px 792px;
-          margin-right: 6px;
-        }
-        .button:nth-child(2):before {
-          background-position: -57px 770px;
-        }
-        .button:nth-child(3):before {
-          background-position: -57px 749px;
-        }
-        .button:nth-child(4):before {
-          background-position: -57px 726px;
-        }
-        .button:nth-child(5):before {
-          background-position: -57px 704px;
-        }
-        .operation {
-          width: 210px;
-          height: 36px;
-          background: #05254b;
-          border: 1px solid #02439d;
-          float: right;
-          display: flex;
-          div {
-            width: 25%;
-            height: 28px;
-            margin-top: 4px;
-            position: relative;
-            cursor: pointer;
-            span {
-              width: 14px;
-              height: 14px;
-              display: inline-block;
-              background-image: url(../../assets/icon.png);
-              background-position: -57px 422px;
-              position: absolute;
-              left: 50%;
-              margin-left: -7px;
-              top: 50%;
-              margin-top: -7px;
-            }
-          }
-          div::before {
-            content: "";
-            width: 1px;
-            height: 28px;
-            display: inline-block;
-            background: linear-gradient(
-              0deg,
-              rgba(1, 84, 199, 0) 0%,
-              rgba(1, 84, 199, 1) 42%,
-              rgba(1, 84, 199, 0) 100%
-            );
-          }
-          div:nth-child(1):before {
-            width: 0;
-          }
-          div:nth-child(2) span {
-            background-position: -57px 376px;
-          }
-          div:nth-child(3) span {
-            background-position: -57px 331px;
-          }
-          div:nth-child(4) span {
-            background-position: -57px 288px;
-          }
-        }
-      }
-      .table {
-        width: 100%;
-        height: calc(100% - 165px);
-        overflow: auto;
-      }
-    }
-  }
-}
+

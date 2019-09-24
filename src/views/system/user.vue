@@ -110,7 +110,7 @@
           <el-radio v-model="form.surSex" label="2">女</el-radio>
         </el-form-item>
         <el-form-item label="用户状态" label-width="120px">
-          <el-switch v-model="form.surStatus"></el-switch>
+          <el-switch v-model="form.status"></el-switch>
         </el-form-item>
 
         <el-form-item label="角 色" label-width="120px">
@@ -463,6 +463,8 @@ export default {
       // this.checkedCities = rows.
       this.dialogFormVisible = true;
       this.form = rows;
+      this.form.status = this.form.status == "0" ? true : false;
+      console.log(this.form.status)
       this.obj = rows;
     },
     getSysUserList() {

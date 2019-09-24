@@ -338,6 +338,7 @@ export default {
       this.obj = {};
     },
     saveAskhz(rows) { //打开新增弹框
+    console.log(rows)
       this.dialogFormVisible = true;
       this.form.parentId = rows.menuId;
       this.obj = {};
