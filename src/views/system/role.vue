@@ -30,7 +30,7 @@
             <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
             <el-table-column label="角色状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="scope.row.status" on-value="0" off-value="1"  @change="changeSwitch(scope.row)"></el-switch>
+                <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" ></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
@@ -270,9 +270,6 @@ export default {
     });
   },
   methods: {
-    changeSwitch (data) {//switch开关切换
-      console.log(data)
-    },
     handleClick(row) {
       console.log(row);
     },
