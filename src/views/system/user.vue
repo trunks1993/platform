@@ -29,7 +29,7 @@
           <el-button type="tool" icon="el-icon-plus" @click="roleAdds">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <el-button type="tool" icon="el-icon-import">导入</el-button>
+          <!-- <el-button type="tool" icon="el-icon-import">导入</el-button> -->
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
         <div class="content-box-table">
@@ -38,7 +38,7 @@
             <el-table-column label="用户ID" prop="surUserId" width="120"></el-table-column>
             <el-table-column prop="surLoginName" label="登录名称" width="120"></el-table-column>
             <el-table-column prop="surUserName" label="用户名称"></el-table-column>
-            <el-table-column prop="surDeptId" label="部门"></el-table-column>
+            <el-table-column prop="dept.sdtDeptName" label="部门"></el-table-column>
             <el-table-column prop="surPhoneNumber" label="手机"></el-table-column>
             <el-table-column label="用户状态" width="120">
               <template slot-scope="scope">
@@ -123,11 +123,11 @@
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="preservation()">保 存</el-button>
+        <el-button type="primary" @click="preservation">保 存</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="dialogFormVisiblespass">
+    <el-dialog :visible.sync="dialogFormVisiblespass" @close="close">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">重置密码</span>
@@ -142,8 +142,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="preservationpassWord()">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisiblespass = false">关 闭</el-button>
+        <el-button type="primary" @click="preservationpassWord">保 存</el-button>
+        <el-button type="primary" @click="close">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -183,7 +183,8 @@ import {
   deleteUserGwPage,
   postresetPwd,
   getSysUserAdd,
-  putUserEdit
+  putUserEdit,
+  getSelectByDictType
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -304,6 +305,9 @@ export default {
     getSysDeptTreeData().then(res => {
       this.data = res;
     });
+    getSelectByDictType({dictType:"sys_user_status"}).then(res=>{
+      console.log(res)
+    })
   },
   methods: {
     handleCheckAllChange(val) {
@@ -351,7 +355,8 @@ export default {
       let postIds = this.postIds.toString();
       let bmId = this.bmId;
       let obj = {
-        surLoginName: this.form.surUserName,
+        surUserName: this.form.surUserName,
+        surLoginName: this.form.surLoginName,
         surDeptId: bmId,
         surEmail: this.form.surEmail,
         surPhoneNumber: this.form.surPhoneNumber,
@@ -361,9 +366,6 @@ export default {
         postIds: postIds,
         surStatus: status,
         surUserId: this.form.surUserId
-        // surUserId:
-        // roleIds:
-        // postIds:
       };
       putUserEdit(obj).then(res => {
         this.$message({
@@ -473,15 +475,22 @@ export default {
       this.isSearch = !this.isSearch;
     },
     handleNodeClicks(data) {
-      console.log(data.sdtDeptId);
-      getSysUserList(data.surDeptId).then(res => {
-        console.log(res);
-        //  this.tableDataList = res.rows;
+      let sdtDeptId = parseInt(data.sdtDeptId);
+      getSysUserList({
+        surDeptId: sdtDeptId,
+        pageNum: this.queryList.pageNum,
+        pageSize: this.queryList.pageSize
+      }).then(res => {
+         this.tableDataList = res.rows;
       });
     },
     handleNodeClick(data) {
       this.form.surDeptId = data.sdtDeptName;
       this.bmId = data.sdtDeptId;
+    },
+    close(){ //关闭
+      this.dialogFormVisiblespass = false;
+      this.query();
     }
   }
 };
