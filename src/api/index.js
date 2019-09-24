@@ -313,6 +313,14 @@ export const deleteDicDatePage = params => request({
   method: 'delete',
   params,
 });
+
+// 删除字典数据字典名称下拉框数据
+export const queryDicDateSelect = params => request({
+  url: '/v1/dictionaries/dictType/down',
+  method: 'get',
+  params,
+});
+
 // 根据字典类型查询相关字典值数据
 export const getSelectByDictType = params => request({
   url: '/v1/dictionaries/dictData/selectByDictType',

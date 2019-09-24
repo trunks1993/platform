@@ -15,7 +15,7 @@
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
         </div>
         <div class="content-box-table">
-          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
+          <el-table :data="tableDataList" ref="multipleTable">
             <el-table-column type="selection"></el-table-column>
             <el-table-column prop="operId" label="日志编号"></el-table-column>
             <el-table-column prop="title" label="系统模块"></el-table-column>
@@ -212,7 +212,7 @@ export default {
         //   bindkey: "surStatus"
         // }
       ],
-      value: true,
+    //   value: true,
       form: {},
       obj: {},
       formLabelWidth: "120px",
@@ -237,19 +237,16 @@ export default {
     }
   },
   methods: {
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
     batchDelete() {
       //批量删除
       let selectArr = [];
-      if (typeof this.multipleSelection == "undefined") {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
         });
       } else {
-        this.multipleSelection.forEach((v, i) => {
+        this.$refs.multipleTable.selection.forEach((v, i) => {
           selectArr.push(v.operId);
         });
         this.deleted(selectArr.join(","));

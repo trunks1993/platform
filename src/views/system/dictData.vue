@@ -18,22 +18,23 @@
         <div class="content-box-table">
           <el-table :data="tableDataList" ref="multipleTable">
             <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="postId" label="岗位编号"></el-table-column>
-            <el-table-column prop="postCode" label="岗位编码"></el-table-column>
-            <el-table-column prop="postName" label="岗位名称" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="postSort" label="显示顺序" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="dictCode" label="字典编码"></el-table-column>
+            <el-table-column prop="dictLabel" label="字典标签"></el-table-column>
+            <el-table-column prop="dictValue" label="字典键值"></el-table-column>
+            <el-table-column prop="dictSort" label="字典排序"></el-table-column>
             <el-table-column label="状态" show-overflow-tooltip>
               <template slot-scope="scope">
-                 <span
+                <span
                   :style="{color:scope.row.status == '0' ? '#45eba7' : '#cb3203'}"
                 >{{scope.row.status == '0' ? '正常' : '停用'}}</span>
               </template>
             </el-table-column>
+            <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row)">编辑</el-button>
-                <el-button type="text-danger" @click="deleted(scope.row.postId)">删除</el-button>
+                <el-button type="text-danger" @click="deleted(scope.row.dictCode)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -52,25 +53,44 @@
         </div>
       </div>
     </div>
-
     <!-- 弹框 -->
     <el-dialog :visible.sync="dialogFormVisible" @close="close">
-      <div slot="title" class="dailog-title">
+        <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
-        <span class="title">岗位管理基本信息</span>
+        <span class="title">字典数据基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form">
-        <el-form-item label="岗位名称" :label-width="formLabelWidth">
-          <el-input v-model="form.postName" autocomplete="off"></el-input>
+      <el-form :model="form" :inline="true">
+        <el-form-item label="字典标签" :label-width="formLabelWidth">
+          <el-input v-model="form.dictLabel" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="岗位编码" :label-width="formLabelWidth">
-          <el-input v-model="form.postCode" autocomplete="off"></el-input>
+        <el-form-item label="字典键值" :label-width="formLabelWidth">
+          <el-input v-model="form.dictValue" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="显示顺序" :label-width="formLabelWidth">
-          <el-input v-model="form.postSort" autocomplete="off"></el-input>
+        <el-form-item label="字典类型" :label-width="formLabelWidth">
+          <el-input v-model="form.dictType" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="岗位状态" :label-width="formLabelWidth" style="width: 325px;">
+        <el-form-item label="样式属性" :label-width="formLabelWidth">
+          <el-input v-model="form.cssClass" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="字典排序" :label-width="formLabelWidth">
+          <el-input v-model="form.dictSort" autocomplete="off"></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="回显样式" :label-width="formLabelWidth">
+            <el-select v-model="form.listClass" multiple placeholder="请选择"> -->
+                <!-- <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option> -->
+            <!-- </el-select>
+        </el-form-item> -->
+        <el-form-item label="系统默认" :label-width="formLabelWidth">
+          <el-radio v-model="form.isDefault" label="1" @change="changeSelect">是</el-radio>
+          <el-radio v-model="form.isDefault" label="0" @change="changeSelect">否</el-radio>
+        </el-form-item>
+        <el-form-item label="状态" :label-width="formLabelWidth">
           <el-switch v-model="form.state"></el-switch>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" class="inputTextarea">
@@ -78,11 +98,11 @@
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="save">保 存</el-button>
+        <el-button type="primary" @click="save()">保 存</el-button>
         <el-button type="primary" @click="close">关 闭</el-button>
       </div>
     </el-dialog>
-    <!-- 删除弹框 -->
+     <!-- 删除弹框 -->
     <el-dialog :visible.sync="dialogVisible">
         <div slot="title" class="dailog-title">
             <img src="../../assets/images/icon-title-left.png" alt />
@@ -99,11 +119,11 @@
 </template>
 <script>
 import {
-  queryGwPage,
-  deleteGwPage,
-  exportGwPage,
-  editorGwPage,
-  addGwPage
+  queryDicDatePage,
+  deleteDicDatePage,
+  editorDicDatePage,
+  addDicDatePage,
+  queryDicDateSelect
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -111,31 +131,35 @@ export default {
   mixins: [mixin],
   data() {
     return {
-      baseExpApi: "/v1/manage/post/export",
+      baseExpApi:
+        "/v1/dictionaries/dictData/export",
       fqForm: [
-        {
+          {
           fiAttr: {
-            label: "岗位编码"
+            label: "字典名称"
           },
-          el: "input",
-          elAttr: {
-            type: "text"
-          },
-          bindKey: "postCode"
+          el: "select",
+          elAttr: {},
+          bindKey: "dictValue",
+          option: [
+            { label: "所有", value: "" },
+            { label: "字典名称", value: 1 },
+            { label: "字典名称2", value: 2 }
+          ]
         },
         {
           fiAttr: {
-            label: "岗位名称"
+            label: "字典标签"
           },
           el: "input",
           elAttr: {
             type: "number"
           },
-          bindKey: "postName"
+          bindKey: "dictLabel"
         },
         {
           fiAttr: {
-            label: "岗位状态"
+            label: "数据状态"
           },
           el: "select",
           elAttr: {},
@@ -154,27 +178,40 @@ export default {
         //   bindkey: "surStatus"
         // }
       ],
+    //   value: true,
+      form: {
+          isDefault:'',
+          state:false,
+      },
       dialogFormVisible: false,
-      form: {}, //新增修改页面的对象
-      formLabelWidth: "120px",
-      radio: "1",
       obj: {},
+      formLabelWidth: "120px",
       dialogVisible:false,
       ids:'',
+      type:'',
     };
   },
   components: {
     FilterQueryForm
   },
-  computed: {
-    query() {
-      return this.doQuery.bind(this, queryGwPage);
-    }
-  },
   created() {
     this.query();
+    this.queryList.dictType = this.$route.query.type;
+    console.log(this.queryList);
+  },
+  computed: {
+    query() {
+      return this.doQuery.bind(this, queryDicDatePage);
+    }
   },
   methods: {
+    changeSelect(value){
+        //int类型转换为string
+        this.radioData=value.toString();
+    },
+    change(data) {
+      console.log(data);
+    },
     batchDelete() {
       //批量删除
       let selectArr = [];
@@ -185,58 +222,25 @@ export default {
         });
       } else {
         this.$refs.multipleTable.selection.forEach((v, i) => {
-          selectArr.push(v.postId);
+          selectArr.push(v.dictCode);
         });
         this.deleted(selectArr.join(","));
       }
     },
-    addInfo() {
-      //新增
-      this.dialogFormVisible = true;
-      this.form = {};
-      this.obj = {};
+    deleted(ids) {
+      //删除
+      this.dialogVisible = true;
+      this.ids = ids;
     },
-    editor(rows) {
-      //编辑
-      this.dialogFormVisible = true;
-      this.form = rows;
-      this.obj = rows;
-      let status = this.obj.status == "0" ? true : false;
-      this.$set(this.form, "state", status); //强制更新form中state的值
-    },
-    save() {
-      //编辑入参
-      if (JSON.stringify(this.obj) == "{}") {
-        //新增
-        this.addAsk();
-      } else {
-        //编辑
-        this.saveAsk();
-      }
-    },
-    saveAsk() {
-      //编辑保存
-      this.form.status = this.form.state ? "0" : "1"; //更新状态传给后端
-      editorGwPage(this.form).then(res => {
-        this.$message({
-          message: "修改成功！",
-          type: "success"
-        });
-        this.dialogFormVisible = false;
-        this.query();
-      });
-    },
-    addAsk() {
-      //新增保存
-      this.form.status = this.form.state ? "0" : "1";
-      addGwPage(this.form).then(res => {
-        this.$message({
-          message: "新增成功！",
-          type: "success"
-        });
-        this.dialogFormVisible = false;
-        this.query();
-      });
+    sure(){//确认删除
+        deleteDicDatePage({ str: this.ids }).then(res => {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            this.dialogVisible = false;
+            this.query();
+          });
     },
     revise() {
       //批量修改
@@ -256,28 +260,74 @@ export default {
         this.dialogFormVisible = true;
         this.form = this.$refs.multipleTable.selection[0]; //获取最后一条
         this.obj = this.$refs.multipleTable.selection[0];
+        delete this.form.params;
         let status = this.form.status == "0" ? true : false;
         this.$set(this.form, "state", status); //强制更新form中state的值
       }
     },
-    deleted(ids) {
-      //删除
-      this.dialogVisible = true;
-      this.ids = ids;
+    addInfo() {
+      //新增
+      this.dialogFormVisible = true;
+      this.form = {};
+      this.obj = {};
     },
-    sure(){//确认删除
-        deleteGwPage({ str: this.ids }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            this.dialogVisible = false;
-            this.query();
+    editor(rows) {
+      //编辑
+      this.dialogFormVisible = true;
+      this.form = rows;
+      this.obj = rows;
+      delete this.form.params;
+      let status = this.form.status == "0" ? true : false;
+      this.$set(this.form, "state", status); //强制更新form中state的值
+    },
+    save() {
+      //编辑入参
+      if (JSON.stringify(this.obj) == "{}") {
+        //新增
+        this.addAsk();
+      } else {console.log(this.form);
+        //编辑
+        this.saveAsk();
+      }
+    },
+    saveAsk() {
+      //编辑保存
+      this.form.status = this.form.state ? "0" : "1"; //更新状态传给后端
+      editorDicDatePage(this.form).then(res => {
+        this.$message({
+          message: "修改成功！",
+          type: "success"
         });
+        this.dialogFormVisible = false;
+        let status = this.form.status == "0" ? true : false;
+        this.$set(this.form, "state", status); //强制更新form中state的值
+        this.query();
+      });
+    },
+    addAsk() {
+      //新增保存
+      this.form.status = this.form.state ? "0" : "1";
+      addDicDatePage(this.form).then(res => {
+        this.$message({
+          message: "新增成功！",
+          type: "success"
+        });
+        this.dialogFormVisible = false;
+        this.query();
+      });
     },
     close(){//关闭事件
       this.dialogFormVisible = false;
       this.query();
+    },
+    handDictDate(rows){
+        console.log(rows);
+        // this.$router.push('dictDate');
+    },
+    selectQuery(){//字典名称查询
+        queryDicDateSelect().then(res => {
+            console.log(res);
+        });
     }
   }
 };
