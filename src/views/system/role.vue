@@ -344,7 +344,7 @@ export default {
     },
     sure() {
       //确认删除
-      deleteRoleGwPage({ roleId: this.ids }).then(res => {
+      deleteRoleGwPage({ roleIds: this.ids }).then(res => {
         console.log(res);
         this.$message({
           type: "success",
@@ -478,7 +478,7 @@ export default {
       // this.bmId = data.sdtDeptId;
     },
     assignUsers(rows){ //分配用户
-      console.log(rows)
+      this.$router.push({path:'/system/assignUsers',query:{roleId:rows.roleId}});
     }
   }
 };

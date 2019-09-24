@@ -26,7 +26,7 @@
         <div class="content-box-tool">
           <el-button type="tool" icon="el-icon-plus" @click="addInfo">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <el-button type="tool" icon="el-icon-export">展开/折叠</el-button>
+          <el-button type="tool" icon="el-icon-export" @click="unfold">展开/折叠</el-button>
         </div>
         <div class="content-box-table">
           <el-table
@@ -34,6 +34,8 @@
             style="width: 100%;margin-bottom: 20px;"
             row-key="sdtDeptId"
             @selection-change="handleSelectionChange"
+            ref="tableTree"
+            default-expand-all
             :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
           >
             <el-table-column type="selection"></el-table-column>
@@ -64,7 +66,7 @@
         </div>
       </div>
     </div>
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible"  @close="close">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
@@ -96,7 +98,7 @@
       </el-form>
       <div slot="footer" style="text-align: center;">
         <el-button @click="preservation" type="primary">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+        <el-button type="primary"  @click="close">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -218,6 +220,7 @@ export default {
       data: [],
       dialogVisible: false,
       ids: "",
+      sdtDeptNameId:"",
       isSearch: true
     };
   },
@@ -240,7 +243,7 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    onSubmit() {
+    onSubmit() { //输入框搜索
       console.log(this.sizeForm);
       searchSysDeptList(this.sizeForm).then(res => {
         this.tableDataList = res;
@@ -270,7 +273,11 @@ export default {
     },
     addAsk() {
       //新增保存
-      this.form.sdtDeptPid = this.bmId;
+      if( this.sdtDeptNameId == []) {
+        this.form.sdtDeptPid = this.bmId;
+      }else {
+        this.form.sdtDeptPid = this.sdtDeptNameId;
+      }
       postSysDeptAdd(this.form).then(res => {
         this.$message({
           type: "success",
@@ -282,7 +289,10 @@ export default {
     },
     saveAsk() {
       //修改保存
-      this.form.sdtDeptPid = this.bmId;
+      console.log(this.form.sdtDeptPid)
+      if(this.bmId != []) {
+        this.form.sdtDeptPid = this.bmId;
+      }
       putSysDeptEdit(this.form).then(res => {
         this.$message({
           type: "success",
@@ -298,7 +308,7 @@ export default {
       this.form = rows;
       this.obj = rows;
     },
-    addInfo() {
+    addInfo() { //新增打开弹框
       this.dialogFormVisible = true;
       this.form = {};
       this.obj = {};
@@ -306,7 +316,8 @@ export default {
     deptAdd(rows) {
       //具体行新增
       this.dialogFormVisible = true;
-      this.form.sdtDeptPid = rows.sdtDeptId;
+      this.form.sdtDeptPid = rows.sdtDeptName;
+      this.sdtDeptNameId = rows.sdtDeptId;
       this.obj = {};
     },
     revise() {
@@ -343,9 +354,18 @@ export default {
        this.queryDate();
       });
     },
-    handleNodeClick(data) {
+    handleNodeClick(data) { //部门选择树
       this.form.sdtDeptPid = data.sdtDeptName;
       this.bmId = data.sdtDeptId;
+    },
+    unfold(){ //展开折叠
+      console.log(this.$refs.tableTree.defaultExpandAll)
+      // this.$refs.tableTree.defaultExpandAll = "false";
+    },
+    close(){ //关闭
+      this.dialogFormVisible = false;
+      this.queryDate();
+      this.form = {};
     }
   }
 };
