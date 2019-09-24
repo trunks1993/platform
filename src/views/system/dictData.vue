@@ -91,7 +91,7 @@
           <el-radio v-model="form.isDefault" label="0" @change="changeSelect">否</el-radio>
         </el-form-item>
         <el-form-item label="状态" :label-width="formLabelWidth">
-          <el-switch v-model="form.state"></el-switch>
+          <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" class="inputTextarea">
           <el-input v-model="form.remark" autocomplete="off" type="textarea" class="textarea"></el-input>
@@ -197,7 +197,6 @@ export default {
   created() {
     this.query();
     this.queryList.dictType = this.$route.query.type;
-    console.log(this.queryList);
   },
   computed: {
     query() {
@@ -258,11 +257,9 @@ export default {
             return;
         }
         this.dialogFormVisible = true;
-        this.form = this.$refs.multipleTable.selection[0]; //获取最后一条
-        this.obj = this.$refs.multipleTable.selection[0];
+        this.form = this.$refs.multipleTable.selection.pop(); //获取最后一条
+        this.obj = this.$refs.multipleTable.selection.pop();
         delete this.form.params;
-        let status = this.form.status == "0" ? true : false;
-        this.$set(this.form, "state", status); //强制更新form中state的值
       }
     },
     addInfo() {
@@ -277,8 +274,6 @@ export default {
       this.form = rows;
       this.obj = rows;
       delete this.form.params;
-      let status = this.form.status == "0" ? true : false;
-      this.$set(this.form, "state", status); //强制更新form中state的值
     },
     save() {
       //编辑入参
@@ -292,21 +287,17 @@ export default {
     },
     saveAsk() {
       //编辑保存
-      this.form.status = this.form.state ? "0" : "1"; //更新状态传给后端
       editorDicDatePage(this.form).then(res => {
         this.$message({
           message: "修改成功！",
           type: "success"
         });
         this.dialogFormVisible = false;
-        let status = this.form.status == "0" ? true : false;
-        this.$set(this.form, "state", status); //强制更新form中state的值
         this.query();
       });
     },
     addAsk() {
       //新增保存
-      this.form.status = this.form.state ? "0" : "1";
       addDicDatePage(this.form).then(res => {
         this.$message({
           message: "新增成功！",

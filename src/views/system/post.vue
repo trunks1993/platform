@@ -71,7 +71,7 @@
           <el-input v-model="form.postSort" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="岗位状态" :label-width="formLabelWidth" style="width: 325px;">
-          <el-switch v-model="form.state"></el-switch>
+          <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" class="inputTextarea">
           <el-input v-model="form.remark" autocomplete="off" type="textarea" class="textarea"></el-input>
@@ -201,8 +201,6 @@ export default {
       this.dialogFormVisible = true;
       this.form = rows;
       this.obj = rows;
-      let status = this.obj.status == "0" ? true : false;
-      this.$set(this.form, "state", status); //强制更新form中state的值
     },
     save() {
       //编辑入参
@@ -216,7 +214,6 @@ export default {
     },
     saveAsk() {
       //编辑保存
-      this.form.status = this.form.state ? "0" : "1"; //更新状态传给后端
       editorGwPage(this.form).then(res => {
         this.$message({
           message: "修改成功！",
@@ -228,7 +225,6 @@ export default {
     },
     addAsk() {
       //新增保存
-      this.form.status = this.form.state ? "0" : "1";
       addGwPage(this.form).then(res => {
         this.$message({
           message: "新增成功！",
@@ -254,10 +250,8 @@ export default {
             return;
         }
         this.dialogFormVisible = true;
-        this.form = this.$refs.multipleTable.selection[0]; //获取最后一条
-        this.obj = this.$refs.multipleTable.selection[0];
-        let status = this.form.status == "0" ? true : false;
-        this.$set(this.form, "state", status); //强制更新form中state的值
+        this.form = this.$refs.multipleTable.selection.pop(); //获取最后一条
+        this.obj = this.$refs.multipleTable.selection.pop();
       }
     },
     deleted(ids) {

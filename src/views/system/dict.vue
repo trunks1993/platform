@@ -72,7 +72,7 @@
           <el-input v-model="form.dictType" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="状态" :label-width="formLabelWidth">
-          <el-switch v-model="form.state"></el-switch>
+           <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" class="inputTextarea">
           <el-input v-model="form.remark" autocomplete="off" type="textarea" class="textarea"></el-input>
@@ -209,7 +209,7 @@ export default {
             this.query();
           });
     },
-    revise() {console.log(this.$refs.multipleTable.selection);
+    revise() {
       //批量修改
       if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
@@ -225,10 +225,8 @@ export default {
             return;
         }
         this.dialogFormVisible = true;
-        this.form = this.$refs.multipleTable.selection[0]; //获取最后一条
-        this.obj = this.$refs.multipleTable.selection[0];
-        let status = this.form.status == "0" ? true : false;
-        this.$set(this.form, "state", status); //强制更新form中state的值
+        this.form = this.$refs.multipleTable.selection.pop(); //获取最后一条
+        this.obj = this.$refs.multipleTable.selection.pop();
       }
     },
     addInfo() {
@@ -242,22 +240,19 @@ export default {
       this.dialogFormVisible = true;
       this.form = rows;
       this.obj = rows;
-      let status = this.form.status == "0" ? true : false;
-      this.$set(this.form, "state", status); //强制更新form中state的值
     },
     save() {
       //编辑入参
       if (JSON.stringify(this.obj) == "{}") {
         //新增
         this.addAsk();
-      } else {console.log(1111);
+      } else {
         //编辑
         this.saveAsk();
       }
     },
     saveAsk() {
       //编辑保存
-      this.form.status = this.form.state ? "0" : "1"; //更新状态传给后端
       editorDictPage(this.form).then(res => {
         this.$message({
           message: "修改成功！",
@@ -269,7 +264,6 @@ export default {
     },
     addAsk() {
       //新增保存
-      this.form.status = this.form.state ? "0" : "1";
       addDictPage(this.form).then(res => {
         this.$message({
           message: "新增成功！",
@@ -284,7 +278,6 @@ export default {
       this.query();
     },
     handDictDate(rows){
-        console.log(rows);
         this.$router.push('/system/dictData?type='+rows.dictType+'&id='+rows.dictId);
     }
   }

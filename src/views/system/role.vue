@@ -225,7 +225,7 @@ export default {
         deptIds: "",
         roleId: ""
       },
-      value: 1,
+      // value: 1,
       // valueF:false,
       multipleSelection: [],
       dialogFormVisible: false,
