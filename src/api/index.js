@@ -322,10 +322,9 @@ export const queryDicDateSelect = params => request({
 });
 
 // 根据字典类型查询相关字典值数据
-export const getSelectByDictType = params => request({
-  url: '/v1/dictionaries/dictData/selectByDictType',
+export const getSelectOption = url => request({
+  url,
   method: 'get',
-  params,
 });
 
 

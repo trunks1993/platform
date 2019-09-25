@@ -93,7 +93,6 @@
           <el-input v-model="form.icon"></el-input>
         </el-form-item>
         <el-form-item label="菜单状态" label-width="120px">
-          <!-- <el-switch v-model="form.visible"></el-switch> -->
            <el-switch v-model="form.visible" active-value="0" inactive-value="1"></el-switch>
         </el-form-item>
       </el-form>
@@ -190,20 +189,7 @@ export default {
       value1: true,
       multipleSelection: [],
       dialogFormVisible: false,
-      form: {
-        parentId: "",
-        menuName: "",
-        systemId: "",
-        parentId: "",
-        orderNum: "",
-        path: "",
-        menuType: "",
-        visible: '0',
-        perms: "",
-        icon: "",
-        menuId: "",
-        component: ""
-      },
+      form: {},
       sizeForm: {
         menuName: "",
         visible: ""

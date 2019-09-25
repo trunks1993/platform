@@ -80,8 +80,8 @@
           <el-input v-model="form.dictSort" autocomplete="off"></el-input>
         </el-form-item>
         <!-- <el-form-item label="回显样式" :label-width="formLabelWidth">
-            <el-select v-model="form.listClass" multiple placeholder="请选择"> -->
-                <!-- <el-option
+        <el-select v-model="form.listClass" multiple placeholder="请选择">-->
+        <!-- <el-option
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
@@ -105,7 +105,7 @@
         <el-button type="primary" @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
-     <!-- 删除弹框 -->
+    <!-- 删除弹框 -->
     <el-dialog :visible.sync="dialogVisible">
         <div slot="title" class="dailog-title">
             <img src="../../assets/images/icon-title-left.png" alt />
@@ -135,21 +135,21 @@ export default {
   mixins: [mixin],
   data() {
     return {
-      baseExpApi:
-        "/v1/dictionaries/dictData/export",
+      baseExpApi: "/v1/dictionaries/dictData/export",
       fqForm: [
-          {
+        {
           fiAttr: {
             label: "字典名称"
           },
           el: "select",
           elAttr: {},
           bindKey: "dictValue",
-          option: [
-            { label: "所有", value: "" },
-            { label: "字典名称", value: 1 },
-            { label: "字典名称2", value: 2 }
-          ]
+          bindValue: this.$route.query.id,
+          option: {
+            url: "/v1/dictionaries/dictType/down",
+            labelKey: "dictName",
+            valueKey: "dictId"
+          }
         },
         {
           fiAttr: {
@@ -168,21 +168,15 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "status",
-          option: [
-            { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "停用", value: 1 }
-          ]
+          bindValue: "",
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
-        // {
-        //   fiAttr: {
-        //     label: "创建时间"
-        //   },
-        //   el: "date-picker",
-        //   bindkey: "surStatus"
-        // }
       ],
-    //   value: true,
       form: {
           dictCode:'',
           dictLabel:'',
@@ -216,9 +210,9 @@ export default {
     }
   },
   methods: {
-    changeSelect(value){
-        //int类型转换为string
-        this.radioData=value.toString();
+    changeSelect(value) {
+      //int类型转换为string
+      this.radioData = value.toString();
     },
     change(data) {
       console.log(data);
@@ -244,15 +238,16 @@ export default {
       this.dialogVisible = true;
       this.ids = ids;
     },
-    sure(){//确认删除
-        deleteDicDatePage({ str: this.ids }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            this.dialogVisible = false;
-            this.query();
-          });
+    sure() {
+      //确认删除
+      deleteDicDatePage({ str: this.ids }).then(res => {
+        this.$message({
+          type: "success",
+          message: "删除成功!"
+        });
+        this.dialogVisible = false;
+        this.query();
+      });
     },
     revise() {
       //批量修改
@@ -262,12 +257,12 @@ export default {
           type: "warning"
         });
       } else {
-        if(this.$refs.multipleTable.selection.length > 1){
-            this.$message({
-                message: "只能选择一条数据进行修改",
-                type: "warning"
-            });
-            return;
+        if (this.$refs.multipleTable.selection.length > 1) {
+          this.$message({
+            message: "只能选择一条数据进行修改",
+            type: "warning"
+          });
+          return;
         }
         this.dialogFormVisible = true;
         let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
@@ -292,10 +287,11 @@ export default {
         this.query();
       })
     },
-    selectQuery(){//字典名称查询
-        queryDicDateSelect().then(res => {
-            console.log(res);
-        });
+    selectQuery() {
+      //字典名称查询
+      queryDicDateSelect().then(res => {
+        console.log(res);
+      });
     }
   }
 };

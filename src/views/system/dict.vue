@@ -149,7 +149,7 @@ export default {
             { label: "所有", value: "" },
             { label: "正常", value: 0 },
             { label: "停用", value: 1 }
-          ]
+          ],
         }
         // {
         //   fiAttr: {
