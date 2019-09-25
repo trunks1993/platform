@@ -29,10 +29,10 @@ export default {
     for (let item of this.model) {
       this.$set(this.queryFilter, item.bindKey, item.bindValue);
       if (item.option && !Array.isArray(item.option)) {
-        const res = await getSelectOption(item.option);
+        const res = await getSelectOption(item.option.url);
         item.option = res.map(v => ({
-          label: v.dictLabel,
-          value: v.dictValue
+          label: v[item.option.labelKey],
+          value: v[item.option.valueKey],
         }));
       }
     }

@@ -55,7 +55,7 @@
     </div>
     <!-- 弹框 -->
     <el-dialog :visible.sync="dialogFormVisible" @close="close">
-        <div slot="title" class="dailog-title">
+      <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">字典数据基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
@@ -77,15 +77,15 @@
           <el-input v-model="form.dictSort" autocomplete="off"></el-input>
         </el-form-item>
         <!-- <el-form-item label="回显样式" :label-width="formLabelWidth">
-            <el-select v-model="form.listClass" multiple placeholder="请选择"> -->
-                <!-- <el-option
+        <el-select v-model="form.listClass" multiple placeholder="请选择">-->
+        <!-- <el-option
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
-                </el-option> -->
-            <!-- </el-select>
-        </el-form-item> -->
+        </el-option>-->
+        <!-- </el-select>
+        </el-form-item>-->
         <el-form-item label="系统默认" :label-width="formLabelWidth">
           <el-radio v-model="form.isDefault" label="1" @change="changeSelect">是</el-radio>
           <el-radio v-model="form.isDefault" label="0" @change="changeSelect">否</el-radio>
@@ -102,18 +102,18 @@
         <el-button type="primary" @click="close">关 闭</el-button>
       </div>
     </el-dialog>
-     <!-- 删除弹框 -->
+    <!-- 删除弹框 -->
     <el-dialog :visible.sync="dialogVisible">
-        <div slot="title" class="dailog-title">
-            <img src="../../assets/images/icon-title-left.png" alt />
-            <span class="title">系统提示信息</span>
-            <img src="../../assets/images/icon-title-right.png" alt />
-        </div>
-        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除数据吗？</div>
-        <div slot="footer" style="text-align: center;">
-            <el-button type="primary" @click="sure">确 定</el-button>
-            <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
-        </div>
+      <div slot="title" class="dailog-title">
+        <img src="../../assets/images/icon-title-left.png" alt />
+        <span class="title">系统提示信息</span>
+        <img src="../../assets/images/icon-title-right.png" alt />
+      </div>
+      <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除数据吗？</div>
+      <div slot="footer" style="text-align: center;">
+        <el-button type="primary" @click="sure">确 定</el-button>
+        <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -132,10 +132,9 @@ export default {
   mixins: [mixin],
   data() {
     return {
-      baseExpApi:
-        "/v1/dictionaries/dictData/export",
+      baseExpApi: "/v1/dictionaries/dictData/export",
       fqForm: [
-          {
+        {
           fiAttr: {
             label: "字典名称"
           },
@@ -143,7 +142,11 @@ export default {
           elAttr: {},
           bindKey: "dictValue",
           bindValue: this.$route.query.id,
-          option: '/v1/dictionaries/dictType/down'
+          option: {
+            url: "/v1/dictionaries/dictType/down",
+            labelKey: "dictName",
+            valueKey: "dictId"
+          }
         },
         {
           fiAttr: {
@@ -162,20 +165,25 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "status",
-          bindValue: "1",
-          option: '/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status'
+          bindValue: "",
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
       ],
       form: {
-          isDefault:'',
-          state:false,
+        isDefault: "",
+        state: false
       },
       dialogFormVisible: false,
       obj: {},
       formLabelWidth: "120px",
-      dialogVisible:false,
-      ids:'',
-      type:'',
+      dialogVisible: false,
+      ids: "",
+      type: ""
     };
   },
   components: {
@@ -191,9 +199,9 @@ export default {
     }
   },
   methods: {
-    changeSelect(value){
-        //int类型转换为string
-        this.radioData=value.toString();
+    changeSelect(value) {
+      //int类型转换为string
+      this.radioData = value.toString();
     },
     change(data) {
       console.log(data);
@@ -218,15 +226,16 @@ export default {
       this.dialogVisible = true;
       this.ids = ids;
     },
-    sure(){//确认删除
-        deleteDicDatePage({ str: this.ids }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            this.dialogVisible = false;
-            this.query();
-          });
+    sure() {
+      //确认删除
+      deleteDicDatePage({ str: this.ids }).then(res => {
+        this.$message({
+          type: "success",
+          message: "删除成功!"
+        });
+        this.dialogVisible = false;
+        this.query();
+      });
     },
     revise() {
       //批量修改
@@ -236,12 +245,12 @@ export default {
           type: "warning"
         });
       } else {
-        if(this.$refs.multipleTable.selection.length > 1){
-            this.$message({
-                message: "只能选择一条数据进行修改",
-                type: "warning"
-            });
-            return;
+        if (this.$refs.multipleTable.selection.length > 1) {
+          this.$message({
+            message: "只能选择一条数据进行修改",
+            type: "warning"
+          });
+          return;
         }
         this.dialogFormVisible = true;
         this.form = this.$refs.multipleTable.selection[0]; //获取最后一条
@@ -271,7 +280,8 @@ export default {
       if (JSON.stringify(this.obj) == "{}") {
         //新增
         this.addAsk();
-      } else {console.log(this.form);
+      } else {
+        console.log(this.form);
         //编辑
         this.saveAsk();
       }
@@ -302,18 +312,20 @@ export default {
         this.query();
       });
     },
-    close(){//关闭事件
+    close() {
+      //关闭事件
       this.dialogFormVisible = false;
       this.query();
     },
-    handDictDate(rows){
-        console.log(rows);
-        // this.$router.push('dictDate');
+    handDictDate(rows) {
+      console.log(rows);
+      // this.$router.push('dictDate');
     },
-    selectQuery(){//字典名称查询
-        queryDicDateSelect().then(res => {
-            console.log(res);
-        });
+    selectQuery() {
+      //字典名称查询
+      queryDicDateSelect().then(res => {
+        console.log(res);
+      });
     }
   }
 };
