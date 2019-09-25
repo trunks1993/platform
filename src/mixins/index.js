@@ -14,9 +14,9 @@ const mixin = {
   },
   methods: {
     doQuery(queryApi) {
-      queryApi(this.queryList).then(({ rows, total }) => {
-        this.tableDataList = rows;
-        this.total = +total;
+      queryApi(this.queryList).then((res) => {
+        this.tableDataList = res.rows || res;
+        res.total && (this.total = +res.total);
       });
     },
     handleFilter(queryFilter, afterHandler) {
@@ -30,6 +30,11 @@ const mixin = {
     handleCurrentChange(current, afterHandler) {
       this.queryList.pageNum = current;
       afterHandler && afterHandler();
+    },
+    // 带form的弹框关闭方式
+    handleFormDlogClose(formName, done) {
+      this.$refs[formName].resetFields();
+      typeof done === 'function' ? done() : (this[done] = false);
     },
     handleExport(baseExpApi) {
       const strArr = Object.entries(this.queryList).map(item => `${item[0]}=${item[1]}`);

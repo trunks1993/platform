@@ -7,7 +7,11 @@ import router from './router';
 import store from './store';
 import './permission'; // 权限
 import './styles/index.scss'; // global css
-// import './mock';
+import * as filters from './filters';
+
+Object.keys(filters).forEach((key) => {
+  Vue.filter(key, filters[key]);
+});
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
