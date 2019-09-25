@@ -306,9 +306,9 @@ export default {
     getSysDeptTreeData().then(res => {
       this.data = res;
     });
-    getSelectByDictType({dictType:"sys_user_status"}).then(res=>{
-      console.log(res)
-    })
+    // getSelectByDictType({dictType:"sys_user_status"}).then(res=>{
+    //   console.log(res)
+    // })
   },
   methods: {
     handleCheckAllChange(val) {

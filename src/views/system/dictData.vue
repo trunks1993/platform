@@ -127,6 +127,7 @@ import {
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
+
 export default {
   mixins: [mixin],
   data() {
@@ -141,11 +142,8 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "dictValue",
-          option: [
-            { label: "所有", value: "" },
-            { label: "字典名称", value: 1 },
-            { label: "字典名称2", value: 2 }
-          ]
+          bindValue: this.$route.query.id,
+          option: '/v1/dictionaries/dictType/down'
         },
         {
           fiAttr: {
@@ -164,21 +162,10 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "status",
-          option: [
-            { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "停用", value: 1 }
-          ]
+          bindValue: "1",
+          option: '/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status'
         }
-        // {
-        //   fiAttr: {
-        //     label: "创建时间"
-        //   },
-        //   el: "date-picker",
-        //   bindkey: "surStatus"
-        // }
       ],
-    //   value: true,
       form: {
           isDefault:'',
           state:false,
