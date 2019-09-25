@@ -207,7 +207,7 @@ export const deleteGwPage = params => request({
 });
 // 编辑岗位管理列表
 export const editorGwPage = params => request({
-  url: '/v1/manage/post/edit/{postCode}',
+  url: '/v1/manage/post/edit',
   method: 'put',
   params,
 });
@@ -225,7 +225,7 @@ export const queryDictPage = params => request({
 });
 // 编辑字典管理列表
 export const editorDictPage = params => request({
-  url: '/v1/dictionaries/dictType/edit/{dictId}',
+  url: '/v1/dictionaries/dictType/edit',
   method: 'put',
   params,
 });

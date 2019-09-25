@@ -10,7 +10,7 @@
     <div class="app-wrapper">
     <div class="content-box">
       <div class="content-box-tool">
-        <el-button type="tool" icon="el-icon-plus" @click="addInfo">新增</el-button>
+        <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
         <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
         <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
         <!-- <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button> -->
@@ -29,7 +29,7 @@
           <el-table-column label="创建时间" prop="createTime" show-overflow-tooltip></el-table-column>
           <el-table-column label="操作" width="280">
             <template slot-scope="scope">
-              <el-button  type="text" @click="editor(scope.row)">编辑</el-button>
+              <el-button  type="text" @click="editor(scope.row, true)">编辑</el-button>
                  <el-button type="text-danger" @click="deleted(scope.row.systemId)">删除</el-button>
             </template>
           </el-table-column>
@@ -39,7 +39,7 @@
         <el-pagination
           style="text-align:right;margin-top:2%;"
           background
-          layout="prev, pager, next"
+          layout="prev, pager, next, total"
           @size-change="handleSizeChange($event, query)"
           @current-change="handleCurrentChange($event, query)"
           :current-page="queryList.pageNum"
@@ -49,23 +49,27 @@
       </div>
     </div>
     </div>
-    <el-dialog :visible.sync="dialogFormVisible" @close="close">
+    <el-dialog :visible.sync="dialogFormVisible" :before-close="handleFormDlogClose.bind(null, 'editForm')">
        <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt="">
         <span class="title">系统基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt="">
       </div>
-      <el-form :model="form" :inline="true">
-        <el-form-item label="系统名称：" :label-width="formLabelWidth">
-          <el-input v-model="form.systemName" autocomplete="off"></el-input>
+      <el-form :model="form" ref="editForm" :inline="true">
+        <el-form-item label="系统编号" prop="systemId" :label-width="formLabelWidth" style="display:none">
+          <el-input v-model="form.systemId" autocomplete="off" disabled></el-input>
         </el-form-item>
-        <el-form-item label="系统key：" :label-width="formLabelWidth">
+        <el-form-item label="系统名称：" prop="systemName" :label-width="formLabelWidth">
+          <el-input v-model="form.systemName" autocomplete="off"></el-input>
+
+        </el-form-item>
+        <el-form-item label="系统key：" prop="systemKey" :label-width="formLabelWidth">
           <el-input v-model="form.systemKey" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer"  style="text-align: center;">
-        <el-button @click="save" type="primary">保 存</el-button>
-        <el-button type="primary" @click="close">关 闭</el-button>
+        <el-button @click="handleSave" type="primary">保 存</el-button>
+        <el-button type="primary" @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -75,7 +79,7 @@
             <span class="title">系统提示信息</span>
             <img src="../../assets/images/icon-title-right.png" alt />
         </div>
-        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除选中的{{count.length}}条列表数据吗？</div>
         <div slot="footer" style="text-align: center;">
             <el-button type="primary" @click="sure">确 定</el-button>
             <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
@@ -92,6 +96,7 @@ import {
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
+import _ from 'lodash';
 export default {
   mixins: [mixin],
   data() {
@@ -127,12 +132,17 @@ export default {
         // }
       ],
       dialogFormVisible: false,
-      form: {}, //新增修改页面的对象
+      form: {
+        systemId:'',
+        systemName:'',
+        systemKey:''
+      }, //新增修改页面的对象
       formLabelWidth: "120px",
       radio: "1",
       obj: {},
       dialogVisible:false,
       ids:'',
+      count:0,
     };
   },
   components: {
@@ -162,51 +172,6 @@ export default {
         this.deleted(selectArr.join(","));
       }
     },
-    addInfo() {
-      //新增
-      this.dialogFormVisible = true;
-      this.form = {};
-      this.obj = {};
-    },
-    editor(rows) {
-      //编辑
-      this.dialogFormVisible = true;
-      this.form = rows;
-      this.obj = rows;
-    },
-    save() {
-      //编辑入参
-      if (JSON.stringify(this.obj) == "{}") {
-        //新增
-        this.addAsk();
-      } else {
-        //编辑
-        this.saveAsk();
-      }
-    },
-    saveAsk() {
-      //编辑保存
-      delete this.form.params;
-      editorSysData(this.form).then(res => {
-        this.$message({
-          message: "修改成功！",
-          type: "success"
-        });
-        this.dialogFormVisible = false;
-        this.query();
-      });
-    },
-    addAsk() {
-      //新增保存
-      addSysData(this.form).then(res => {
-        this.$message({
-          message: "新增成功！",
-          type: "success"
-        });
-        this.dialogFormVisible = false;
-        this.query();
-      });
-    },
     revise() {
       //批量修改
       if (this.$refs.multipleTable.selection.length == 0) {
@@ -223,12 +188,13 @@ export default {
             return;
         }
         this.dialogFormVisible = true;
-        this.form = this.$refs.multipleTable.selection.pop(); //获取最后一条
-        this.obj = this.$refs.multipleTable.selection.pop();
+        let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
+        this.editor(rows,true);
       }
     },
     deleted(ids) {
       //删除
+      this.count = ids.split(",");
       this.dialogVisible = true;
       this.ids = ids;
     },
@@ -242,10 +208,24 @@ export default {
             this.query();
         });
     },
-    close(){//关闭事件
-      this.dialogFormVisible = false;
-      this.query();
-    }
+    editor(rows, isEditor) {
+      this.dialogFormVisible = true;
+      this.isEditor = isEditor;
+      this.$nextTick(() => {
+        isEditor ? this.form = _.pick(rows, _.keys(this.form)) : rows;
+      });
+    },
+    handleSave() {//弹框保存
+      const requestApi = this.isEditor ? editorSysData : addSysData;//判断是修改还是新增，isEditor为true是修改
+      requestApi(this.form).then(res => {
+        this.$message({
+          message: "操作成功！",
+          type: "success"
+        });
+        this.handleFormDlogClose('editForm', 'dialogFormVisible');
+        this.query();
+      })
+    },
   }
 };
 </script>
