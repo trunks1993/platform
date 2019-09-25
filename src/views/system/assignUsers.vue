@@ -154,7 +154,7 @@ export default {
       },
       multipleSelection: [],
       multipleSelectionSon: [],
-      roleId:"",
+      roleId:"1",
     };
   },
   components: {
@@ -162,8 +162,7 @@ export default {
   },
   computed: {},
   created() {
-    console.log(this.$route.query.roleId)
-    this.roleId = this.$route.query.roleId;
+    this.roleId = this.$route.query.roleId != null ? this.roleId:1;
     this.query();
     getMenuList(this.sizeForm).then(res => {
       console.log(res);
