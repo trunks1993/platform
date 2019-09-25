@@ -197,7 +197,6 @@ export default {
   created() {
     this.query();
     this.queryList.dictType = this.$route.query.type;
-    console.log(this.queryList);
   },
   computed: {
     query() {

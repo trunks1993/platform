@@ -6,13 +6,13 @@
       :resetBtnVisible="true"
       :searchBtnVisible="true"
       :model="fqForm"
-      @afterReset="queryDate"
-      @afterFilter="handleFilter($event, query)"
+      @afterReset="query"
+      @afterFilter="handleFilter($event, querySearch)"
     ></FilterQueryForm>
     <div class="app-wrapper">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="saveAskfather">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <!-- <el-button type="tool" icon="el-icon-export">展开/折叠</el-button> -->
         </div>
@@ -27,70 +27,67 @@
             <el-table-column label="排序" prop="orderNum" />
             <el-table-column label="资源路径" prop="component" />
             <el-table-column label="路由" prop="path" />
-            <el-table-column label="类型" prop="menuType" />
-            <el-table-column label="可见" prop="visible" />
+            <el-table-column label="类型" >
+              <span slot-scope="scope">
+                {{scope.row.menuType | getMenuTypeName}}
+              </span>
+            </el-table-column>
+            <el-table-column label="可见" prop="visible">
+              <span slot-scope="scope">
+                {{+scope.row.visible ? '不可见' : '可见'}}
+              </span>
+            </el-table-column>
             <el-table-column label="权限标识" prop="perms" />
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button type="text" @click="editor(scope.row)">编辑</el-button>
-                <el-button type="text" @click="saveAskhz(scope.row.menuId)">新增</el-button>
+                <el-button type="text" @click="editor(scope.row, true)">编辑</el-button>
+                <el-button type="text" @click="editor(scope.row)">新增</el-button>
                 <el-button type="text-warn" @click="deleted(scope.row.menuId)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
-        <div class="content-box-pagination">
-          <el-pagination
-            style="text-align:right;"
-            background
-            layout="prev, pager, next"
-            @size-change="handleSizeChange($event, query)"
-            @current-change="handleCurrentChange($event, query)"
-            :current-page="queryList.pageNum"
-            :page-size="queryList.pageSize"
-            :total="total"
-          ></el-pagination>
-        </div>
       </div>
     </div>
-    <el-dialog title="基本信息" :visible.sync="dialogFormVisible"  @close="close">
+    <el-dialog title="基本信息" :visible.sync="dialogFormVisible" :before-close="handleFormDlogClose.bind(null, 'editForm')">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" :inline="true">
-        <el-form-item label="上级菜单" label-width="120px">
-          <el-input v-model="form.parentId" @focus="sectoralChoice = true" autocomplete="off"></el-input>
+      <el-form :model="form" ref="editForm" :inline="true">
+        <el-form-item label="上级菜单" label-width="120px" prop="parentId">
+          <el-input v-model="form.parentId" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
-        <el-form-item label="菜单类型" label-width="120px">
-          <el-input v-model="form.menuType" autocomplete="off"></el-input>
+        <el-form-item label="菜单类型" label-width="120px" prop="menuType">
+          <el-input v-model="form.menuType"></el-input>
         </el-form-item>
-        <el-form-item label="菜单名称" label-width="120px">
-          <el-input v-model="form.menuName" autocomplete="off"></el-input>
+        <el-form-item label="菜单名称" label-width="120px" prop="menuName">
+          <el-input v-model="form.menuName"></el-input>
         </el-form-item>
-        <el-form-item label="资源路径" label-width="120px">
-          <el-input v-model="form.component" autocomplete="off"></el-input>
+        <el-form-item label="资源路径" label-width="120px" prop="component">
+          <el-input v-model="form.component"></el-input>
         </el-form-item>
-        <el-form-item label="请求地址" label-width="120px">
-          <el-input v-model="form.path" autocomplete="off"></el-input>
+        <el-form-item label="请求地址" label-width="120px" prop="path">
+          <el-input v-model="form.path"></el-input>
         </el-form-item>
-        <el-form-item label="权限标识" label-width="120px">
-          <el-input v-model="form.perms" autocomplete="off"></el-input>
+        <el-form-item label="权限标识" label-width="120px" prop="perms">
+          <el-input v-model="form.perms"></el-input>
         </el-form-item>
-        <el-form-item label="显示排序" label-width="120px">
-          <el-input v-model="form.orderNum" autocomplete="off"></el-input>
+        <el-form-item label="显示排序" label-width="120px" prop="orderNum">
+          <el-input v-model="form.orderNum"></el-input>
         </el-form-item>
-        <el-form-item label="图标" label-width="120px">
-          <el-input v-model="form.icon" autocomplete="off"></el-input>
+        <el-form-item label="图标" label-width="120px" prop="icon">
+          <el-input v-model="form.icon"></el-input>
         </el-form-item>
         <el-form-item label="菜单状态" label-width="120px">
-          <el-switch v-model="form.visible"></el-switch>
+          <!-- <el-switch v-model="form.visible"></el-switch> -->
+           <el-switch v-model="form.visible" active-value="0" inactive-value="1"></el-switch>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button @click="preservation" type="primary">保 存</el-button>
-        <el-button type="primary" @click="close">关 闭</el-button>
+        <el-button @click="handleSave" type="primary">保 存</el-button>
+        <el-button type="primary" @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -114,10 +111,10 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;">
-        <el-tree :data="tableDataList" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        <el-tree :data="tableDataList" :expand-on-click-node="false" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="sectoralChoice = false">确 定</el-button>
+        <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
         <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -134,6 +131,7 @@ import {
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
+import _ from 'lodash';
 
 export default {
   mixins: [mixin],
@@ -188,35 +186,36 @@ export default {
         orderNum: "",
         path: "",
         menuType: "",
-        visible: "",
+        visible: '0',
         perms: "",
         icon: "",
         menuId: "",
         component: ""
       },
-      cdId: "",
       sizeForm: {
         menuName: "",
         visible: ""
       },
+      nodeSelTemp: '',
       dialogVisible: false,
       sectoralChoice: false,
       ids: "",
-      isSearch: true,
       defaultProps: {
         children: "children",
         label: "menuName"
-      },
-      data: []
+      }
     };
   },
   computed: {
     query() {
+      return this.doQuery.bind(this, getMenuList);
+    },
+    querySearch() {
       return this.doQuery.bind(this, getQueryByList);
     }
   },
   created() {
-    this.queryDate();
+    this.query();
   },
   methods: {
     toggleSelection(rows) {
@@ -241,7 +240,7 @@ export default {
           message: "删除成功!"
         });
         this.dialogVisible = false;
-        this.queryDate();
+        this.query();
       });
     },
     revise() {
@@ -255,109 +254,40 @@ export default {
           type: "warning"
         });
       } else {
-        console.log(this.multipleSelection);
         this.dialogFormVisible = true;
-        this.form = this.multipleSelection.pop(); //获取最后一条
-        this.obj = this.multipleSelection.pop();
+        let rows = this.multipleSelection.pop(); //获取最后一条
+        this.editor(rows,true);
       }
     },
     handleSelectionChange(val) {
       console.log(val);
       this.multipleSelection = val;
     },
-    queryDate() { //数据获取
-      this.total = 1;
-      getMenuList(this.sizeForm).then(res => {
-        console.log(res);
-        res.forEach(item => {
-          console.log();
-          if (item.menuType == "M") {
-            res.menuType = "目录";
-          } else if (item.menuType == "C") {
-            res.menuType = "菜单";
-          } else if (item.menuType == "F") {
-            res.menuType = "按钮";
-          }
-        });
-        this.tableDataList = res;
-        this.data = res.rows;
-      });
-    },
-    preservation() {
-      if (JSON.stringify(this.obj) == "{}") {
-        //新增
-        this.addAsk();
-      } else {
-        //编辑
-        this.saveAsk();
-      }
-    },
-    addAsk() { //新增
-      this.form.visible = this.form.visible == true ? 0 : 1;
-      this.form.parentId = this.cdId;
-      putMenuAdd(this.form).then(res => {
+    handleSave() {
+      const requestApi = this.isEditor ? putMenuEdit : putMenuAdd;
+      requestApi(this.form).then(res => {
+        this.handleFormDlogClose('editForm', 'dialogFormVisible');
+        let msgName = this.isEditor ? "修改成功!":"新增成功!";
         this.$message({
           type: "success",
-          message: "新增成功!"
+          message: msgName
         });
-        this.dialogFormVisible = false;
-        this.queryDate();
-      });
+        this.query();
+      })
     },
-    saveAsk() { // 编辑
-      // console.log(this.form)
-      this.form.visible = this.form.visible == true ? 0 : 1;
-      // this.form.systemId = this.form.systemId;
-      let obj = {
-        menuId: this.form.menuId,
-        parentId: this.form.parentId,
-        menuName: this.form.menuName,
-        systemId: this.form.systemId,
-        parentId: this.form.parentId,
-        orderNum: this.form.orderNum,
-        path: this.form.path,
-        menuType: this.form.menuType,
-        visible: this.form.visible,
-        perms: this.form.perms,
-        icon: this.form.icon,
-        component: this.form.component
-      };
+    editor(rows, isEditor) {
+      console.log(rows, isEditor)
+      this.dialogFormVisible = true;
+      this.isEditor = isEditor;
+      this.$nextTick(() => {
+        isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
+      });
       console.log(this.form);
-      putMenuEdit(obj).then(res => {
-        this.$message({
-          type: "success",
-          message: "修改成功!"
-        });
-        this.dialogFormVisible = false;
-        this.queryDate();
-      });
     },
-    saveAskfather() { //打开新增弹框
-      this.dialogFormVisible = true;
-      this.form = {};
-      this.obj = {};
-    },
-    saveAskhz(rows) { //打开新增弹框
-    console.log(rows)
-      this.dialogFormVisible = true;
-      this.form.parentId = rows.menuId;
-      this.obj = {};
-    },
-    editor(rows) {
-      console.log(rows);
-      //编辑
-      this.dialogFormVisible = true;
-      this.form = rows;
-      this.obj = rows;
-    },
-    handleNodeClick(data) { //获取菜单选择树
-      this.form.parentId = data.menuName;
-      this.cdId = data.menuId;
-    },
-    close() { //关闭
-      this.queryDate();
-      this.dialogFormVisible = false;
-      this.form = {};
+    handleNodeSelect() {
+      this.form.parentId = _.clone(this.nodeSelTemp).menuId;
+      this.nodeSelTemp = '';
+      this.sectoralChoice = false;
     }
   }
 };

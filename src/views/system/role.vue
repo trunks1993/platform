@@ -10,7 +10,7 @@
     <div class="app-wrapper">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="roleAdds">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <!-- <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button> -->
@@ -36,7 +36,7 @@
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="280">
               <template slot-scope="scope">
-                <el-button type="text" @click="editor(scope.row)">编辑</el-button>
+                <el-button type="text" @click="editor(scope.row,true)">编辑</el-button>
                 <el-button type="text" @click="editdialog(scope.row)">数据权限</el-button>
                 <el-button type="text-warn" @click="assignUsers(scope.row)">分配用户</el-button>
                 <el-button type="text-warn" @click="deleted(scope.row.roleId)">删除</el-button>
@@ -58,21 +58,21 @@
         </div>
       </div>
     </div>
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible"  :before-close="handleFormDlogClose.bind(null, 'editForm')">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" :inline="true" style="height: 400px; overflow: auto;">
-        <el-form-item label="角色名称：" label-width="120px">
-          <el-input v-model="form.roleName" autocomplete="off"></el-input>
+      <el-form :model="form" :inline="true"  ref="editForm">
+        <el-form-item label="角色名称：" label-width="120px" prop="roleName">
+          <el-input v-model="form.roleName"></el-input>
         </el-form-item>
-        <el-form-item label="权限字符：" label-width="120px">
-          <el-input v-model="form.roleKey" autocomplete="off"></el-input>
+        <el-form-item label="权限字符：" label-width="120px" prop="roleKey">
+          <el-input v-model="form.roleKey"></el-input>
         </el-form-item>
-        <el-form-item label="显示顺序：" label-width="120px">
-          <el-input v-model="form.roleSort" autocomplete="off"></el-input>
+        <el-form-item label="显示顺序：" label-width="120px" prop="roleSort">
+          <el-input v-model="form.roleSort"></el-input>
         </el-form-item>
         <el-form-item label="状态：" label-width="120px">
          <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
@@ -91,13 +91,13 @@
             style="top: 7px;"
           ></el-tree>
         </el-form-item>
-        <el-form-item label="备注：" label-width="120px">
+        <el-form-item label="备注：" label-width="120px"  prop="remark">
           <el-input v-model="form.remark" autocomplete="off" type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button @click="preservation" type="primary">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+        <el-button  @click="handleSave" type="primary">保 存</el-button>
+        <el-button type="primary" @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -198,13 +198,6 @@ export default {
             { label: "停用", value: 1 }
           ]
         }
-        // {
-        //   fiAttr: {
-        //     label: "创建时间"
-        //   },
-        //   el: "date-picker",
-        //   bindkey: "surStatus"
-        // }
       ],
       data: [],
       defaultProps: {
@@ -333,8 +326,8 @@ export default {
         });
       } else {
         this.dialogFormVisible = true;
-        this.form = this.multipleSelection.pop(); //获取最后一条
-        this.obj = this.multipleSelection.pop();
+        let rows = this.multipleSelection.pop(); //获取最后一条
+        this.editor(rows,true);
       }
     },
     deleted(ids) {
@@ -354,48 +347,6 @@ export default {
         this.query();
       });
     },
-    preservation() {
-      // 新增保存
-      if (JSON.stringify(this.obj) == "{}") {
-        //新增
-        this.addAsk();
-      } else {
-        //编辑
-        this.saveAsk();
-      }
-    },
-    addAsk() {
-      this.form.deptIds = this.deptIds.toString();
-      putRoleAdd(this.form).then(res => {
-        this.$message({
-          type: "success",
-          message: "新增成功!"
-        });
-        this.dialogFormVisible = false;
-        this.query();
-      });
-    },
-    saveAsk() {
-      this.form.deptIds = this.deptIds.toString();
-      let obj = {
-        roleName: this.form.roleName,
-        roleKey: this.form.roleKey,
-        roleSort: this.form.roleSort,
-        status: this.form.status,
-        remark: this.form.remark,
-        deptIds: this.form.deptIds,
-        roleId: this.form.roleId
-      };
-      console.log(this.form);
-      putRoleEdit(obj).then(res => {
-        this.$message({
-          type: "success",
-          message: "修改成功!"
-        });
-        this.dialogFormVisible = false;
-        this.query();
-      });
-    },
     sureEdit() {
       putRoleEdit(this.editForm).then(res => {
         this.$message({
@@ -406,25 +357,10 @@ export default {
         this.query();
       });
     },
-    handleSizeChange: function(current) {
-      console.log(current);
-      this.current = current;
-      this.queryDate();
-    },
-
     roleAdds() {
       this.dialogFormVisible = true;
       this.form = {};
       this.obj = {};
-    },
-    editor(rows) {
-      //编辑
-      this.dialogFormVisible = true;
-      this.treeSelection.push(Number(rows.dataScope));
-      console.log(this.treeSelection)
-      console.log(rows);
-      this.form = rows;
-      this.obj = rows;
     },
     // 权限
     getCheckedNodes() {
@@ -432,18 +368,6 @@ export default {
     },
     getCheckedKeys() {
       console.log(this.$refs.tree.getCheckedKeys());
-    },
-    setCheckedNodes() {
-      this.$refs.tree.setCheckedNodes([
-        {
-          id: 5,
-          label: "二级 2-1"
-        },
-        {
-          id: 9,
-          label: "三级 1-1-1"
-        }
-      ]);
     },
     setCheckedKeys() {
       this.$refs.tree.setCheckedKeys([3]);
@@ -460,6 +384,39 @@ export default {
       });
       console.log(arr);
       this.deptIds = arr;
+    },
+    handleSave() {
+      const requestApi = this.isEditor ? putRoleEdit : putRoleAdd;
+      requestApi(this.form).then(res => {
+        this.handleFormDlogClose('editForm', 'dialogFormVisible');
+        let msgName = this.isEditor ? "修改成功!":"新增成功!";
+        this.$message({
+          type: "success",
+          message: msgName
+        });
+        this.query();
+      })
+    },
+    handleNodeClicks(data) {
+      let sdtDeptId = parseInt(data.sdtDeptId);
+      getSysUserList({
+        surDeptId: sdtDeptId,
+        pageNum: this.queryList.pageNum,
+        pageSize: this.queryList.pageSize
+      }).then(res => {
+         this.tableDataList = res.rows;
+      });
+    },
+    handleNodeClick(data) {
+      this.form.surDeptId = data.sdtDeptId;
+    },
+    editor(rows, isEditor) {
+      this.dialogFormVisible = true;
+      this.isEditor = isEditor;
+      this.$nextTick(() => {
+        isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
+      });
+      this.form.roleId = rows.roleId;
     },
     // 数据权限
     editdialog(rows) {
