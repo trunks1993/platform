@@ -30,7 +30,7 @@
             <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
             <el-table-column label="角色状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="scope.row.status" active-value="0" inactive-value="1"></el-switch>
+                <el-switch v-model="scope.row.status"  @change="editorStatus(scope.row)"  active-value="0" inactive-value="1"></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
@@ -107,7 +107,7 @@
         <span class="title">系统提示信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+     <div style="width:100%;color:#63ACDF;text-align:center;">{{handleData}}</div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="sure">确 定</el-button>
         <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
@@ -246,6 +246,7 @@ export default {
       isSearch: true,
       deptIds: [],
       treeSelection:[],
+      handleData:"确定要删除列表数据吗？"
     };
   },
   components: {
@@ -334,18 +335,39 @@ export default {
       //删除
       this.dialogVisible = true;
       this.ids = ids;
+      this.handleData = "确定要删除列表数据吗？";
+    },
+    editorStatus(rows){ //开关按钮
+      console.log(rows.status)
+      this.dialogVisible = true;
+      this.form = rows;
+      this.handleData = rows.status == 0 ? "确认要正常用户吗？": "确认要停用用户吗？";
     },
     sure() {
-      //确认删除
-      deleteRoleGwPage({ roleIds: this.ids }).then(res => {
-        console.log(res);
-        this.$message({
-          type: "success",
-          message: "删除成功!"
+      if(this.ids.length != 0){
+        deleteRoleGwPage({ roleIds: this.ids }).then(res => {
+          let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
+          this.$message({
+            type: "success",
+            message: msgName
+          });
+          this.dialogVisible = false;
+          this.query();
         });
-        this.dialogVisible = false;
-        this.query();
-      });
+      } else {
+        let obj = {
+          roleId:this.form.roleId,
+          status:this.form.status,
+        }
+        putRoleEdit(obj).then(res => {  
+          this.$message({
+            type: "success",
+            message: "修改成功!"
+          });
+          this.dialogVisible = false;
+          this.query();
+        })
+      }
     },
     sureEdit() {
       putRoleEdit(this.editForm).then(res => {
@@ -387,6 +409,7 @@ export default {
     },
     handleSave() {
       const requestApi = this.isEditor ? putRoleEdit : putRoleAdd;
+      console.log(this.form);
       requestApi(this.form).then(res => {
         this.handleFormDlogClose('editForm', 'dialogFormVisible');
         let msgName = this.isEditor ? "修改成功!":"新增成功!";
