@@ -62,7 +62,7 @@ export const postresetPwd = params => request({
 });
 // 获取角色管理列表
 export const getSysRoleList = params => request({
-  url: '/v1/role/list',
+  url: '/v1/role/selectByRole',
   method: 'get',
   params,
 });

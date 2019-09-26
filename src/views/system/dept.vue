@@ -1,30 +1,17 @@
 <template>
   <div class="common-container">
-    <div
-      class="filter-container"
-      style="height: 159px;background: url(../img/tabs-search-bg.e34485a0.png);background-size: 100% 100%;padding: 20px;"
-    >
-      <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-        <el-form-item label="部门名称">
-          <el-input v-model="sizeForm.sdtDeptName"></el-input>
-        </el-form-item>
-        <el-form-item label="部门状态">
-          <el-select v-model="sizeForm.sdtStatus" placeholder="请选择" style="width:245px;">
-            <el-option label="所有" value></el-option>
-            <el-option label="正常" value="0"></el-option>
-            <el-option label="停用" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item size="large">
-          <el-button type="primary" @click="onSubmit">搜索</el-button>
-          <el-button type="primary" @click="reset">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <FilterQueryForm
+      :fAttr="{'label-width': '80px'}"
+      :resetBtnVisible="true"
+      :searchBtnVisible="true"
+      :model="fqForm"
+      @afterReset="query"
+      @afterFilter="handleFilter($event, querySearch)"
+    ></FilterQueryForm>
     <div class="app-wrapper">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="addInfo">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="unfold">展开/折叠</el-button>
         </div>
@@ -57,8 +44,8 @@
             <el-table-column prop="sdtCreateTime" label="创建时间"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button type="text" @click="editor(scope.row)">编辑</el-button>
-                <el-button type="text" @click="deptAdd(scope.row)">新增</el-button>
+                <el-button type="text" @click="editor(scope.row, true)">编辑</el-button>
+                <el-button type="text" @click="editor(scope.row)">新增</el-button>
                 <el-button type="text-warn" @click="deleted(scope.row.sdtDeptId)">删除</el-button>
               </template>
             </el-table-column>
@@ -66,39 +53,39 @@
         </div>
       </div>
     </div>
-    <el-dialog :visible.sync="dialogFormVisible"  @close="close">
+    <el-dialog :visible.sync="dialogFormVisible" :before-close="handleFormDlogClose.bind(null, 'editForm')">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" :inline="true">
-        <el-form-item label="上级部门：" :label-width="formLabelWidth">
-          <el-input v-model="form.sdtDeptPid" @focus="sectoralChoice = true" autocomplete="off"></el-input>
+      <el-form :model="form"  ref="editForm" :inline="true">
+        <el-form-item label="上级部门：" :label-width="'120px'"  prop="sdtDeptPid">
+          <el-input v-model="form.sdtDeptPid" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
-        <el-form-item label="部门名称：" :label-width="formLabelWidth">
-          <el-input v-model="form.sdtDeptName" autocomplete="off"></el-input>
+        <el-form-item label="部门名称：" :label-width="'120px'"  prop="sdtDeptName">
+          <el-input v-model="form.sdtDeptName"></el-input>
         </el-form-item>
-        <el-form-item label="显示排序：" :label-width="formLabelWidth">
-          <el-input v-model="form.sdtOrderNum" autocomplete="off"></el-input>
+        <el-form-item label="显示排序：" :label-width="'120px'"  prop="sdtOrderNum">
+          <el-input v-model="form.sdtOrderNum"></el-input>
         </el-form-item>
-        <el-form-item label="负责人：" :label-width="formLabelWidth">
-          <el-input v-model="form.sdtLeader" autocomplete="off"></el-input>
+        <el-form-item label="负责人：" :label-width="'120px'"  prop="sdtLeader">
+          <el-input v-model="form.sdtLeader"></el-input>
         </el-form-item>
-        <el-form-item label="联系电话：" :label-width="formLabelWidth">
-          <el-input v-model="form.sdtPhone" autocomplete="off"></el-input>
+        <el-form-item label="联系电话：" :label-width="'120px'"  prop="sdtPhone">
+          <el-input v-model="form.sdtPhone"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱：" :label-width="formLabelWidth">
-          <el-input v-model="form.sdtEmail" autocomplete="off"></el-input>
+        <el-form-item label="邮箱：" :label-width="'120px'"  prop="sdtEmail">
+          <el-input v-model="form.sdtEmail"></el-input>
         </el-form-item>
-        <el-form-item label="部门状态" :label-width="formLabelWidth">
+        <el-form-item label="部门状态" :label-width="'120px'">
           <el-radio v-model="form.sdtStatus" label="0">正常</el-radio>
           <el-radio v-model="form.sdtStatus" label="1">停用</el-radio>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button @click="preservation" type="primary">保 存</el-button>
-        <el-button type="primary"  @click="close">关 闭</el-button>
+        <el-button @click="handleSave" type="primary">保 存</el-button>
+        <el-button type="primary"  @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -122,10 +109,10 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;">
-        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        <el-tree :data="data" :expand-on-click-node="false" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="sectoralChoice = false">确 定</el-button>
+        <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
         <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -147,7 +134,7 @@ export default {
     return {
       baseExpApi:
         "http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel",
-      fqForm: [
+       fqForm: [
         {
           fiAttr: {
             label: "部门名称"
@@ -156,7 +143,7 @@ export default {
           elAttr: {
             type: "text"
           },
-          bindKey: "roleName"
+          bindKey: "sdtDeptName"
         },
         {
           fiAttr: {
@@ -164,7 +151,7 @@ export default {
           },
           el: "select",
           elAttr: {},
-          bindKey: "status",
+          bindKey: "sdtStatus",
           option: [
             { label: "所有", value: "" },
             { label: "正常", value: 0 },
@@ -202,7 +189,7 @@ export default {
       bmId: "",
       type: 0,
       tableData: [],
-      formLabelWidth: "120px",
+      '120px': "120px",
       dialogFormVisible: false,
       sectoralChoice: false,
       value1: true,
@@ -221,13 +208,23 @@ export default {
       dialogVisible: false,
       ids: "",
       sdtDeptNameId:"",
-      isSearch: true
+      nodeSelTemp: '',
+      // isSearch: true
     };
   },
   components: {
     FilterQueryForm
   },
+  computed: {
+    query() {
+      return this.doQuery.bind(this, getSysDeptTreeData);
+    },
+    querySearch() {
+      return this.doQuery.bind(this, searchSysDeptList);
+    }
+  },
   created() {
+    this.query();
     this.queryDate();
   },
   methods: {
@@ -254,22 +251,12 @@ export default {
       //获取分页数据
       getSysDeptTreeData().then(res => {
         this.data = res;
-        this.tableDataList = res;
       });
     },
     reset() {
       //重置输入框数据
       this.sizeForm.sdtDeptName = "";
       this.sizeForm.sdtStatus = "";
-    },
-    preservation() {
-      if (JSON.stringify(this.obj) == "{}") {
-        //新增
-        this.addAsk();
-      } else {
-        //编辑
-        this.saveAsk();
-      }
     },
     addAsk() {
       //新增保存
@@ -302,17 +289,6 @@ export default {
         this.queryDate();
       });
     },
-    editor(rows) {
-      //编辑
-      this.dialogFormVisible = true;
-      this.form = rows;
-      this.obj = rows;
-    },
-    addInfo() { //新增打开弹框
-      this.dialogFormVisible = true;
-      this.form = {};
-      this.obj = {};
-    },
     deptAdd(rows) {
       //具体行新增
       this.dialogFormVisible = true;
@@ -334,8 +310,8 @@ export default {
       } else {
         console.log(this.multipleSelection);
         this.dialogFormVisible = true;
-        this.form = this.multipleSelection.pop(); //获取最后一条
-        this.obj = this.multipleSelection.pop();
+        let rows = this.multipleSelection.pop(); //获取最后一条
+        this.editor(rows,true);
       }
     },
     deleted(ids) {
@@ -351,7 +327,7 @@ export default {
           message: "删除成功!"
         });
         this.dialogVisible = false;
-       this.queryDate();
+       this.query();
       });
     },
     handleNodeClick(data) { //部门选择树
@@ -362,10 +338,31 @@ export default {
       console.log(this.$refs.tableTree.defaultExpandAll)
       // this.$refs.tableTree.defaultExpandAll = "false";
     },
-    close(){ //关闭
-      this.dialogFormVisible = false;
-      this.queryDate();
-      this.form = {};
+    editor(rows, isEditor) {
+      console.log(rows, isEditor)
+      this.dialogFormVisible = true;
+      this.isEditor = isEditor;
+        this.$nextTick(() => {
+          isEditor ? this.form = rows : this.form.sdtDeptPid = rows.sdtDeptPid;
+        });
+    },
+    handleSave() {
+      const requestApi = this.isEditor ? putSysDeptEdit : postSysDeptAdd;
+      requestApi(this.form).then(res => {
+        this.handleFormDlogClose('editForm', 'dialogFormVisible');
+        let msgName = this.isEditor ? "修改成功!":"新增成功!";
+        this.$message({
+          type: "success",
+          message: msgName
+        });
+        this.query();
+      })
+    },
+    handleNodeSelect() {
+      console.log(_.clone(this.nodeSelTemp))
+      this.form.sdtDeptPid = _.clone(this.nodeSelTemp).sdtDeptId;
+      this.nodeSelTemp = '';
+      this.sectoralChoice = false;
     }
   }
 };

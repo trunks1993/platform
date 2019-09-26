@@ -7,7 +7,7 @@
       :searchBtnVisible="true"
       :model="fqForm"
       @afterReset="query"
-      @afterFilter="handleFilter($event, query)"
+      @afterFilter="handleFilter($event, querySearch)"
     ></FilterQueryForm>
     <div class="app-wrapper">
       <div class="content-box">
@@ -46,18 +46,6 @@
               </template>
             </el-table-column>
           </el-table>
-        </div>
-        <div class="content-box-pagination">
-          <el-pagination
-            style="text-align:right;"
-            background
-            layout="prev, pager, next"
-            @size-change="handleSizeChange($event, query)"
-            @current-change="handleCurrentChange($event, query)"
-            :current-page="queryList.pageNum"
-            :page-size="queryList.pageSize"
-            :total="total"
-          ></el-pagination>
         </div>
       </div>
     </div>
@@ -207,6 +195,9 @@ export default {
   computed: {
     query() {
       return this.doQuery.bind(this, getMenuList);
+    },
+    querySearch() {
+      return this.doQuery.bind(this, getQueryByList);
     }
   },
   created() {
@@ -249,10 +240,9 @@ export default {
           type: "warning"
         });
       } else {
-        console.log(this.multipleSelection);
         this.dialogFormVisible = true;
-        this.form = this.multipleSelection.pop(); //获取最后一条
-        this.obj = this.multipleSelection.pop();
+        let rows = this.multipleSelection.pop(); //获取最后一条
+        this.editor(rows,true);
       }
     },
     handleSelectionChange(val) {
@@ -263,15 +253,22 @@ export default {
       const requestApi = this.isEditor ? putMenuEdit : putMenuAdd;
       requestApi(this.form).then(res => {
         this.handleFormDlogClose('editForm', 'dialogFormVisible');
+        let msgName = this.isEditor ? "修改成功!":"新增成功!";
+        this.$message({
+          type: "success",
+          message: msgName
+        });
         this.query();
       })
     },
     editor(rows, isEditor) {
+      console.log(rows, isEditor)
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
       this.$nextTick(() => {
         isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
       });
+      console.log(this.form);
     },
     handleNodeSelect() {
       this.form.parentId = _.clone(this.nodeSelTemp).menuId;

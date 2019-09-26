@@ -1,17 +1,12 @@
 <template>
   <div class="common-container">
-     <el-form :model="allocatedListForm" :inline="true" style="height: 159px;background: url(../img/tabs-search-bg.e34485a0.png);background-size: 100% 100%;padding: 20px;">
-      <el-form-item label="登录名称" :label-width="'120px'">
-        <el-input v-model="allocatedListForm.surLoginName" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="手机号码" :label-width="'120px'">
-        <el-input v-model="allocatedListForm.surPhoneNumber" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item size="large">
-        <el-button type="primary" @click="allocatedListSearch">搜索</el-button>
-        <el-button type="primary" @click="reset">重置</el-button>
-      </el-form-item>
-    </el-form>
+     <FilterQueryForm
+      :fAttr="{'label-width': '80px'}"
+      :resetBtnVisible="false"
+      :searchBtnVisible="true"
+      :model="fqForm"
+      @afterFilter="handleFilter($event, querySearch)"
+    ></FilterQueryForm>
     <div class="app-wrapper">
       <div class="content-box">
         <div class="content-box-tool">
@@ -139,10 +134,7 @@ export default {
         surLoginName: "",
         surPhoneNumber: "",
       },
-      allocatedListForm: {
-        surLoginName: "",
-        surPhoneNumber: "",
-      },
+
       pageShow: true,
       current: 1,
       pageSize: 5,
@@ -154,29 +146,48 @@ export default {
       },
       multipleSelection: [],
       multipleSelectionSon: [],
-      roleId:"",
+      roleId:"1",
+      fqForm: [
+        {
+          fiAttr: {
+            label: "角色名称"
+          },
+          el: "input",
+          elAttr: {
+            type: "text"
+          },
+          bindKey: "surLoginName"
+        },
+        {
+          fiAttr: {
+            label: "手机号码"
+          },
+          el: "input",
+          elAttr: {
+            type: "number"
+          },
+          bindKey: "surPhoneNumber"
+        }
+      ],
     };
   },
   components: {
     FilterQueryForm
   },
-  computed: {},
+  computed: {
+    query() {
+      return this.doQuery.bind(this, getSelectByUser);
+    },
+    querySearch(){
+      return this.doQuery.bind(this, getAllocatedList);
+    }
+  },
   created() {
-    console.log(this.$route.query.roleId)
-    this.roleId = this.$route.query.roleId;
     this.query();
-    getMenuList(this.sizeForm).then(res => {
-      console.log(res);
-      this.data = res;
-    });
+    this.roleId = this.$route.query.roleId != null ? this.roleId:1;
+    this.queryList.roleId = this.$route.query.roleId;
   },
   methods: {
-    query() {
-      getSelectByUser({ roleId: this.roleId }).then(res => {
-        console.log(res);
-        this.tableDataList = res.rows;
-      });
-    },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
@@ -232,7 +243,7 @@ export default {
     },
     roleAdds(){ //添加用户
         this.dialogFormVisible = true;
-        getUnallocatedList({surRoleId:this.roleId}).then(res=>{
+        getUnallocatedList({roleId:this.roleId}).then(res=>{
           console.log(res)
           this.unTableDataList = res.rows;
         })
@@ -256,7 +267,7 @@ export default {
     sure(){ //删除
         console.log(this.ids);
         if(this.ids.length >= 1){
-            getDeleteUserRole({surUserIds:this.ids,surRoleId:1}).then(res=>{
+            getDeleteUserRole({surUserIds:this.ids,surRoleId:this.roleId}).then(res=>{
                 this.dialogVisible = false;
                 this.$message({
                     type: "success",
@@ -275,15 +286,10 @@ export default {
         }
         this.query()
     },
-    allocatedListSearch(){
-      this.allocatedListForm.surRoleId = this.roleId;
-      getAllocatedList(this.allocatedListForm).then(res=>{
-        this.tableDataList = res.rows;
-      })
-    },
+
     unSearch(){
       getUnallocatedList({
-        surRoleId:this.roleId,
+        roleId:this.roleId,
         surLoginName:this.form.surLoginName,
         surPhoneNumber:this.form.surPhoneNumber,
       }).then(res=>{
@@ -293,128 +299,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.role {
-  color: #fff;
-  height: 100%;
-  .tabs-search {
-    height: 175px;
-    margin-bottom: 12px;
-    background: url(../../assets/images/tabs-search-bg.png);
-    background-size: 100% 100%;
-    .search {
-      width: 100%;
-      height: 150px;
-      padding: 28px 20px;
-    }
-  }
-  .dashboard-content {
-    height: calc(100% - 187px);
-    width: 100%;
-    display: flex;
-    .organization {
-      width: 223px;
-      height: 100%;
-    }
-    .table-content {
-      width: 100%;
-      height: 100%;
-      background: url(../../assets/images/table-content-bg.png);
-      background-size: 100% 100%;
-      padding: 22px 34px;
-      box-sizing: border-box;
-      .tableHead {
-        height: 70px;
-        .button {
-          width: 90px;
-          height: 36px;
-          line-height: 36px;
-          background: #05254b;
-          margin-right: 20px;
-          float: left;
-          border-radius: 4px;
-          text-align: right;
-          padding-right: 20px;
-          cursor: pointer;
-        }
-        .button::before {
-          content: "";
-          width: 14px;
-          height: 14px;
-          display: inline-block;
-          background-image: url(../../assets/icon.png);
-          background-position: -57px 792px;
-          margin-right: 6px;
-        }
-        .button:nth-child(2):before {
-          background-position: -57px 770px;
-        }
-        .button:nth-child(3):before {
-          background-position: -57px 749px;
-        }
-        .button:nth-child(4):before {
-          background-position: -57px 726px;
-        }
-        .button:nth-child(5):before {
-          background-position: -57px 704px;
-        }
-        .operation {
-          width: 210px;
-          height: 36px;
-          background: #05254b;
-          border: 1px solid #02439d;
-          float: right;
-          display: flex;
-          div {
-            width: 25%;
-            height: 28px;
-            margin-top: 4px;
-            position: relative;
-            cursor: pointer;
-            span {
-              width: 14px;
-              height: 14px;
-              display: inline-block;
-              background-image: url(../../assets/icon.png);
-              background-position: -57px 422px;
-              position: absolute;
-              left: 50%;
-              margin-left: -7px;
-              top: 50%;
-              margin-top: -7px;
-            }
-          }
-          div::before {
-            content: "";
-            width: 1px;
-            height: 28px;
-            display: inline-block;
-            background: linear-gradient(
-              0deg,
-              rgba(1, 84, 199, 0) 0%,
-              rgba(1, 84, 199, 1) 42%,
-              rgba(1, 84, 199, 0) 100%
-            );
-          }
-          div:nth-child(1):before {
-            width: 0;
-          }
-          div:nth-child(2) span {
-            background-position: -57px 376px;
-          }
-          div:nth-child(3) span {
-            background-position: -57px 331px;
-          }
-          div:nth-child(4) span {
-            background-position: -57px 288px;
-          }
-        }
-      }
-      .table {
-        width: 100%;
-        height: calc(100% - 165px);
-        overflow: auto;
-      }
-    }
-  }
-}
