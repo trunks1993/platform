@@ -8,7 +8,7 @@ const mixin = {
       total: 0,
       queryList: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 5,
       },
       tableDataList: [],
     };
