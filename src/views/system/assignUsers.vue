@@ -28,7 +28,13 @@
             <el-table-column label="用户名称" prop="surUserName"></el-table-column>
             <el-table-column label="邮箱" prop="surEmail"></el-table-column>
             <el-table-column prop="surPhoneNumber" label="手机" show-overflow-tooltip></el-table-column>
-            <el-table-column label="用户状态" prop="surStatus"></el-table-column>
+            <el-table-column label="用户状态" prop="surStatus">
+              <template slot-scope="scope">
+                 <span
+                  :style="{color:scope.row.surStatus == '0' ? '#45eba7' : '#cb3203'}"
+                >{{scope.row.surStatus == '0' ? '正常' : '停用'}}</span>
+              </template>
+            </el-table-column>
             <el-table-column prop="surCreateTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
@@ -150,7 +156,7 @@ export default {
       fqForm: [
         {
           fiAttr: {
-            label: "角色名称"
+            label: "登录名称"
           },
           el: "input",
           elAttr: {
@@ -184,8 +190,8 @@ export default {
   },
   created() {
     this.query();
-    this.roleId = this.$route.query.roleId != null ? this.roleId:1;
-    this.queryList.roleId = this.$route.query.roleId;
+    this.roleId = this.$route.query.roleId != null ? this.$route.query.roleId:this.roleId;
+    this.queryList.roleId = this.roleId;
   },
   methods: {
     toggleSelection(rows) {
@@ -269,6 +275,7 @@ export default {
                     type: "success",
                     message: "批量取消授权成功!"
                 });
+                this.query()
             })
         }else {
             deleteRoleGwPage({roleId:this.ids}).then(res=>{
@@ -277,9 +284,10 @@ export default {
                     type: "success",
                     message: "取消授权成功!"
                 });
+                this.query()   
             })
         }
-        this.query()
+        
     },
 
     unSearch(){

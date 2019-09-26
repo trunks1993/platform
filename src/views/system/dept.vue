@@ -124,7 +124,8 @@ import {
   searchSysDeptList,
   postSysDeptAdd,
   deleteSysDeptRomove,
-  putSysDeptEdit
+  putSysDeptEdit,
+  getSysDeptEdit
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -229,15 +230,6 @@ export default {
     this.queryDate();
   },
   methods: {
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -258,44 +250,6 @@ export default {
       //重置输入框数据
       this.sizeForm.sdtDeptName = "";
       this.sizeForm.sdtStatus = "";
-    },
-    addAsk() {
-      //新增保存
-      if( this.sdtDeptNameId == []) {
-        this.form.sdtDeptPid = this.bmId;
-      }else {
-        this.form.sdtDeptPid = this.sdtDeptNameId;
-      }
-      postSysDeptAdd(this.form).then(res => {
-        this.$message({
-          type: "success",
-          message: "新增成功!"
-        });
-        this.dialogFormVisible = false;
-        this.queryDate();
-      });
-    },
-    saveAsk() {
-      //修改保存
-      console.log(this.form.sdtDeptPid)
-      if(this.bmId != []) {
-        this.form.sdtDeptPid = this.bmId;
-      }
-      putSysDeptEdit(this.form).then(res => {
-        this.$message({
-          type: "success",
-          message: "修改成功!"
-        });
-        this.dialogFormVisible = false;
-        this.queryDate();
-      });
-    },
-    deptAdd(rows) {
-      //具体行新增
-      this.dialogFormVisible = true;
-      this.form.sdtDeptPid = rows.sdtDeptName;
-      this.sdtDeptNameId = rows.sdtDeptId;
-      this.obj = {};
     },
     revise() {
       //批量修改
@@ -345,9 +299,13 @@ export default {
       console.log(rows, isEditor)
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
-        this.$nextTick(() => {
-          isEditor ? this.form = rows : this.form.sdtDeptPid = rows.sdtDeptPid;
-        });
+      if(isEditor){
+        getSysDeptEdit(rows.sdtDeptId).then(res=>{
+          this.form = res
+        })
+      }else {
+          this.form.sdtDeptPid = rows.sdtDeptId;
+      }
     },
     handleSave() {
       const requestApi = this.isEditor ? putSysDeptEdit : postSysDeptAdd;

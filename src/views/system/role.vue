@@ -260,11 +260,8 @@ export default {
         dataScope: "",
       },
       pageShow: true,
-      current: 1,
-      pageSize: 5,
       dialogVisible: false,
       ids: "",
-      total: 10,
       isSearch: true,
       deptIds: [],
       menuIds: [],
@@ -306,14 +303,6 @@ export default {
     //搜索按钮
     onSubmit() {
       console.log("submit!");
-    },
-    //重置按钮
-    reset() {
-      this.sizeForm.roleName = "";
-      this.sizeForm.roleKey = "";
-      this.sizeForm.date1 = "";
-      this.sizeForm.date2 = "";
-      this.sizeForm.status = "";
     },
     exported() {
       //导出
@@ -462,23 +451,18 @@ export default {
       this.isEditor = isEditor;
       if(isEditor){
         getQueryByRoleId({roleId:rows.roleId}).then(res=>{
-          console.log(res)
+          this.form = _.pick(res, _.keys(this.form))
+          console.log(res);
         })
+      }else {
+        this.form.parentId = rows.menuId;
       }
-      this.$nextTick(() => {
-        isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
-      });
       this.form.roleId = rows.roleId;
     },
     // 数据权限
     editdialog(rows) {
       this.editForm = _.pick(rows, _.keys(this.editForm))
       this.editdialogVisible = true;
-    },
-    handleNodeClick(data) {
-      console.log(data);
-      // this.form.surDeptId = data.sdtDeptName;
-      // this.bmId = data.sdtDeptId;
     },
     assignUsers(rows){ //分配用户
       this.$router.push({path:'/system/assignUsers',query:{roleId:rows.roleId}});

@@ -32,9 +32,9 @@
                 {{scope.row.menuType | getMenuTypeName}}
               </span>
             </el-table-column>
-            <el-table-column label="可见" prop="visible">
+            <el-table-column label="显示" prop="visible">
               <span slot-scope="scope">
-                {{+scope.row.visible ? '不可见' : '可见'}}
+                {{+scope.row.visible ? '隐藏' : '显示'}}
               </span>
             </el-table-column>
             <el-table-column label="权限标识" prop="perms" />
@@ -60,7 +60,9 @@
           <el-input v-model="form.parentId" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
         <el-form-item label="菜单类型" label-width="120px" prop="menuType">
-          <el-input v-model="form.menuType"></el-input>
+          <el-radio v-model="form.menuType" label="M">目录</el-radio>
+          <el-radio v-model="form.menuType" label="C">菜单</el-radio>
+          <el-radio v-model="form.menuType" label="F">按钮</el-radio>
         </el-form-item>
         <el-form-item label="菜单名称" label-width="120px" prop="menuName">
           <el-input v-model="form.menuName"></el-input>
@@ -126,7 +128,8 @@ import {
   getMenuDelete,
   getMenuList,
   getQueryByList,
-  putMenuEdit
+  putMenuEdit,
+  getQueryByMenuId
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -166,21 +169,13 @@ export default {
             valueKey: "dictValue"
           }
         }
-        // {
-        //   fiAttr: {
-        //     label: "创建时间"
-        //   },
-        //   el: "date-picker",
-        //   bindkey: "surStatus"
-        // }
       ],
       tableDataList: [],
-      value1: true,
       multipleSelection: [],
       dialogFormVisible: false,
       form: {
         parentId:"",
-        menuType: "",
+        menuType: "M",
         menuName: "",
         component: "",
         path: "",
@@ -280,9 +275,14 @@ export default {
     editor(rows, isEditor) {
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
-      this.$nextTick(() => {
-        isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
-      });
+      if(isEditor){
+        getQueryByMenuId({menuId:rows.menuId}).then(res=>{
+          this.form = _.pick(res, _.keys(this.form));
+          this.form.menuId = rows.menuId;
+        })
+      }else {
+          this.form.parentId = rows.menuId;
+      }
     },
     handleNodeSelect() {
       this.form.parentId = _.clone(this.nodeSelTemp).menuId;
