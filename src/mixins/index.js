@@ -34,14 +34,13 @@ const mixin = {
     },
     // 带form的弹框关闭方式
     handleFormDlogClose(formName, done) {
-      console.log(this.$refs[formName]);
       this.$refs[formName].resetFields();
       typeof done === 'function' ? done() : (this[done] = false);
     },
     handleExport(baseExpApi, name) {
       const strArr = Object.entries(this.queryList).map(item => `${item[0]}=${item[1]}`);
       const paramString = strArr.join('&');
-      this.$confirm('确定导出所有数据吗？', '提示', {
+      this.$confirm('确定导出所有数据吗？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',

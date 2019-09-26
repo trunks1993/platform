@@ -144,11 +144,13 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "status",
-          option: [
-            { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "停用", value: 1 }
-          ]
+          bindValue: "",
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_post_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
         // {
         //   fiAttr: {
