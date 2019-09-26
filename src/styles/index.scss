@@ -148,3 +148,44 @@ ul {
     }
   }
 }
+// elementUI消息弹窗样式修改
+.el-message-box__wrapper{
+  width: 300px;
+  height: 200px;
+  background: url(../assets/images/dialog-bg.png) repeat;
+  background-size: 100% 100%;
+  color:#63ACDF;
+  left:50%; 
+  top:50%;
+  transform:translate(-50%,-50%);
+  text-align: center;
+  .el-message-box{
+    width: 300px;
+    height: 200px;
+    margin: 0 auto;
+    position: relative;
+    vertical-align: middle;
+    .el-message-box__header{
+      position: absolute;
+      bottom:0;
+      right:50%;
+      .el-message-box__headerbtn{
+        border:none;
+        outline:none;
+        width: 30px;
+        height: 30px;
+        // background-size: 100% 100%;
+        -webkit-transform: translate(50%, 0);
+        transform: translate(50%, 0);
+        background: url(../assets/images/icon-close-dialog.png) repeat;
+        background-size: cover;
+        .el-icon-close:before {
+          content: "";
+        }
+      }
+    }
+    .el-message-box__message{
+      margin: 50px auto;
+    }
+  }
+}
