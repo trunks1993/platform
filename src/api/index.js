@@ -207,7 +207,7 @@ export const deleteGwPage = params => request({
 });
 // 编辑岗位管理列表
 export const editorGwPage = params => request({
-  url: '/v1/manage/post/edit/{postCode}',
+  url: '/v1/manage/post/edit',
   method: 'put',
   params,
 });
@@ -225,7 +225,7 @@ export const queryDictPage = params => request({
 });
 // 编辑字典管理列表
 export const editorDictPage = params => request({
-  url: '/v1/dictionaries/dictType/edit/{dictId}',
+  url: '/v1/dictionaries/dictType/edit',
   method: 'put',
   params,
 });
@@ -297,7 +297,7 @@ export const addDicDatePage = params => request({
 });
 // 编辑字典数据管理列表
 export const editorDicDatePage = params => request({
-  url: '/v1/dictionaries/dictData/edit/{dictCode}',
+  url: '/v1/dictionaries/dictData/edit',
   method: 'put',
   params,
 });
@@ -314,7 +314,7 @@ export const deleteDicDatePage = params => request({
   params,
 });
 
-// 删除字典数据字典名称下拉框数据
+// 字典数据字典名称下拉框数据
 export const queryDicDateSelect = params => request({
   url: '/v1/dictionaries/dictType/down',
   method: 'get',
@@ -325,4 +325,30 @@ export const queryDicDateSelect = params => request({
 export const getSelectOption = url => request({
   url,
   method: 'get',
+});
+
+
+// 新增系统管理列表
+export const addSysData = params => request({
+  url: '/v1/system/add',
+  method: 'put',
+  params,
+});
+// 编辑系统管理列表
+export const editorSysData = params => request({
+  url: '/v1/system/edit',
+  method: 'put',
+  params,
+});
+// 查询系统管理列表
+export const querySysData = params => request({
+  url: '/v1/system/list',
+  method: 'get',
+  params,
+});
+// 删除系统管理列表
+export const deleteSysData = params => request({
+  url: '/v1/system/delete',
+  method: 'delete',
+  params,
 });

@@ -42,8 +42,7 @@
             <el-table-column prop="surPhoneNumber" label="手机"></el-table-column>
             <el-table-column label="用户状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="value1" v-if="scope.row.surStatus == 0"></el-switch>
-                <el-switch v-else></el-switch>
+                <el-switch v-model="scope.row.surStatus" active-value="0" inactive-value="1" ></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="surCreateTime" label="创建时间" show-overflow-tooltip></el-table-column>
