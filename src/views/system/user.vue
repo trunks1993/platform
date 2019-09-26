@@ -49,7 +49,7 @@
             <el-table-column label="操作" width="220">
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row, true)">编辑</el-button>
-                <el-button type="text" @click="deleted(scope.row.surUserId)">删除</el-button>
+                <el-button type="text-danger" @click="deleted(scope.row.surUserId)">删除</el-button>
                 <el-button type="text-warn" @click="resetPassword(scope.row)">重置</el-button>
               </template>
             </el-table-column>
@@ -98,9 +98,9 @@
           <el-select v-model="form.postIds" multiple placeholder="请选择">
             <el-option
               v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item.postId"
+              :label="item.postName"
+              :value="item.postId"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -116,9 +116,9 @@
           <el-checkbox-group v-model="roleIds" @change="handleCheckedCitiesChange">
             <el-checkbox
               v-for="(item, index) in cities"
-              :label="item.key"
+              :label="item.roleId"
               :key="index"
-            >{{item.name}}</el-checkbox>
+            >{{item.roleName}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
@@ -184,7 +184,10 @@ import {
   postresetPwd,
   getSysUserAdd,
   putUserEdit,
-  getSelectByDictType
+  getSelectByDictType,
+  queryGwPage,
+  getSysUserEdit,
+  getSysRoleList
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -222,11 +225,12 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "surStatus",
-          option: [
-            { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "禁用", value: 1 }
-          ]
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
       ],
       
@@ -297,9 +301,16 @@ export default {
   },
   created() {
     this.query();
-    getSysDeptTreeData().then(res => {
+    getSysDeptTreeData().then(res => { //部门树
       this.data = res;
     });
+    queryGwPage({status:0}).then(res=>{ //岗位
+      this.options = res.rows;
+    })
+    getSysRoleList().then(res=>{ //角色
+      this.cities = res.rows;
+      console.log(res);
+    })
   },
   methods: {
     handleCheckAllChange(val) {
@@ -409,7 +420,6 @@ export default {
           this.query();
         })
       }
-      
     },
     handleSave() {
       const requestApi = this.isEditor ? putUserEdit : getSysUserAdd;
@@ -445,10 +455,25 @@ export default {
     editor(rows, isEditor) {
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
-      console.log(rows)
-      this.$nextTick(() => {
-        isEditor ? this.form = rows : this.form.sdtDeptPid = rows.sdtDeptPid;
-      });
+      let editRows = {};
+      if(this.isEditor){
+        console.log(rows.surUserId)
+        getSysUserEdit(rows.surUserId).then(res=>{
+          editRows = res;
+          console.log(res);
+          res.roles.forEach((item)=>{
+            editRows.roleIds.push(item.roleId);
+            console.log(editRows.roleIds)
+          })
+          res.posts.forEach((item)=>{
+            editRows.postIds.push(item.postId);
+          })
+          this.form = editRows
+        })
+      }
+      if(isEditor != true) {
+        this.form.sdtDeptPid = rows.sdtDeptPid;
+      }
     },
   }
 };

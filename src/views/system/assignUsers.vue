@@ -215,7 +215,6 @@ export default {
     },
     batchDelete() {
       //批量删除
-      console.log(this.multipleSelection);
       let selectArr = [];
       if (
         typeof this.multipleSelection == "undefined" ||
@@ -236,7 +235,6 @@ export default {
       this.$router.push('/system/role')
     },
     deleted(ids) {
-        console.log(ids)
       //删除
       this.dialogVisible = true;
       this.ids = ids;
@@ -244,7 +242,6 @@ export default {
     roleAdds(){ //添加用户
         this.dialogFormVisible = true;
         getUnallocatedList({roleId:this.roleId}).then(res=>{
-          console.log(res)
           this.unTableDataList = res.rows;
         })
     },
@@ -265,7 +262,6 @@ export default {
         })
     },
     sure(){ //删除
-        console.log(this.ids);
         if(this.ids.length >= 1){
             getDeleteUserRole({surUserIds:this.ids,surRoleId:this.roleId}).then(res=>{
                 this.dialogVisible = false;
@@ -276,7 +272,6 @@ export default {
             })
         }else {
             deleteRoleGwPage({roleId:this.ids}).then(res=>{
-                console.log(res)
                 this.dialogVisible = false;
                 this.$message({
                     type: "success",

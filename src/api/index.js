@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 import request from '@/utils/request';
 
 // export default (username, password) => request({
@@ -60,6 +61,11 @@ export const postresetPwd = params => request({
   method: 'post',
   params,
 });
+// 编辑用户时调查询信息G
+export const getSysUserEdit = params => request({
+  url: '/v1/api/user/SysUser/edit/' + params,
+  method: 'get',
+});
 // 获取角色管理列表
 export const getSysRoleList = params => request({
   url: '/v1/role/selectByRole',
@@ -82,6 +88,12 @@ export const putRoleAdd = params => request({
 export const putRoleEdit = params => request({
   url: '/v1/role/edit',
   method: 'put',
+  params,
+});
+// 根据角色Id查询详情
+export const getQueryByRoleId = params => request({
+  url: '/v1/role/queryByRoleId',
+  method: 'get',
   params,
 });
 // 获取分配用户管理列表

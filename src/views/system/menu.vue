@@ -14,7 +14,7 @@
         <div class="content-box-tool">
           <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <!-- <el-button type="tool" icon="el-icon-export">展开/折叠</el-button> -->
+          <el-button type="tool" icon="el-icon-export" @click="handleUnfold">展开/折叠</el-button>
         </div>
         <div class="content-box-table">
           <el-table
@@ -41,8 +41,8 @@
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row, true)">编辑</el-button>
-                <el-button type="text" @click="editor(scope.row)">新增</el-button>
-                <el-button type="text-warn" @click="deleted(scope.row.menuId)">删除</el-button>
+                <el-button type="text-warn" @click="editor(scope.row)">新增</el-button>
+                <el-button type="text-danger" @click="deleted(scope.row.menuId)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -159,11 +159,12 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "visible",
-          option: [
-            { label: "所有", value: "" },
-            { label: "显示", value: 0 },
-            { label: "隐藏", value: 1 }
-          ]
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_menu_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
         // {
         //   fiAttr: {
@@ -177,10 +178,20 @@ export default {
       value1: true,
       multipleSelection: [],
       dialogFormVisible: false,
-      form: {},
+      form: {
+        parentId:"",
+        menuType: "",
+        menuName: "",
+        component: "",
+        path: "",
+        perms: "",
+        orderNum: "",
+        icon: "",
+        visible: "0",
+      },
       sizeForm: {
         menuName: "",
-        visible: ""
+        visible: "",
       },
       nodeSelTemp: '',
       dialogVisible: false,
@@ -245,8 +256,13 @@ export default {
         this.editor(rows,true);
       }
     },
+    handleUnfold(){ //展开折叠
+      const arr = [...document.getElementsByClassName("el-table__expand-icon")];
+      arr.forEach(item=>{
+        item.click();
+      })
+    },
     handleSelectionChange(val) {
-      console.log(val);
       this.multipleSelection = val;
     },
     handleSave() {
@@ -262,13 +278,11 @@ export default {
       })
     },
     editor(rows, isEditor) {
-      console.log(rows, isEditor)
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
       this.$nextTick(() => {
         isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
       });
-      console.log(this.form);
     },
     handleNodeSelect() {
       this.form.parentId = _.clone(this.nodeSelTemp).menuId;
