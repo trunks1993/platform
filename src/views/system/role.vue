@@ -30,8 +30,7 @@
             <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
             <el-table-column label="角色状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="value1" v-if="scope.row.status == 0"></el-switch>
-                <el-switch v-else></el-switch>
+                <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" ></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
@@ -226,7 +225,8 @@ export default {
         deptIds: "",
         roleId: ""
       },
-      value1: true,
+      // value: 1,
+      // valueF:false,
       multipleSelection: [],
       dialogFormVisible: false,
       editdialogVisible: false,
@@ -266,7 +266,6 @@ export default {
   created() {
     this.query();
     getMenuList(this.sizeForm).then(res => {
-      console.log(res);
       this.data = res;
     });
   },
@@ -344,7 +343,7 @@ export default {
     },
     sure() {
       //确认删除
-      deleteRoleGwPage({ roleId: this.ids }).then(res => {
+      deleteRoleGwPage({ roleIds: this.ids }).then(res => {
         console.log(res);
         this.$message({
           type: "success",
@@ -478,7 +477,7 @@ export default {
       // this.bmId = data.sdtDeptId;
     },
     assignUsers(rows){ //分配用户
-      console.log(rows)
+      this.$router.push({path:'/system/assignUsers',query:{roleId:rows.roleId}});
     }
   }
 };

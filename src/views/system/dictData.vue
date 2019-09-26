@@ -13,18 +13,15 @@
           <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi,'字典管理')">导出</el-button>
+          <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi,'字典数据')">导出</el-button>
         </div>
         <div class="content-box-table">
           <el-table :data="tableDataList" ref="multipleTable">
             <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="dictId" label="字典主键"></el-table-column>
-            <el-table-column prop="dictName" label="字典名称"></el-table-column>
-            <el-table-column prop label="字典类型" show-overflow-tooltip>
-              <template slot-scope="scope">
-                <span class="type" style="color:#4baefd;cursor: pointer;" @click="handDictDate(scope.row)">{{ scope.row.dictType }}</span>
-              </template>
-            </el-table-column>
+            <el-table-column prop="dictCode" label="字典编码"></el-table-column>
+            <el-table-column prop="dictLabel" label="字典标签"></el-table-column>
+            <el-table-column prop="dictValue" label="字典键值"></el-table-column>
+            <el-table-column prop="dictSort" label="字典排序"></el-table-column>
             <el-table-column label="状态" show-overflow-tooltip>
               <template slot-scope="scope">
                 <span
@@ -37,8 +34,7 @@
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row, true)">编辑</el-button>
-                <el-button type="text-danger" @click="deleted(scope.row.dictId)">删除</el-button>
-                <el-button type="text-warn" @click="handDictDate(scope.row)">列表</el-button>
+                <el-button type="text-danger" @click="deleted(scope.row.dictCode)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -61,21 +57,44 @@
     <el-dialog :visible.sync="dialogFormVisible" :before-close="handleFormDlogClose.bind(null, 'editForm')">
         <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
-        <span class="title">字典管理基本信息</span>
+        <span class="title">字典数据基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <el-form :model="form" ref="editForm" :inline="true">
-        <el-form-item label="字典编号" prop="dictId" :label-width="formLabelWidth" style="display:none">
+        <el-form-item label="字典编号" prop="dictId"  :label-width="formLabelWidth" style="display:none">
           <el-input v-model="form.dictId" autocomplete="off" disabled></el-input>
         </el-form-item>
-        <el-form-item label="字典名称" prop="dictName" :label-width="formLabelWidth">
-          <el-input v-model="form.dictName" autocomplete="off"></el-input>
+        <el-form-item label="字典标签" prop="dictLabel"  :label-width="formLabelWidth">
+          <el-input v-model="form.dictLabel" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="字典类型" prop="dictType" :label-width="formLabelWidth">
+        <el-form-item label="字典键值" prop="dictValue"  :label-width="formLabelWidth">
+          <el-input v-model="form.dictValue" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="字典类型" prop="dictType"  :label-width="formLabelWidth">
           <el-input v-model="form.dictType" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="样式属性" prop="cssClass"  :label-width="formLabelWidth">
+          <el-input v-model="form.cssClass" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="字典排序" prop="dictSort"  :label-width="formLabelWidth">
+          <el-input v-model="form.dictSort" autocomplete="off"></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="回显样式" :label-width="formLabelWidth">
+        <el-select v-model="form.listClass" multiple placeholder="请选择">-->
+        <!-- <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option> -->
+            <!-- </el-select>
+        </el-form-item> -->
+        <el-form-item label="系统默认" prop="isDefault" :label-width="formLabelWidth">
+          <el-radio v-model="form.isDefault" label="1" @change="changeSelect">是</el-radio>
+          <el-radio v-model="form.isDefault" label="0" @change="changeSelect">否</el-radio>
+        </el-form-item>
         <el-form-item label="状态" prop="status" :label-width="formLabelWidth">
-           <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
+          <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
         </el-form-item>
         <el-form-item label="备注" prop="remark" :label-width="formLabelWidth" class="inputTextarea">
           <el-input v-model="form.remark" autocomplete="off" type="textarea" class="textarea"></el-input>
@@ -86,7 +105,7 @@
         <el-button type="primary" @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
-     <!-- 删除弹框 -->
+    <!-- 删除弹框 -->
     <el-dialog :visible.sync="dialogVisible">
         <div slot="title" class="dailog-title">
             <img src="../../assets/images/icon-title-left.png" alt />
@@ -103,10 +122,11 @@
 </template>
 <script>
 import {
-  queryDictPage,
-  deleteDictPage,
-  editorDictPage,
-  addDictPage
+  queryDicDatePage,
+  deleteDicDatePage,
+  editorDicDatePage,
+  addDicDatePage,
+  queryDicDateSelect
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -115,63 +135,65 @@ export default {
   mixins: [mixin],
   data() {
     return {
-      baseExpApi:
-        "/v1/dictionaries/dictType/export",
+      baseExpApi: "/v1/dictionaries/dictData/export",
       fqForm: [
         {
           fiAttr: {
             label: "字典名称"
           },
-          el: "input",
-          elAttr: {
-            type: "text"
-          },
-          bindKey: "dictName"
+          el: "select",
+          elAttr: {},
+          bindKey: "dictValue",
+          bindValue: this.$route.query.id,
+          option: {
+            url: "/v1/dictionaries/dictType/down",
+            labelKey: "dictName",
+            valueKey: "dictId"
+          }
         },
         {
           fiAttr: {
-            label: "字典类型"
+            label: "字典标签"
           },
           el: "input",
           elAttr: {
             type: "number"
           },
-          bindKey: "dictType"
+          bindKey: "dictLabel"
         },
         {
           fiAttr: {
-            label: "字典状态"
+            label: "数据状态"
           },
           el: "select",
           elAttr: {},
           bindKey: "status",
-          option: [
-            { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "停用", value: 1 }
-          ],
+          bindValue: "",
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
-        // {
-        //   fiAttr: {
-        //     label: "创建时间"
-        //   },
-        //   el: "date-picker",
-        //   bindkey: "surStatus"
-        // }
       ],
-    //   value: true,
       form: {
-        dictId:'',
-        dictName:'',
-        dictType:'',
-        status:'0',
-        remark:''
+          dictCode:'',
+          dictLabel:'',
+          dictValue:'',
+          dictType:'',
+          cssClass:'',
+          dictSort:'',
+          status:'0',
+          isDefault:'',
+          remark:'',
       },
       dialogFormVisible: false,
       obj: {},
       formLabelWidth: "120px",
       dialogVisible:false,
       ids:'',
+      type:'',
       count:0,
     };
   },
@@ -180,13 +202,18 @@ export default {
   },
   created() {
     this.query();
+    this.queryList.dictType = this.$route.query.type;
   },
   computed: {
     query() {
-      return this.doQuery.bind(this, queryDictPage);
+      return this.doQuery.bind(this, queryDicDatePage);
     }
   },
   methods: {
+    changeSelect(value) {
+      //int类型转换为string
+      this.radioData = value.toString();
+    },
     change(data) {
       console.log(data);
     },
@@ -200,7 +227,7 @@ export default {
         });
       } else {
         this.$refs.multipleTable.selection.forEach((v, i) => {
-          selectArr.push(v.dictId);
+          selectArr.push(v.dictCode);
         });
         this.deleted(selectArr.join(","));
       }
@@ -211,15 +238,16 @@ export default {
       this.dialogVisible = true;
       this.ids = ids;
     },
-    sure(){//确认删除
-        deleteDictPage({ str: this.ids }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            this.dialogVisible = false;
-            this.query();
-          });
+    sure() {
+      //确认删除
+      deleteDicDatePage({ str: this.ids }).then(res => {
+        this.$message({
+          type: "success",
+          message: "删除成功!"
+        });
+        this.dialogVisible = false;
+        this.query();
+      });
     },
     revise() {
       //批量修改
@@ -229,12 +257,12 @@ export default {
           type: "warning"
         });
       } else {
-        if(this.$refs.multipleTable.selection.length > 1){
-            this.$message({
-                message: "只能选择一条数据进行修改",
-                type: "warning"
-            });
-            return;
+        if (this.$refs.multipleTable.selection.length > 1) {
+          this.$message({
+            message: "只能选择一条数据进行修改",
+            type: "warning"
+          });
+          return;
         }
         this.dialogFormVisible = true;
         let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
@@ -249,7 +277,7 @@ export default {
       });
     },
     handleSave() {//弹框保存
-      const requestApi = this.isEditor ? editorDictPage : addDictPage;//判断是修改还是新增，isEditor为true是修改
+      const requestApi = this.isEditor ? editorDicDatePage : addDicDatePage;//判断是修改还是新增，isEditor为true是修改
       requestApi(this.form).then(res => {
         this.$message({
           message: "操作成功！",
@@ -259,8 +287,11 @@ export default {
         this.query();
       })
     },
-    handDictDate(rows){
-        this.$router.push('/system/dictData?type='+rows.dictType+'&id='+rows.dictId);
+    selectQuery() {
+      //字典名称查询
+      queryDicDateSelect().then(res => {
+        console.log(res);
+      });
     }
   }
 };

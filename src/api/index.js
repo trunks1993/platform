@@ -84,6 +84,36 @@ export const putRoleEdit = params => request({
   method: 'put',
   params,
 });
+// 获取分配用户管理列表
+export const getSelectByUser = params => request({
+  url: '/v1/role/selectByUser',
+  method: 'get',
+  params,
+});
+// 批量新增分配用户角色
+export const getInsertUserRole = params => request({
+  url: '/v1/role/insertUserRole',
+  method: 'put',
+  params,
+});
+// 查询已授权的分配用户角色
+export const getAllocatedList = params => request({
+  url: '/v1/role/authUser/allocatedList',
+  method: 'get',
+  params,
+});
+// 查询未授权的分配用户角色
+export const getUnallocatedList = params => request({
+  url: '/v1/role/authUser/unallocatedList',
+  method: 'get',
+  params,
+});
+// 批量删除分配用户管理列表
+export const getDeleteUserRole = params => request({
+  url: '/v1/role/deleteUserRole',
+  method: 'delete',
+  params,
+});
 // 搜索菜单管理列表
 export const getMenuList = params => request({
   url: '/v1/menu/list',
@@ -177,7 +207,7 @@ export const deleteGwPage = params => request({
 });
 // 编辑岗位管理列表
 export const editorGwPage = params => request({
-  url: '/v1/manage/post/edit/{postCode}',
+  url: '/v1/manage/post/edit',
   method: 'put',
   params,
 });
@@ -195,7 +225,7 @@ export const queryDictPage = params => request({
 });
 // 编辑字典管理列表
 export const editorDictPage = params => request({
-  url: '/v1/dictionaries/dictType/edit/{dictId}',
+  url: '/v1/dictionaries/dictType/edit',
   method: 'put',
   params,
 });
@@ -267,7 +297,7 @@ export const addDicDatePage = params => request({
 });
 // 编辑字典数据管理列表
 export const editorDicDatePage = params => request({
-  url: '/v1/dictionaries/dictData/edit/{dictCode}',
+  url: '/v1/dictionaries/dictData/edit',
   method: 'put',
   params,
 });
@@ -280,6 +310,45 @@ export const queryDicDatePage = params => request({
 // 删除字典数据管理列表
 export const deleteDicDatePage = params => request({
   url: '/v1/dictionaries/dictData/remove',
+  method: 'delete',
+  params,
+});
+
+// 字典数据字典名称下拉框数据
+export const queryDicDateSelect = params => request({
+  url: '/v1/dictionaries/dictType/down',
+  method: 'get',
+  params,
+});
+
+// 根据字典类型查询相关字典值数据
+export const getSelectOption = url => request({
+  url,
+  method: 'get',
+});
+
+
+// 新增系统管理列表
+export const addSysData = params => request({
+  url: '/v1/system/add',
+  method: 'put',
+  params,
+});
+// 编辑系统管理列表
+export const editorSysData = params => request({
+  url: '/v1/system/edit',
+  method: 'put',
+  params,
+});
+// 查询系统管理列表
+export const querySysData = params => request({
+  url: '/v1/system/list',
+  method: 'get',
+  params,
+});
+// 删除系统管理列表
+export const deleteSysData = params => request({
+  url: '/v1/system/delete',
   method: 'delete',
   params,
 });

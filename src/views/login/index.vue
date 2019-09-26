@@ -201,6 +201,7 @@ export default {
       }
       .login-input /deep/ .el-form-item__content{
           width:100%;
+          cursor: pointer;
       }
      .login-input /deep/ .login-in .el-form-item__content{
        height: 48px;
