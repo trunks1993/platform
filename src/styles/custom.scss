@@ -242,6 +242,11 @@ $green: #0ebae1;
       cursor: default;
     }
   }
+  .el-pagination__total{
+      line-height: 28px;
+      font-size: 14px;
+      margin-left: 10px;
+  }
 }
 
 .el-select {

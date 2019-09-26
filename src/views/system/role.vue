@@ -218,7 +218,8 @@ export default {
         deptIds: "",
         roleId: ""
       },
-      value1: true,
+      // value: 1,
+      // valueF:false,
       multipleSelection: [],
       dialogFormVisible: false,
       editdialogVisible: false,
@@ -260,7 +261,6 @@ export default {
   created() {
     this.query();
     getMenuList(this.sizeForm).then(res => {
-      console.log(res);
       this.data = res;
     });
   },

@@ -38,7 +38,7 @@
           <el-pagination
             style="text-align:right;"
             background
-            layout="prev, pager, next"
+            layout="prev, pager, next, total"
             @size-change="handleSizeChange($event, query)"
             @current-change="handleCurrentChange($event, query)"
             :current-page="queryList.pageNum"
@@ -122,6 +122,7 @@ export default {
       ids:'',
       content:'',
       isClear:true,
+      count:0,
     };
   },
   components: {
@@ -153,7 +154,8 @@ export default {
     deleted(ids) { //删除
         this.dialogVisible = true;
         this.isClear = false;
-        this.content = '确定要删除数据吗？';
+        this.count = ids.split(",");
+        this.content = '确定要删除选中的'+this.count.length+'条数据吗？';
         this.ids = ids;
     },
     clearLog() { //清空日志
@@ -162,25 +164,16 @@ export default {
         this.content = '确定要清空所有数据？';
     },
     sure(){//确认
-        if(this.isClear){//清空接口
-            clearLoginPage({}).then(res => {
-                this.$message({
-                type: "success",
-                message: "清除成功!"
-                });
-                this.dialogVisible = false;
-                this.query();
+        const requestApi = this.isClear ? clearLoginPage : deleteLoginPage; 
+        const params = this.isClear ? {} : { ids: this.ids }; 
+        requestApi(params).then(res => {
+            this.$message({
+            type: "success",
+            message: "操作成功!"
             });
-        }else{//删除接口
-            deleteLoginPage({ ids: this.ids }).then(res => {
-                this.$message({
-                type: "success",
-                message: "删除成功!"
-                });
-                this.dialogVisible = false;
-                this.query();
-            });
-        } 
+            this.dialogVisible = false;
+            this.query();
+        });
     },
   }
 };
