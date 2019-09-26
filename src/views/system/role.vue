@@ -10,7 +10,7 @@
     <div class="app-wrapper">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="roleAdds">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <!-- <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button> -->
@@ -30,14 +30,13 @@
             <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
             <el-table-column label="角色状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="value1" v-if="scope.row.status == 0"></el-switch>
-                <el-switch v-else></el-switch>
+                <el-switch v-model="scope.row.status"  @change="editorStatus(scope.row)"  active-value="0" inactive-value="1"></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="280">
               <template slot-scope="scope">
-                <el-button type="text" @click="editor(scope.row)">编辑</el-button>
+                <el-button type="text" @click="editor(scope.row,true)">编辑</el-button>
                 <el-button type="text" @click="editdialog(scope.row)">数据权限</el-button>
                 <el-button type="text-warn" @click="assignUsers(scope.row)">分配用户</el-button>
                 <el-button type="text-warn" @click="deleted(scope.row.roleId)">删除</el-button>
@@ -59,46 +58,46 @@
         </div>
       </div>
     </div>
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible"  :before-close="handleFormDlogClose.bind(null, 'editForm')">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" :inline="true" style="height: 400px; overflow: auto;">
-        <el-form-item label="角色名称：" label-width="120px">
-          <el-input v-model="form.roleName" autocomplete="off"></el-input>
+      <el-form :model="form" :inline="true"  ref="editForm">
+        <el-form-item label="角色名称：" label-width="120px" prop="roleName">
+          <el-input v-model="form.roleName"></el-input>
         </el-form-item>
-        <el-form-item label="权限字符：" label-width="120px">
-          <el-input v-model="form.roleKey" autocomplete="off"></el-input>
+        <el-form-item label="权限字符：" label-width="120px" prop="roleKey">
+          <el-input v-model="form.roleKey"></el-input>
         </el-form-item>
-        <el-form-item label="显示顺序：" label-width="120px">
-          <el-input v-model="form.roleSort" autocomplete="off"></el-input>
+        <el-form-item label="显示顺序：" label-width="120px" prop="roleSort">
+          <el-input v-model="form.roleSort"></el-input>
         </el-form-item>
-
         <el-form-item label="状态：" label-width="120px">
-          <el-switch v-model="form.status"></el-switch>
+         <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
         </el-form-item>
         <el-form-item label="菜单权限" label-width="120px">
           <el-tree
             :data="data"
             show-checkbox
-            node-key="id"
+            node-key="menuId"
             width="500px"
             ref="tree"
             highlight-current
             :props="defaultProps"
+            :default-checked-keys="treeSelection"
             @check-change="handleCheckChange"
             style="top: 7px;"
           ></el-tree>
         </el-form-item>
-        <el-form-item label="备注：" label-width="120px">
+        <el-form-item label="备注：" label-width="120px"  prop="remark">
           <el-input v-model="form.remark" autocomplete="off" type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button @click="preservation" type="primary">保 存</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">关 闭</el-button>
+        <el-button  @click="handleSave" type="primary">保 存</el-button>
+        <el-button type="primary" @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
@@ -108,7 +107,7 @@
         <span class="title">系统提示信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;">确定要删除列表数据吗？</div>
+     <div style="width:100%;color:#63ACDF;text-align:center;">{{handleData}}</div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="sure">确 定</el-button>
         <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
@@ -199,13 +198,6 @@ export default {
             { label: "停用", value: 1 }
           ]
         }
-        // {
-        //   fiAttr: {
-        //     label: "创建时间"
-        //   },
-        //   el: "date-picker",
-        //   bindkey: "surStatus"
-        // }
       ],
       data: [],
       defaultProps: {
@@ -226,7 +218,8 @@ export default {
         deptIds: "",
         roleId: ""
       },
-      value1: true,
+      // value: 1,
+      // valueF:false,
       multipleSelection: [],
       dialogFormVisible: false,
       editdialogVisible: false,
@@ -253,6 +246,8 @@ export default {
       total: 10,
       isSearch: true,
       deptIds: [],
+      treeSelection:[],
+      handleData:"确定要删除列表数据吗？"
     };
   },
   components: {
@@ -266,7 +261,6 @@ export default {
   created() {
     this.query();
     getMenuList(this.sizeForm).then(res => {
-      console.log(res);
       this.data = res;
     });
   },
@@ -333,70 +327,47 @@ export default {
         });
       } else {
         this.dialogFormVisible = true;
-        this.form = this.multipleSelection.pop(); //获取最后一条
-        this.obj = this.multipleSelection.pop();
+        let rows = this.multipleSelection.pop(); //获取最后一条
+        this.editor(rows,true);
       }
     },
     deleted(ids) {
       //删除
       this.dialogVisible = true;
       this.ids = ids;
+      this.handleData = "确定要删除列表数据吗？";
+    },
+    editorStatus(rows){ //开关按钮
+      console.log(rows.status)
+      this.dialogVisible = true;
+      this.form = rows;
+      this.handleData = rows.status == 0 ? "确认要正常用户吗？": "确认要停用用户吗？";
     },
     sure() {
-      //确认删除
-      deleteRoleGwPage({ roleIds: this.ids }).then(res => {
-        console.log(res);
-        this.$message({
-          type: "success",
-          message: "删除成功!"
+      if(this.ids.length != 0){
+        deleteRoleGwPage({ roleIds: this.ids }).then(res => {
+          let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
+          this.$message({
+            type: "success",
+            message: msgName
+          });
+          this.dialogVisible = false;
+          this.query();
         });
-        this.dialogVisible = false;
-        this.query();
-      });
-    },
-    preservation() {
-      // 新增保存
-      if (JSON.stringify(this.obj) == "{}") {
-        //新增
-        this.addAsk();
       } else {
-        //编辑
-        this.saveAsk();
+        let obj = {
+          roleId:this.form.roleId,
+          status:this.form.status,
+        }
+        putRoleEdit(obj).then(res => {  
+          this.$message({
+            type: "success",
+            message: "修改成功!"
+          });
+          this.dialogVisible = false;
+          this.query();
+        })
       }
-    },
-    addAsk() {
-      this.form.deptIds = this.deptIds.toString();
-      this.form.status = this.form.status == true ? 0 : 1;
-      putRoleAdd(this.form).then(res => {
-        this.$message({
-          type: "success",
-          message: "新增成功!"
-        });
-        this.dialogFormVisible = false;
-        this.query();
-      });
-    },
-    saveAsk() {
-      this.form.deptIds = this.deptIds.toString();
-      this.form.status = this.form.status == true ? 0 : 1;
-      let obj = {
-        roleName: this.form.roleName,
-        roleKey: this.form.roleKey,
-        roleSort: this.form.roleSort,
-        status: this.form.status,
-        remark: this.form.remark,
-        deptIds: this.form.deptIds,
-        roleId: this.form.roleId
-      };
-      console.log(this.form);
-      putRoleEdit(obj).then(res => {
-        this.$message({
-          type: "success",
-          message: "修改成功!"
-        });
-        this.dialogFormVisible = false;
-        this.query();
-      });
     },
     sureEdit() {
       putRoleEdit(this.editForm).then(res => {
@@ -408,23 +379,10 @@ export default {
         this.query();
       });
     },
-    handleSizeChange: function(current) {
-      console.log(current);
-      this.current = current;
-      this.queryDate();
-    },
-
     roleAdds() {
       this.dialogFormVisible = true;
       this.form = {};
       this.obj = {};
-    },
-    editor(rows) {
-      //编辑
-      this.dialogFormVisible = true;
-      console.log(rows);
-      this.form = rows;
-      this.obj = rows;
     },
     // 权限
     getCheckedNodes() {
@@ -432,18 +390,6 @@ export default {
     },
     getCheckedKeys() {
       console.log(this.$refs.tree.getCheckedKeys());
-    },
-    setCheckedNodes() {
-      this.$refs.tree.setCheckedNodes([
-        {
-          id: 5,
-          label: "二级 2-1"
-        },
-        {
-          id: 9,
-          label: "三级 1-1-1"
-        }
-      ]);
     },
     setCheckedKeys() {
       this.$refs.tree.setCheckedKeys([3]);
@@ -460,6 +406,40 @@ export default {
       });
       console.log(arr);
       this.deptIds = arr;
+    },
+    handleSave() {
+      const requestApi = this.isEditor ? putRoleEdit : putRoleAdd;
+      console.log(this.form);
+      requestApi(this.form).then(res => {
+        this.handleFormDlogClose('editForm', 'dialogFormVisible');
+        let msgName = this.isEditor ? "修改成功!":"新增成功!";
+        this.$message({
+          type: "success",
+          message: msgName
+        });
+        this.query();
+      })
+    },
+    handleNodeClicks(data) {
+      let sdtDeptId = parseInt(data.sdtDeptId);
+      getSysUserList({
+        surDeptId: sdtDeptId,
+        pageNum: this.queryList.pageNum,
+        pageSize: this.queryList.pageSize
+      }).then(res => {
+         this.tableDataList = res.rows;
+      });
+    },
+    handleNodeClick(data) {
+      this.form.surDeptId = data.sdtDeptId;
+    },
+    editor(rows, isEditor) {
+      this.dialogFormVisible = true;
+      this.isEditor = isEditor;
+      this.$nextTick(() => {
+        isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
+      });
+      this.form.roleId = rows.roleId;
     },
     // 数据权限
     editdialog(rows) {
@@ -483,128 +463,4 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.role {
-  color: #fff;
-  height: 100%;
-  .tabs-search {
-    height: 175px;
-    margin-bottom: 12px;
-    background: url(../../assets/images/tabs-search-bg.png);
-    background-size: 100% 100%;
-    .search {
-      width: 100%;
-      height: 150px;
-      padding: 28px 20px;
-    }
-  }
-  .dashboard-content {
-    height: calc(100% - 187px);
-    width: 100%;
-    display: flex;
-    .organization {
-      width: 223px;
-      height: 100%;
-    }
-    .table-content {
-      width: 100%;
-      height: 100%;
-      background: url(../../assets/images/table-content-bg.png);
-      background-size: 100% 100%;
-      padding: 22px 34px;
-      box-sizing: border-box;
-      .tableHead {
-        height: 70px;
-        .button {
-          width: 90px;
-          height: 36px;
-          line-height: 36px;
-          background: #05254b;
-          margin-right: 20px;
-          float: left;
-          border-radius: 4px;
-          text-align: right;
-          padding-right: 20px;
-          cursor: pointer;
-        }
-        .button::before {
-          content: "";
-          width: 14px;
-          height: 14px;
-          display: inline-block;
-          background-image: url(../../assets/icon.png);
-          background-position: -57px 792px;
-          margin-right: 6px;
-        }
-        .button:nth-child(2):before {
-          background-position: -57px 770px;
-        }
-        .button:nth-child(3):before {
-          background-position: -57px 749px;
-        }
-        .button:nth-child(4):before {
-          background-position: -57px 726px;
-        }
-        .button:nth-child(5):before {
-          background-position: -57px 704px;
-        }
-        .operation {
-          width: 210px;
-          height: 36px;
-          background: #05254b;
-          border: 1px solid #02439d;
-          float: right;
-          display: flex;
-          div {
-            width: 25%;
-            height: 28px;
-            margin-top: 4px;
-            position: relative;
-            cursor: pointer;
-            span {
-              width: 14px;
-              height: 14px;
-              display: inline-block;
-              background-image: url(../../assets/icon.png);
-              background-position: -57px 422px;
-              position: absolute;
-              left: 50%;
-              margin-left: -7px;
-              top: 50%;
-              margin-top: -7px;
-            }
-          }
-          div::before {
-            content: "";
-            width: 1px;
-            height: 28px;
-            display: inline-block;
-            background: linear-gradient(
-              0deg,
-              rgba(1, 84, 199, 0) 0%,
-              rgba(1, 84, 199, 1) 42%,
-              rgba(1, 84, 199, 0) 100%
-            );
-          }
-          div:nth-child(1):before {
-            width: 0;
-          }
-          div:nth-child(2) span {
-            background-position: -57px 376px;
-          }
-          div:nth-child(3) span {
-            background-position: -57px 331px;
-          }
-          div:nth-child(4) span {
-            background-position: -57px 288px;
-          }
-        }
-      }
-      .table {
-        width: 100%;
-        height: calc(100% - 165px);
-        overflow: auto;
-      }
-    }
-  }
-}
+
