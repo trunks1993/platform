@@ -167,8 +167,7 @@ export default {
           bindKey: "status",
           bindValue: "",
           option: {
-            url:
-              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status",
+            url: "/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status",
             labelKey: "dictLabel",
             valueKey: "dictValue"
           }
