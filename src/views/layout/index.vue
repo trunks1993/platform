@@ -39,9 +39,10 @@ export default {
 
   &-content {
     display: flex;
-    height: calc(100% - 118px);
+    height: calc(100% - 100px);
     padding: 20px;
-
+    padding-top: 0;
+    overflow-x: hidden;
     &-box {
       width: calc(100% - 284px);
     }

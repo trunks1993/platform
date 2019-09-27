@@ -22,16 +22,23 @@ export default {
   },
   data() {
     return {
-      queryFilter: {}
+      queryFilter: {},
+      filterVisible: true,
     };
   },
   watch: {
     queryFilter: {
       handler(val, oVal) {
-        this.$emit('queryChange', val);
+        this.$emit("queryChange", val);
       },
-      deep: true,
+      deep: true
+    },
+    filterVisible(val, oVal) {
+      this.$emit("handleVisible", val);
     }
+  },
+  mounted() {
+    console.log(this.$refs.test);
   },
   async created() {
     for (let item of this.model) {
@@ -40,7 +47,7 @@ export default {
         const res = await getSelectOption(item.option.url);
         item.option = res.map(v => ({
           label: v[item.option.labelKey],
-          value: v[item.option.valueKey],
+          value: v[item.option.valueKey]
         }));
       }
     }
@@ -67,44 +74,61 @@ export default {
     const getEL = data => jsxmap[data.el](data);
 
     return (
-      <div class="filter-container">
-        <el-form {...{ attrs: this.fAttr }}>
-          {this.model.map(item => (
-            <el-form-item {...{ attrs: item.fiAttr }}>
-              {getEL(item)}
-            </el-form-item>
-          ))}
-          <el-form-item>
-            {this.searchBtnVisible && (
-              <el-button
-                type="primary"
-                {...{
-                  on: {
-                    click: () => {
-                      this.$emit("afterFilter", this.queryFilter);
-                    }
+      <div class="filter-container" style={{height: this.filterVisible ? '100px' : '25px'}}>
+        
+        <div class="filter-container-form" style={{display: this.filterVisible ? 'block' : 'none'}}>
+          <el-form {...{ attrs: this.fAttr }}>
+            {this.model.map(item => (
+              <el-form-item {...{ attrs: item.fiAttr }}>
+                {getEL(item)}
+              </el-form-item>
+            ))}
+          </el-form>
+        </div>
+        <div class="filter-container-btn" style={{display: this.filterVisible ? 'block' : 'none'}}>
+          {this.searchBtnVisible && (
+            <el-button
+              type="primary"
+              {...{
+                on: {
+                  click: () => {
+                    this.$emit("afterFilter", this.queryFilter);
                   }
-                }}
-              >
-                查询
-              </el-button>
-            )}
-            {this.resetBtnVisible && (
-              <el-button
-                type="primary"
-                {...{
-                  on: {
-                    click: () => {
-                      this.$emit("afterReset");
-                    }
+                }
+              }}
+            >
+              查询
+            </el-button>
+          )}
+          {this.resetBtnVisible && (
+            <el-button
+              type="primary"
+              {...{
+                on: {
+                  click: () => {
+                    this.$emit("afterReset");
                   }
-                }}
-              >
-                重置
-              </el-button>
-            )}
-          </el-form-item>
-        </el-form>
+                }
+              }}
+            >
+              重置
+            </el-button>
+          )}
+        </div>
+        
+
+        <div
+          class="filter-container-visible"
+          {...{
+            on: {
+              click: () => {
+                this.filterVisible = !this.filterVisible;
+              }
+            }
+          }}
+        >
+          <i class="el-icon-arrow-down" />
+        </div>
       </div>
     );
   }
@@ -112,9 +136,46 @@ export default {
 </script>
 <style lang="scss" scoped>
 .filter-container {
-  height: 159px;
   background: url(../assets/images/tabs-search-bg.png);
   background-size: 100% 100%;
-  padding: 20px;
+  padding-left: 20px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: all .5s;
+  &-form {
+    transition: all .5s;
+  }
+  &-btn {
+    transition: all .5s;
+  }
+
+  &-visible {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: #796e6e;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+  }
+}
+</style>
+<style lang="scss">
+.filter-container-form {
+  .el-form-item {
+    margin-bottom: 0;
+    margin-right: 30px;
+    &__content {
+      min-width: 210px;
+    }
+
+    .el-input {
+      input {
+        width: 210px;
+      }
+    }
+  }
 }
 </style>

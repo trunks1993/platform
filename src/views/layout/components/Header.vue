@@ -109,7 +109,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .head-container {
-  height: 118px;
+  height: 100px;
   background: url(../../../assets/header-Bg.png);
   background-size: 100% 100%;
   color: #fff;
