@@ -2,7 +2,7 @@
   <div class="common-container">
     <FilterQueryForm
       :fAttr="{'label-width': '80px'}"
-      :resetBtnVisible="false"
+      :resetBtnVisible="true"
       :searchBtnVisible="true"
       :model="fqForm"
       @afterFilter="handleFilter($event, query)"
@@ -29,7 +29,7 @@
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi,'用户管理')">导出</el-button>
         </div>
         <div class="content-box-table">
-          <el-table :data="tableDataList" @selection-change="handleSelectionChange">
+          <el-table :data="tableDataList" @selection-change="handleSelectionChange"  ref="multipleTable">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column label="用户ID" prop="surUserId" width="120"></el-table-column>
             <el-table-column prop="surLoginName" label="登录名称" width="120"></el-table-column>
@@ -71,24 +71,24 @@
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form"  ref="editForm" :inline="true">
+      <el-form :model="form" :rules="rules" ref="editForm" :inline="true">
         <el-form-item label="用户名称" label-width="120px" prop="surUserName">
           <el-input v-model="form.surUserName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="归属部门" label-width="120px" prop="surDeptId">
+        <el-form-item label="归属部门" label-width="120px" prop="surDeptName">
           <el-input v-model="form.surDeptName" @focus="sectoralChoice = true" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机号码" label-width="120px" prop="surPhoneNumber">
-          <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
+          <el-input v-model="form.surPhoneNumber" type="tel" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮 箱" label-width="120px" prop="surEmail">
-          <el-input v-model="form.surEmail" autocomplete="off"></el-input>
+          <el-input v-model="form.surEmail" type="email" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="登录帐号" label-width="120px" prop="surLoginName">
           <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="登录密码" v-if="!isEditor" label-width="120px" prop="surPassword">
-          <el-input v-model="form.surPassword" autocomplete="off"></el-input>
+          <el-input v-model="form.surPassword" type="password" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="岗 位" label-width="120px" prop="postIds">
           <el-select v-model="form.postIds" multiple placeholder="请选择">
@@ -107,7 +107,7 @@
         <el-form-item label="用户状态" label-width="120px">
           <el-switch v-model="form.surStatus" active-value="0" inactive-value="1"></el-switch>
         </el-form-item>
-        <el-form-item label="角 色" label-width="120px">
+        <el-form-item label="角 色" label-width="120px" prop="roleIds">
           <el-checkbox-group v-model="form.roleIds" @change="handleCheckedCitiesChange">
             <el-checkbox
               v-for="(item, index) in cities"
@@ -118,7 +118,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="handleSave">保 存</el-button>
+        <el-button type="primary" @click="handleSave('form')">保 存</el-button>
         <el-button type="primary" @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
@@ -130,10 +130,10 @@
       </div>
       <el-form :model="passWordForm" :inline="true">
         <el-form-item label="登录名称：" label-width="120px">
-          <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
+          <el-input v-model="passWordForm.surLoginName" disabled autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="输入密码：" label-width="120px">
-          <el-input v-model="passWordForm.surPassword" type="password" autocomplete="off"></el-input>
+          <el-input v-model="passWordForm.surPassword" placeholder="请输入新的密码" type="password" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
@@ -151,7 +151,7 @@
       <div style="width:100%;color:#63ACDF;text-align:center;">{{handleData}}</div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="sure">确 定</el-button>
-        <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
     <!-- 部门选择 -->
@@ -165,7 +165,7 @@
         <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="sectoralChoice = false">确 定</el-button>
+        <!-- <el-button type="primary" @click="sectoralChoice = false">确 定</el-button> -->
         <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -190,6 +190,19 @@ import md5 from 'js-md5';
 export default {
   mixins: [mixin],
   data() {
+      var checkPhone = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('手机号不能为空'));
+      } else {
+        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
+        console.log(reg.test(value));
+        if (reg.test(value)) {
+          callback();
+        } else {
+          return callback(new Error('请输入正确的手机号'));
+        }
+      }
+      };
     return {
       baseExpApi: "/v1/api/user/SysUser/export",
       type: 0,
@@ -258,6 +271,28 @@ export default {
         postIds:[],
         roleIds:[],
       },
+
+      rules:{
+        surUserName:[
+          { required: true, message: '请输入登录名称', trigger: 'blur' }
+        ],
+        surDeptName:[
+          { required: true, message: '请选择归属部门', trigger: 'blur' }
+        ],
+        surPhoneNumber:[
+          {validator: checkPhone, trigger: 'blur'}
+        ],
+        surEmail:[
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+        ],
+        surLoginName:[
+          { required: true, message: '请输入登录账号', trigger: 'blur' }
+        ],
+        surPassword:[
+          { required: true, message: '请输入登录密码', trigger: 'blur' }
+        ],
+      },
       handleData:"确定要删除列表数据吗？",
       defaultProps: {
         children: "children",
@@ -325,19 +360,15 @@ export default {
     },
     batchDelete() {
       //批量删除
-      console.log(this.multipleSelection);
       let selectArr = [];
-      if (
-        typeof this.multipleSelection == "undefined" ||
-        this.multipleSelection.length == 0
-      ) {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
         });
       } else {
-        this.multipleSelection.forEach((v, i) => {
-          selectArr.push(v.surUserId);
+        this.$refs.multipleTable.selection.forEach((v, i) => {
+          selectArr.push(v.postId);
         });
         this.deleted(selectArr.join(","));
       }
@@ -361,18 +392,22 @@ export default {
       });
     },
     revise() {
-      if (
-        typeof this.multipleSelection == "undefined" ||
-        this.multipleSelection.length == 0
-      ) {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
         });
       } else {
+        if(this.$refs.multipleTable.selection.length > 1){
+            this.$message({
+                message: "只能选择一条数据进行修改",
+                type: "warning"
+            });
+            return;
+        }
         this.dialogFormVisible = true;
-        let rows = this.multipleSelection.pop(); //获取最后一条
-        this.editor(rows,true)
+        let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
+        this.editor(rows,true);
       }
     },
     deleted(ids) {
@@ -412,23 +447,32 @@ export default {
       }
     },
     handleSave() {
-      const requestApi = this.isEditor ? putUserEdit : getSysUserAdd;
-      if(this.isEditor == undefined){
-          this.form.surPassword = md5(this.form.surPassword);
-      }
-      this.form.roleIds = this.form.roleIds.toString();
-      this.form.postIds = this.form.postIds.toString();
-      console.log(this.form);
-      requestApi(this.form).then(res => {
-        this.handleFormDlogClose('editForm', 'dialogFormVisible');
-        let msgName = this.isEditor ? "修改成功!":"新增成功!";
-        this.$message({
-          type: "success",
-          message: msgName
-        });
-        this.form.roleIds = [];
-        this.query();
-      })
+      console.log("12312")
+      this.$refs['editForm'].validate((valid) => {
+        if (valid) {
+          const requestApi = this.isEditor ? putUserEdit : getSysUserAdd;
+          if(this.isEditor == undefined){
+              this.form.surPassword = md5(this.form.surPassword);
+          }
+          this.form.roleIds = this.form.roleIds.toString();
+          this.form.postIds = this.form.postIds.toString();
+          console.log(this.form);
+          requestApi(this.form).then(res => {
+            this.handleFormDlogClose('editForm', 'dialogFormVisible');
+            let msgName = this.isEditor ? "修改成功!":"新增成功!";
+            this.$message({
+              type: "success",
+              message: msgName
+            });
+            this.query();
+            this.form.roleIds = [];
+            this.this.isEditor = false;
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     handleNodeClicks(data) {
       let sdtDeptId = parseInt(data.sdtDeptId);
@@ -438,13 +482,14 @@ export default {
         pageSize: this.queryList.pageSize
       }).then(res => {
          this.tableDataList = res.rows;
+         this.total = Number(res.total);
       });
     },
     handleNodeClick(data) {
       console.log(data);
       this.form.surDeptId = data.sdtDeptId;
       this.form.surDeptName = data.sdtDeptName;
-
+      this.sectoralChoice = false;
     },
     editor(rows, isEditor) {
       this.isEditor = isEditor;
@@ -469,6 +514,10 @@ export default {
       }
       this.dialogFormVisible = true;
     },
+    cancel(){
+      this.dialogVisible = false;
+      this.query();
+    }
   }
 };
 </script>
@@ -530,14 +579,14 @@ export default {
 .tree :first-child .el-tree-node:before {
   border-left: none;
 }
-.el-tree-node:before {
+.el-tree-node__expand-icon:before {
   border-left: 1px dashed #4386c6;
   bottom: 0px;
   height: 100%;
   top: -14px;
   width: 1px;
 }
-.el-tree-node:after {
+.el-tree-node__expand-icon:after {
   border-top: 1px dashed #4386c6;
   height: 20px;
   top: 15px;
