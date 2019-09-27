@@ -96,6 +96,7 @@ export default {
     },
     logout() {
       this.$store.dispatch("FedLogOut");
+      window.sessionStorage.removeItem('menuList')
       window.location.reload();
     }
   },
