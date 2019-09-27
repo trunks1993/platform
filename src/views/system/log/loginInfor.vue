@@ -81,7 +81,7 @@ export default {
           elAttr: {
             type: "text"
           },
-          bindKey: "slrInfoId"
+          bindKey: "slrIpaddr"
         },
         {
           fiAttr: {
