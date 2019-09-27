@@ -2,12 +2,13 @@
   <div class="common-container">
     <FilterQueryForm
       :fAttr="{'label-width': '80px'}"
-      :resetBtnVisible="false"
+      :resetBtnVisible="true"
       :searchBtnVisible="true"
       :model="fqForm"
       @afterFilter="handleFilter($event, query)"
+      @handleVisible="e => filterVisible = e"
     ></FilterQueryForm>
-    <div class="app-wrapper">
+    <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
     <div class="content-box">
       <div class="content-box-tool">
         <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
@@ -141,6 +142,7 @@ export default {
       radio: "1",
       obj: {},
       dialogVisible:false,
+      filterVisible: true,
       ids:'',
       count:0,
       rules: {
