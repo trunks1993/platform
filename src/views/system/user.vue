@@ -210,7 +210,7 @@ export default {
       fqForm: [
         {
           fiAttr: {
-            label: "登录名称"
+            label: "登录名称",
           },
           el: "input",
           elAttr: {
