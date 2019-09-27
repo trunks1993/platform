@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!item.hidden">
+  <div v-if="!item.hidden && item.xianyin != 1">
     <el-menu-item :index="item.path" v-if="!item.children.length">
       {{item.menuName }}
     </el-menu-item>
