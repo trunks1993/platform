@@ -10,14 +10,11 @@
 
     <div class="app-wrapper" style="display: flex;">
       <div class="org-box">
-        <!-- <div class="zzBox">
-          <span>组织结构</span>
-          <div class="revise">
-            <i class="comm revised"></i>
-            <i class="comm refresh"></i>
-            <i class="comm select"></i>
-          </div>
-        </div>-->
+        <div class="revise">
+          <i @click="handleEditor" class="el-icon-editor"></i>
+          <i @click="handleDown" class="el-icon-arrow-down"></i>
+          <i @click="handleRefresh" class="el-icon-refresh"></i>
+        </div>
         <div class="org-box-header">
           <label style="font-size: 14px;">组织机构</label>
         </div>
@@ -29,7 +26,6 @@
           <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <!-- <el-button type="tool" icon="el-icon-import">导入</el-button> -->
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi,'用户管理')">导出</el-button>
         </div>
         <div class="content-box-table">
@@ -49,7 +45,7 @@
             <el-table-column label="操作" width="220">
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row, true)">编辑</el-button>
-                <el-button type="text" @click="deleted(scope.row.surUserId)">删除</el-button>
+                <el-button type="text-danger" @click="deleted(scope.row.surUserId)">删除</el-button>
                 <el-button type="text-warn" @click="resetPassword(scope.row)">重置</el-button>
               </template>
             </el-table-column>
@@ -80,7 +76,7 @@
           <el-input v-model="form.surUserName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="归属部门" label-width="120px" prop="surDeptId">
-          <el-input v-model="form.surDeptId" @focus="sectoralChoice = true" autocomplete="off"></el-input>
+          <el-input v-model="form.surDeptName" @focus="sectoralChoice = true" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机号码" label-width="120px" prop="surPhoneNumber">
           <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
@@ -91,16 +87,16 @@
         <el-form-item label="登录帐号" label-width="120px" prop="surLoginName">
           <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录密码" label-width="120px" prop="surPassword">
+        <el-form-item label="登录密码" v-if="!isEditor" label-width="120px" prop="surPassword">
           <el-input v-model="form.surPassword" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="岗 位" label-width="120px" prop="postIds">
           <el-select v-model="form.postIds" multiple placeholder="请选择">
             <el-option
               v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item.postId"
+              :label="item.postName"
+              :value="item.postId"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -111,14 +107,13 @@
         <el-form-item label="用户状态" label-width="120px">
           <el-switch v-model="form.surStatus" active-value="0" inactive-value="1"></el-switch>
         </el-form-item>
-
         <el-form-item label="角 色" label-width="120px">
-          <el-checkbox-group v-model="roleIds" @change="handleCheckedCitiesChange">
+          <el-checkbox-group v-model="form.roleIds" @change="handleCheckedCitiesChange">
             <el-checkbox
               v-for="(item, index) in cities"
-              :label="item.key"
+              :label="item.roleId"
               :key="index"
-            >{{item.name}}</el-checkbox>
+            >{{item.roleName}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
@@ -138,7 +133,7 @@
           <el-input v-model="passWordForm.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="输入密码：" label-width="120px">
-          <el-input v-model="passWordForm.surPassword" autocomplete="off"></el-input>
+          <el-input v-model="passWordForm.surPassword" type="password" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
@@ -166,7 +161,7 @@
         <span class="title">部门选择</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;">
+      <div style="width:100%;color:#63ACDF;text-align:center;padding-left:50px;">
         <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
@@ -184,10 +179,14 @@ import {
   postresetPwd,
   getSysUserAdd,
   putUserEdit,
-  getSelectByDictType
+  getSelectByDictType,
+  queryGwPage,
+  getSysUserEdit,
+  getSysRoleList
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
+import md5 from 'js-md5';
 export default {
   mixins: [mixin],
   data() {
@@ -222,50 +221,31 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "surStatus",
-          option: [
-            { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "禁用", value: 1 }
-          ]
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
       ],
       
-      options: [
-        {
-          value: "1",
-          label: "董事长"
-        },
-        {
-          value: "2",
-          label: "项目经理"
-        },
-        {
-          value: "3",
-          label: "人力资源"
-        },
-        {
-          value: "4",
-          label: "普通员工"
-        }
-      ],
+      options: [],
       valuefox: [],
-      cities: [{ name: "管理员", key: 0 }, { name: "操作员", key: 1 }],
+      cities: [],
       isIndeterminate: true,
       passWordForm: {
         surLoginName: "",
         surPassword: ""
       },
-      tableData: [],
-      value1: true,
       multipleSelection: [],
-      radio: "1",
       dialogFormVisible: false,
       dialogFormVisiblespass: false,
       data: [],
-      roleIds: [],
       form: {
         surUserName: "",
         surDeptId: "",
+        surDeptName:"",
         surPhoneNumber: "",
         surEmail: "",
         surLoginName: "",
@@ -274,17 +254,19 @@ export default {
         surStatus:"0",
         surSex: "1",
         form: "0",
+        surUserId:"",
         postIds:[],
+        roleIds:[],
       },
       handleData:"确定要删除列表数据吗？",
       defaultProps: {
         children: "children",
         label: "sdtDeptName"
       },
-      bmId: "",
       sectoralChoice: false,
       dialogVisible: false,
-      ids: ""
+      ids: "",
+      isEditor:false
     };
   },
   components: {
@@ -297,11 +279,32 @@ export default {
   },
   created() {
     this.query();
-    getSysDeptTreeData().then(res => {
+    getSysDeptTreeData().then(res => { //部门树
       this.data = res;
     });
+    queryGwPage({status:0}).then(res=>{ //岗位
+      this.options = res.rows;
+    })
+    getSysRoleList().then(res=>{ //角色
+      this.cities = res.rows;
+      console.log(res);
+    })
   },
   methods: {
+    handleEditor(){
+      this.$router.push({path:'/system/dept'});
+    },
+    handleDown(){
+      const arr = [...document.getElementsByClassName("el-tree-node__expand-icon")];
+      arr.forEach(item=>{
+        item.click();
+      })
+    },
+    handleRefresh(){
+      getSysDeptTreeData().then(res => { //部门树
+        this.data = res;
+      });
+    },
     handleCheckAllChange(val) {
       this.checkedCities = val ? cityOptions : [];
       this.isIndeterminate = false;
@@ -346,10 +349,8 @@ export default {
       this.passWordForm = row;
     },
     preservationpassWord() {
-      console.log(this.passWordForm.surPassword);
-      console.log(this.passWordForm.surUserId);
       postresetPwd({
-        password: this.passWordForm.surPassword,
+        password: md5(this.passWordForm.surPassword),
         surUserId: this.passWordForm.surUserId
       }).then(res => {
         this.$message({
@@ -409,14 +410,14 @@ export default {
           this.query();
         })
       }
-      
     },
     handleSave() {
       const requestApi = this.isEditor ? putUserEdit : getSysUserAdd;
       if(this.isEditor == undefined){
-          this.form.postIds = this.form.postIds.toString();
-          this.form.roleIds = this.roleIds.toString();
+          this.form.surPassword = md5(this.form.surPassword);
       }
+      this.form.roleIds = this.form.roleIds.toString();
+      this.form.postIds = this.form.postIds.toString();
       console.log(this.form);
       requestApi(this.form).then(res => {
         this.handleFormDlogClose('editForm', 'dialogFormVisible');
@@ -425,7 +426,7 @@ export default {
           type: "success",
           message: msgName
         });
-        this.roleIds = [];
+        this.form.roleIds = [];
         this.query();
       })
     },
@@ -440,15 +441,33 @@ export default {
       });
     },
     handleNodeClick(data) {
+      console.log(data);
       this.form.surDeptId = data.sdtDeptId;
+      this.form.surDeptName = data.sdtDeptName;
+
     },
     editor(rows, isEditor) {
-      this.dialogFormVisible = true;
       this.isEditor = isEditor;
-      console.log(rows)
-      this.$nextTick(() => {
-        isEditor ? this.form = rows : this.form.sdtDeptPid = rows.sdtDeptPid;
-      });
+      let editRows = {};
+      if(this.isEditor){
+        console.log(rows.surUserId)
+        getSysUserEdit(rows.surUserId).then(res=>{
+          editRows = res;
+          console.log(res);
+          res.roles.forEach((item)=>{
+            editRows.roleIds.push(item.roleId);
+          })
+          res.posts.forEach((item)=>{
+            editRows.postIds.push(item.postId);
+          })
+          this.form = _.pick(editRows, _.keys(this.form))
+          
+          // this.form.surDeptName = 
+        })
+      }else {
+        this.form.sdtDeptPid = rows.sdtDeptPid;
+      }
+      this.dialogFormVisible = true;
     },
   }
 };
@@ -459,15 +478,70 @@ export default {
   background: url(../../assets/images/org-bg.png);
   background-size: 100% 100%;
   padding: 20px;
+  position: relative;
   &-header {
     padding: 5px 0;
     margin-bottom: 20px;
     position: relative;
   }
+  .revise {
+    width: 80px;
+    height: 18px;
+    position: absolute;
+    top: 25px;
+    right: 18px;
+    padding-left: 20px; 
+    z-index: 999;
+    i {
+      margin-right: 10px;
+      cursor: pointer;
+    }
+  }
 }
-
 .content-box {
   width: calc(100% - 238px);
   margin-left: 15px;
 }
 </style>
+<style>
+.el-tree-node {
+  position: relative;
+  padding-left: 0px;
+}
+.el-tree-node-children {
+  padding-left: 0px;
+}
+.el-tree-node :last-child:before {
+  height: 30px;
+}
+.el-tree>.el-tree-node:before {
+  border-left: none;
+}
+.el-tree>.el-tree-node:after {
+  border-top: none;
+}
+.el-tree-node:before,.el-tree-node:after {
+  content: "";
+  left: -4px;
+  position: absolute;
+  right: auto;
+  border-width: 1px;
+}
+.tree :first-child .el-tree-node:before {
+  border-left: none;
+}
+.el-tree-node:before {
+  border-left: 1px dashed #4386c6;
+  bottom: 0px;
+  height: 100%;
+  top: -14px;
+  width: 1px;
+}
+.el-tree-node:after {
+  border-top: 1px dashed #4386c6;
+  height: 20px;
+  top: 15px;
+  width: 16px;
+}
+</style>
+

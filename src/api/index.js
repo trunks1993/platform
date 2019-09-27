@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 import request from '@/utils/request';
 
 // export default (username, password) => request({
@@ -60,6 +61,11 @@ export const postresetPwd = params => request({
   method: 'post',
   params,
 });
+// 编辑用户时调查询信息
+export const getSysUserEdit = params => request({
+  url: '/v1/api/user/SysUser/edit/' + params,
+  method: 'get',
+});
 // 获取角色管理列表
 export const getSysRoleList = params => request({
   url: '/v1/role/selectByRole',
@@ -82,6 +88,12 @@ export const putRoleAdd = params => request({
 export const putRoleEdit = params => request({
   url: '/v1/role/edit',
   method: 'put',
+  params,
+});
+// 根据角色Id查询详情
+export const getQueryByRoleId = params => request({
+  url: '/v1/role/queryByRoleId',
+  method: 'get',
   params,
 });
 // 获取分配用户管理列表
@@ -144,6 +156,12 @@ export const getMenuDelete = params => request({
   method: 'delete',
   params,
 });
+// 修改菜单管理列表查询详情
+export const getQueryByMenuId = params => request({
+  url: '/v1/menu/queryByMenuId',
+  method: 'get',
+  params,
+});
 // 搜索部门管理信息
 export const searchSysDeptList = params => request({
   url: '/v1/api/dept/SysDept/list',
@@ -198,7 +216,11 @@ export const putSysDeptEdit = params => request({
   method: 'put',
   params,
 });
-
+// 编辑部门时调查询信息
+export const getSysDeptEdit = params => request({
+  url: '/v1/api/dept/SysDept/edit/' + params,
+  method: 'get',
+});
 // 删除岗位管理列表
 export const deleteGwPage = params => request({
   url: '/v1/manage/post/remove',

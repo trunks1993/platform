@@ -13,7 +13,7 @@
         <div class="content-box-tool">
           <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
-          <el-button type="tool" icon="el-icon-export" @click="unfold">展开/折叠</el-button>
+          <el-button type="tool" icon="el-icon-export" @click="handleUnfold">展开/折叠</el-button>
         </div>
         <div class="content-box-table">
           <el-table
@@ -22,7 +22,7 @@
             row-key="sdtDeptId"
             @selection-change="handleSelectionChange"
             ref="tableTree"
-            default-expand-all
+            :default-expand-all="isExpand"
             :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
           >
             <el-table-column type="selection"></el-table-column>
@@ -45,8 +45,8 @@
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button type="text" @click="editor(scope.row, true)">编辑</el-button>
-                <el-button type="text" @click="editor(scope.row)">新增</el-button>
-                <el-button type="text-warn" @click="deleted(scope.row.sdtDeptId)">删除</el-button>
+                <el-button type="text-warn" @click="editor(scope.row)">新增</el-button>
+                <el-button type="text-danger" @click="deleted(scope.row.sdtDeptId)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -124,7 +124,8 @@ import {
   searchSysDeptList,
   postSysDeptAdd,
   deleteSysDeptRomove,
-  putSysDeptEdit
+  putSysDeptEdit,
+  getSysDeptEdit
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -152,11 +153,12 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "sdtStatus",
-          option: [
-            { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "停用", value: 1 }
-          ]
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_dept_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
       ],
       tableList: [
@@ -209,7 +211,7 @@ export default {
       ids: "",
       sdtDeptNameId:"",
       nodeSelTemp: '',
-      // isSearch: true
+      isExpand: true
     };
   },
   components: {
@@ -228,15 +230,6 @@ export default {
     this.queryDate();
   },
   methods: {
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -257,44 +250,6 @@ export default {
       //重置输入框数据
       this.sizeForm.sdtDeptName = "";
       this.sizeForm.sdtStatus = "";
-    },
-    addAsk() {
-      //新增保存
-      if( this.sdtDeptNameId == []) {
-        this.form.sdtDeptPid = this.bmId;
-      }else {
-        this.form.sdtDeptPid = this.sdtDeptNameId;
-      }
-      postSysDeptAdd(this.form).then(res => {
-        this.$message({
-          type: "success",
-          message: "新增成功!"
-        });
-        this.dialogFormVisible = false;
-        this.queryDate();
-      });
-    },
-    saveAsk() {
-      //修改保存
-      console.log(this.form.sdtDeptPid)
-      if(this.bmId != []) {
-        this.form.sdtDeptPid = this.bmId;
-      }
-      putSysDeptEdit(this.form).then(res => {
-        this.$message({
-          type: "success",
-          message: "修改成功!"
-        });
-        this.dialogFormVisible = false;
-        this.queryDate();
-      });
-    },
-    deptAdd(rows) {
-      //具体行新增
-      this.dialogFormVisible = true;
-      this.form.sdtDeptPid = rows.sdtDeptName;
-      this.sdtDeptNameId = rows.sdtDeptId;
-      this.obj = {};
     },
     revise() {
       //批量修改
@@ -334,17 +289,23 @@ export default {
       this.form.sdtDeptPid = data.sdtDeptName;
       this.bmId = data.sdtDeptId;
     },
-    unfold(){ //展开折叠
-      console.log(this.$refs.tableTree.defaultExpandAll)
-      // this.$refs.tableTree.defaultExpandAll = "false";
+    handleUnfold(){ //展开折叠
+      const arr = [...document.getElementsByClassName("el-table__expand-icon")];
+      arr.forEach(item=>{
+        item.click();
+      })
     },
     editor(rows, isEditor) {
       console.log(rows, isEditor)
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
-        this.$nextTick(() => {
-          isEditor ? this.form = rows : this.form.sdtDeptPid = rows.sdtDeptPid;
-        });
+      if(isEditor){
+        getSysDeptEdit(rows.sdtDeptId).then(res=>{
+          this.form = res
+        })
+      }else {
+          this.form.sdtDeptPid = rows.sdtDeptId;
+      }
     },
     handleSave() {
       const requestApi = this.isEditor ? putSysDeptEdit : postSysDeptAdd;

@@ -39,7 +39,7 @@
                 <el-button type="text" @click="editor(scope.row,true)">编辑</el-button>
                 <el-button type="text" @click="editdialog(scope.row)">数据权限</el-button>
                 <el-button type="text-warn" @click="assignUsers(scope.row)">分配用户</el-button>
-                <el-button type="text-warn" @click="deleted(scope.row.roleId)">删除</el-button>
+                <el-button type="text-danger" @click="deleted(scope.row.roleId)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -48,7 +48,7 @@
           <el-pagination
             style="text-align:right;margin-top:2%;"
             background
-            layout="prev, pager, next"
+            layout="prev, pager, next, total"
             @size-change="handleSizeChange($event, query)"
             @current-change="handleCurrentChange($event, query)"
             :current-page="queryList.pageNum"
@@ -136,6 +136,20 @@
             <el-option label="仅本人数据权限" value="4"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="数据权限" v-if="editForm.dataScope == 1" label-width="120px">
+            <el-tree
+              :data="deptData"
+              show-checkbox
+              node-key="menuId"
+              width="500px"
+              ref="tree"
+              highlight-current
+              :props="defaultPropsTree"
+              :default-checked-keys="treeSelection"
+              @check-change="handleCheckChangeDept"
+              style="top: 7px;"
+            ></el-tree>
+          </el-form-item>
         <!-- <el-form-item label="数据权限" prop="region">
             <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
         </el-form-item>-->
@@ -154,7 +168,9 @@ import {
   deleteRoleGwPage,
   putRoleAdd,
   putRoleEdit,
-  getMenuList
+  getMenuList,
+  getQueryByRoleId,
+  getSysDeptTreeData 
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -192,14 +208,16 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "status",
-          option: [
-            { label: "所有", value: "" },
-            { label: "正常", value: 0 },
-            { label: "停用", value: 1 }
-          ]
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_role_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
       ],
       data: [],
+      deptData:[],
       defaultProps: {
         children: "children",
         label: "menuName"
@@ -226,26 +244,27 @@ export default {
       sizeForm: {
         roleName: "",
         roleKey: "",
-        date1: "",
-        date2: "",
-        status: ""
+        status: "",
+        remark: "",
+        status: "",
+        deptIds:[],
+        roleId:"",
       },
+
       form: {
         roleName: "",
         roleKey: "",
         roleSort: "",
-        status: "",
+        status: "0",
         remark: "",
-        dataScope: ""
+        dataScope: "",
       },
       pageShow: true,
-      current: 1,
-      pageSize: 5,
       dialogVisible: false,
       ids: "",
-      total: 10,
       isSearch: true,
       deptIds: [],
+      menuIds: [],
       treeSelection:[],
       handleData:"确定要删除列表数据吗？"
     };
@@ -263,11 +282,12 @@ export default {
     getMenuList(this.sizeForm).then(res => {
       this.data = res;
     });
+    getSysDeptTreeData().then(res => {
+      console.log(res);
+      this.deptData = res;
+    });
   },
   methods: {
-    handleClick(row) {
-      console.log(row);
-    },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
@@ -284,14 +304,6 @@ export default {
     onSubmit() {
       console.log("submit!");
     },
-    //重置按钮
-    reset() {
-      this.sizeForm.roleName = "";
-      this.sizeForm.roleKey = "";
-      this.sizeForm.date1 = "";
-      this.sizeForm.date2 = "";
-      this.sizeForm.status = "";
-    },
     exported() {
       //导出
       window.location.href =
@@ -299,7 +311,6 @@ export default {
     },
     batchDelete() {
       //批量删除
-      console.log(this.multipleSelection);
       let selectArr = [];
       if (
         typeof this.multipleSelection == "undefined" ||
@@ -338,7 +349,6 @@ export default {
       this.handleData = "确定要删除列表数据吗？";
     },
     editorStatus(rows){ //开关按钮
-      console.log(rows.status)
       this.dialogVisible = true;
       this.form = rows;
       this.handleData = rows.status == 0 ? "确认要正常用户吗？": "确认要停用用户吗？";
@@ -370,12 +380,14 @@ export default {
       }
     },
     sureEdit() {
+      this.editForm.deptIds = this.deptIds.toString();
       putRoleEdit(this.editForm).then(res => {
         this.$message({
           type: "success",
           message: "数据权限成功!"
         });
         this.editdialogVisible = false;
+        this.deptIds = [];
         this.query();
       });
     },
@@ -384,32 +396,33 @@ export default {
       this.form = {};
       this.obj = {};
     },
-    // 权限
-    getCheckedNodes() {
-      console.log(this.$refs.tree.getCheckedNodes());
-    },
-    getCheckedKeys() {
-      console.log(this.$refs.tree.getCheckedKeys());
-    },
     setCheckedKeys() {
       this.$refs.tree.setCheckedKeys([3]);
     },
     resetChecked() {
       this.$refs.tree.setCheckedKeys([]);
     },
-    handleCheckChange() {
+    handleCheckChange() { //选择菜单
       // console.log(data);
       let res = this.$refs.tree.getCheckedNodes();
       let arr = [];
       res.forEach(item => {
         arr.push(item.menuId);
       });
-      console.log(arr);
+      this.menuIds = arr;
+    },
+    handleCheckChangeDept() { //选择部门
+      // console.log(data);
+      let res = this.$refs.tree.getCheckedNodes();
+      let arr = [];
+      res.forEach(item => {
+        arr.push(item.sdtDeptId);
+      });
       this.deptIds = arr;
     },
     handleSave() {
       const requestApi = this.isEditor ? putRoleEdit : putRoleAdd;
-      console.log(this.form);
+      this.form.menuIds = this.menuIds.toString();
       requestApi(this.form).then(res => {
         this.handleFormDlogClose('editForm', 'dialogFormVisible');
         let msgName = this.isEditor ? "修改成功!":"新增成功!";
@@ -436,26 +449,20 @@ export default {
     editor(rows, isEditor) {
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
-      this.$nextTick(() => {
-        isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
-      });
+      if(isEditor){
+        getQueryByRoleId({roleId:rows.roleId}).then(res=>{
+          this.form = _.pick(res, _.keys(this.form))
+          console.log(res);
+        })
+      }else {
+        this.form.parentId = rows.menuId;
+      }
       this.form.roleId = rows.roleId;
     },
     // 数据权限
     editdialog(rows) {
-      this.editForm.roleName = rows.roleName;
-      this.editForm.roleKey = rows.roleKey;
-      this.editForm.roleSort = rows.roleSort;
-      this.editForm.status = rows.status;
-      this.editForm.remark = rows.remark;
-      this.editForm.deptIds = rows.deptIds;
-      this.editForm.roleId = rows.roleId;
+      this.editForm = _.pick(rows, _.keys(this.editForm))
       this.editdialogVisible = true;
-    },
-    handleNodeClick(data) {
-      console.log(data);
-      // this.form.surDeptId = data.sdtDeptName;
-      // this.bmId = data.sdtDeptId;
     },
     assignUsers(rows){ //分配用户
       this.$router.push({path:'/system/assignUsers',query:{roleId:rows.roleId}});
