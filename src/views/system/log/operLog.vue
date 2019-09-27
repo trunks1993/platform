@@ -143,53 +143,14 @@ export default {
           },
           el: "select",
           elAttr: {},
-          bindKey: "operatorType",
-          option: [
-            {
-              label: "请选择",
-              value: ""
-            },
-            {
-              label: "其他",
-              value: 0
-            },
-            {
-              label: "新增",
-              value: 1
-            },
-            {
-              label: "修改",
-              value: 2
-            },
-            {
-              label: "删除",
-              value: 3
-            },
-            {
-              label: "授权",
-              value: 4
-            },
-            {
-              label: "导出",
-              value: 5
-            },
-            {
-              label: "导入",
-              value: 6
-            },
-            {
-              label: "强退",
-              value: 7
-            },
-            {
-              label: "生成代码",
-              value: 8
-            },
-            {
-              label: "清空",
-              value: 9
-            }
-          ]
+          bindKey: "status",
+          bindValue: "",
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_oper_type",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         },
         {
           fiAttr: {
@@ -198,11 +159,13 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "status",
-          option: [
-            { label: "所有", value: "" },
-            { label: "成功", value: 0 },
-            { label: "失败", value: 1 }
-          ]
+          bindValue: "",
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_oper_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
         // {
         //   fiAttr: {
@@ -288,9 +251,6 @@ export default {
             this.options.push(obj);
             });
         });
-    },
-    lookUp() {
-      //详情
     }
   }
 };

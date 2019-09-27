@@ -70,7 +70,7 @@
         <el-form-item label="字典键值" prop="dictValue"  :label-width="formLabelWidth">
           <el-input v-model="form.dictValue" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="字典类型" prop="dictType"  :label-width="formLabelWidth">
+        <el-form-item label="字典类型" prop="dictType" :label-width="formLabelWidth">
           <el-input v-model="form.dictType" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="样式属性" prop="cssClass"  :label-width="formLabelWidth">
@@ -180,11 +180,11 @@ export default {
           dictCode:'',
           dictLabel:'',
           dictValue:'',
-          dictType:'',
+          dictType:this.$route.query.type,
           cssClass:'',
           dictSort:'',
           status:'0',
-          isDefault:'',
+          isDefault:'0',
           remark:'',
       },
       dialogFormVisible: false,
@@ -212,9 +212,6 @@ export default {
     changeSelect(value) {
       //int类型转换为string
       this.radioData = value.toString();
-    },
-    change(data) {
-      console.log(data);
     },
     batchDelete() {
       //批量删除
@@ -285,12 +282,6 @@ export default {
         this.handleFormDlogClose('editForm', 'dialogFormVisible');
         this.query();
       })
-    },
-    selectQuery() {
-      //字典名称查询
-      queryDicDateSelect().then(res => {
-        console.log(res);
-      });
     }
   }
 };
