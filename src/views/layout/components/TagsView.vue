@@ -50,7 +50,8 @@ export default {
         if(this.$store.getters.visitedViews.length){
             window.sessionStorage.setItem('menuList',JSON.stringify(this.$store.getters.visitedViews))
         }
-        return JSON.parse(window.sessionStorage.getItem('menuList')).length ?  JSON.parse(window.sessionStorage.getItem('menuList')):this.$store.getters.visitedViews;
+        const SESSION_MENU = JSON.parse(window.sessionStorage.getItem('menuList')) || [];
+        return SESSION_MENU.length ?  SESSION_MENU : this.$store.getters.visitedViews;
     },
     routes() {
       return this.$store.getters.routers;
@@ -67,7 +68,7 @@ export default {
       this.showNewContextMenu = false;
     })
     this.initTags();
-    let menuList = JSON.parse(window.sessionStorage.getItem('menuList'))
+    let menuList = JSON.parse(window.sessionStorage.getItem('menuList'))||[];
     if(menuList.length){ //如果缓存中存在标签记录，不默认添加标签；否，则添加一条。
         menuList.forEach(e => { //将缓存中的标签记录继续存到store中。
           this.$store.dispatch("addView", e);        
@@ -118,7 +119,6 @@ export default {
       }
     },
     addTags() {
-      console.log(this.$route)
       const { name } = this.$route;
       if (name) {
         this.$store.dispatch("addView", this.$route);
