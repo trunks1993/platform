@@ -4,13 +4,14 @@
       :fAttr="{'label-width': '80px'}"
       :resetBtnVisible="false"
       :searchBtnVisible="true"
+      ref="fqForm"
       :model="fqForm"
       @afterFilter="handleFilter($event, query)"
     ></FilterQueryForm>
     <div class="app-wrapper" style="display: flex;">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true, form.dictType = $refs.fqForm.queryFilter.dictType">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi,'字典数据')">导出</el-button>
@@ -143,12 +144,12 @@ export default {
           },
           el: "select",
           elAttr: {},
-          bindKey: "dictValue",
-          bindValue: this.$route.query.id,
+          bindKey: "dictType",
+          bindValue: this.$route.query.type,
           option: {
             url: "/v1/dictionaries/dictType/down",
             labelKey: "dictName",
-            valueKey: "dictId"
+            valueKey: "dictType"
           }
         },
         {
@@ -180,7 +181,7 @@ export default {
           dictCode:'',
           dictLabel:'',
           dictValue:'',
-          dictType:this.$route.query.type,
+          dictType: '',
           cssClass:'',
           dictSort:'',
           status:'0',
@@ -262,7 +263,7 @@ export default {
         }
         this.dialogFormVisible = true;
         let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
-        this.editor(rows,true);
+        this.editor(rows, true);
       }
     },
     editor(rows, isEditor) {
