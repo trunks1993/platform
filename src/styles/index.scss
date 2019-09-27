@@ -121,11 +121,12 @@ ul {
 .common-container {
   height: 100%;
   color: #fff;
+  overflow-y: hidden;
 }
 
 // app-wrapper
 .app-wrapper {
-  height: calc(100% - 174px);
+  
   width: 100%;
   margin-top: 15px;
   .content-box {

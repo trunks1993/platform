@@ -69,11 +69,11 @@ export default {
     })
     this.initTags();
     let menuList = JSON.parse(window.sessionStorage.getItem('menuList'))||[];
-    if(menuList.length){ //如果缓存中存在标签记录，不默认添加标签；否，则添加一条。
+    if(menuList.length) { //如果缓存中存在标签记录，不默认添加标签；否，则添加一条。
         menuList.forEach(e => { //将缓存中的标签记录继续存到store中。
           this.$store.dispatch("addView", e);        
         })
-    }else{
+    } else { 
       this.addTags();
     }
     // 
