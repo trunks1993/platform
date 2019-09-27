@@ -355,7 +355,7 @@ export default {
     },
     handleNodeSelect() {
       this.form.sdtDeptPid = _.clone(this.nodeSelTemp).sdtDeptId;
-      this.form.sdtDeptPidName = _.clone(this.nodeSelTemp).sdtDeptName;
+      this.form.sdtParentName = _.clone(this.nodeSelTemp).sdtDeptName;
       this.nodeSelTemp = '';
       this.sectoralChoice = false;
     }
