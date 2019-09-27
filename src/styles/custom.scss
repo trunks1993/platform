@@ -462,3 +462,63 @@ $green: #0ebae1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+// elementUI消息弹窗样式修改
+.el-message-box__wrapper{
+  width: 400px;
+  height: 200px;
+  background: url(../assets/images/dialog-bg.png) repeat;
+  background-size: 100% 100%;
+  color:#63ACDF;
+  left:50%; 
+  top:50%;
+  transform:translate(-50%,-50%);
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  .el-message-box{
+    width: 100%;
+    height: 64px;
+    margin: 0 auto;
+    position: relative;
+    vertical-align: middle;
+    .el-message-box__header{
+      position: absolute;
+      bottom:-160px;
+      right:50%;
+      .el-message-box__headerbtn{
+        border:none;
+        outline:none;
+        width: 50px;
+        height: 50px;
+        // background-size: 100% 100%;
+        -webkit-transform: translate(50%, 0);
+        transform: translate(50%, 0);
+        background: url(../assets/images/icon-close-dialog.png) repeat;
+        background-size: cover;
+        .el-icon-close:before {
+          content: "";
+        }
+      }
+    }
+    .el-message-box__message{
+      p{
+        word-wrap:break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+      }
+    }
+    .el-message-box__btns{
+      width: 100%;
+      position: absolute;
+      bottom: -80px;
+      left: 0;
+      .el-button{
+        padding: 10px 50px;
+        background: url(../assets/images/icon-bg-btn.png) repeat;
+        background-size: 100% 100%;
+      }
+    }
+  }
+}

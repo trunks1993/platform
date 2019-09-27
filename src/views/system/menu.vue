@@ -275,7 +275,7 @@ export default {
     editor(rows, isEditor) {
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
-      if(isEditor){
+     if(isEditor){
         getQueryByMenuId({menuId:rows.menuId}).then(res=>{
           this.form = _.pick(res, _.keys(this.form));
           this.form.menuId = rows.menuId;

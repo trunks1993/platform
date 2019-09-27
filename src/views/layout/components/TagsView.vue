@@ -1,8 +1,13 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
     <!-- <scroll-pane ref="scrollPane" class="tags-view-wrapper"> -->
+    <div v-if="showNewContextMenu" class="c_menu" :style="{left:positionX,top:positionY}" ref="menu">
+      <div class="will_BeSelect" v-if="showPrev" @click="closeSelectedTag(visitedViews[curIndex - 1])">删除前一个</div>
+      <div class="will_BeSelect" v-if="showNext" @click="closeSelectedTag(visitedViews[curIndex + 1])">删除后一个</div>
+      <div class="will_BeSelect" @click="closeAllTags(visitedViews[curIndex])">删除全部</div>
+    </div>
     <router-link
-      v-for="tag in visitedViews"
+      v-for="(tag,index) in visitedViews"
       ref="tag"
       :key="tag.path"
       :class="{active: isActive(tag)}"
@@ -10,6 +15,7 @@
       tag="span"
       class="tags-view-item"
       @click.middle.native="closeSelectedTag(tag)"
+      @contextmenu.prevent.native="show($event,index)"
     >
       {{ tag.title }}
       <span
@@ -27,12 +33,25 @@ export default {
   data() {
     return {
       selectedTag: {},
-      affixTags: []
+      affixTags: [],
+      showNewContextMenu:false,
+      positionX:null,
+      positionY:null,
+      showNext:false,
+      showPrev:false,
+      curIndex:0
     };
   },
   computed: {
-    visitedViews() {
-      return this.$store.getters.visitedViews;
+    visitedViews(){
+        this.$store.getters.visitedViews.forEach(e=>{
+            delete e.matched;// 该对象属性（matched）循环引用导致JSON.stringify报错
+        })
+        if(this.$store.getters.visitedViews.length){
+            window.sessionStorage.setItem('menuList',JSON.stringify(this.$store.getters.visitedViews))
+        }
+        const SESSION_MENU = JSON.parse(window.sessionStorage.getItem('menuList')) || [];
+        return SESSION_MENU.length ?  SESSION_MENU : this.$store.getters.visitedViews;
     },
     routes() {
       return this.$store.getters.routers;
@@ -42,13 +61,32 @@ export default {
     $route() {
       this.addTags();
       //   this.moveToCurrentTag();
-    }
+    },
   },
   mounted() {
+    document.body.addEventListener('click',()=>{
+      this.showNewContextMenu = false;
+    })
     this.initTags();
-    this.addTags();
+    let menuList = JSON.parse(window.sessionStorage.getItem('menuList'))||[];
+    if(menuList.length){ //如果缓存中存在标签记录，不默认添加标签；否，则添加一条。
+        menuList.forEach(e => { //将缓存中的标签记录继续存到store中。
+          this.$store.dispatch("addView", e);        
+        })
+    }else{
+      this.addTags();
+    }
+    // 
   },
   methods: { 
+    show(e,index){
+      this.curIndex = index;
+      this.showPrev = index !== 0 ? true:false;
+      this.showNext = index !== this.visitedViews.length - 1 ? true:false;
+      this.showNewContextMenu = true;
+      this.positionY = e.clientY +'px';
+      this.positionX = e.clientX +'px';
+    },
     isActive(route) {
       return route.path === this.$route.path;
     },
@@ -156,6 +194,24 @@ export default {
 .tags-view-container {
   height: 26px;
   width: 100%;
+  .c_menu{
+    width: 111px;
+    height: 95px;
+    z-index: 999;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #02439D;
+    border-radius: 1px;
+    position: absolute;
+    background: #05254B;
+    color: #4BAEFD;
+    padding: 10px;
+    box-sizing: border-box;
+    .will_BeSelect{
+      margin-bottom: 5px;
+      text-align: left
+    }
+  }
   .tags-view-item {
     display: inline-block;
     position: relative;

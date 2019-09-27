@@ -25,6 +25,14 @@ export default {
       queryFilter: {}
     };
   },
+  watch: {
+    queryFilter: {
+      handler(val, oVal) {
+        this.$emit('queryChange', val);
+      },
+      deep: true,
+    }
+  },
   async created() {
     for (let item of this.model) {
       this.$set(this.queryFilter, item.bindKey, item.bindValue);
