@@ -76,7 +76,7 @@
           <el-input v-model="form.surUserName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="归属部门" label-width="120px" prop="surDeptId">
-          <el-input v-model="form.surDeptId" @focus="sectoralChoice = true" autocomplete="off"></el-input>
+          <el-input v-model="form.surDeptName" @focus="sectoralChoice = true" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机号码" label-width="120px" prop="surPhoneNumber">
           <el-input v-model="form.surPhoneNumber" autocomplete="off"></el-input>
@@ -161,7 +161,7 @@
         <span class="title">部门选择</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;">
+      <div style="width:100%;color:#63ACDF;text-align:center;padding-left:50px;">
         <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
@@ -245,6 +245,7 @@ export default {
       form: {
         surUserName: "",
         surDeptId: "",
+        surDeptName:"",
         surPhoneNumber: "",
         surEmail: "",
         surLoginName: "",
@@ -440,7 +441,10 @@ export default {
       });
     },
     handleNodeClick(data) {
+      console.log(data);
       this.form.surDeptId = data.sdtDeptId;
+      this.form.surDeptName = data.sdtDeptName;
+
     },
     editor(rows, isEditor) {
       this.isEditor = isEditor;
@@ -457,6 +461,8 @@ export default {
             editRows.postIds.push(item.postId);
           })
           this.form = _.pick(editRows, _.keys(this.form))
+          
+          // this.form.surDeptName = 
         })
       }else {
         this.form.sdtDeptPid = rows.sdtDeptPid;
@@ -495,6 +501,47 @@ export default {
 .content-box {
   width: calc(100% - 238px);
   margin-left: 15px;
+}
+</style>
+<style>
+.el-tree-node {
+  position: relative;
+  padding-left: 0px;
+}
+.el-tree-node-children {
+  padding-left: 0px;
+}
+.el-tree-node :last-child:before {
+  height: 30px;
+}
+.el-tree>.el-tree-node:before {
+  border-left: none;
+}
+.el-tree>.el-tree-node:after {
+  border-top: none;
+}
+.el-tree-node:before,.el-tree-node:after {
+  content: "";
+  left: -4px;
+  position: absolute;
+  right: auto;
+  border-width: 1px;
+}
+.tree :first-child .el-tree-node:before {
+  border-left: none;
+}
+.el-tree-node:before {
+  border-left: 1px dashed #4386c6;
+  bottom: 0px;
+  height: 100%;
+  top: -14px;
+  width: 1px;
+}
+.el-tree-node:after {
+  border-top: 1px dashed #4386c6;
+  height: 20px;
+  top: 15px;
+  width: 16px;
 }
 </style>
 

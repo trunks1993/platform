@@ -46,6 +46,7 @@
   </div>
 </template>
 <script>
+import md5 from 'js-md5';
 export default {
 	name: 'login',
 	data() {
@@ -82,6 +83,7 @@ export default {
 	methods: {
 		login(ruleForm) {
       let self = this;
+      this.ruleForm.password = md5(this.ruleForm.password);
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
           this.$store.dispatch('Login', this.ruleForm).then(res => {
