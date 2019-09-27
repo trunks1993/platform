@@ -30,8 +30,8 @@ service.interceptors.response.use(
       MessageBox.alert(data.msg, {
         confirmButtonText: '确定',
         callback: (action) => {
-          store.dispatch('FedLogOut');
-          location.reload(); // 为了重新实例化vue-router对象 避免bug
+         // store.dispatch('FedLogOut');
+          //location.reload(); // 为了重新实例化vue-router对象 避免bug
         },
       });
       return Promise.reject('error');
