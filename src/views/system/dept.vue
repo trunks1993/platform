@@ -62,7 +62,7 @@
       </div>
       <el-form :model="form"  ref="editForm"  :rules="rules" :inline="true">
         <el-form-item label="上级部门：" :label-width="'120px'"  prop="sdtDeptPidName">
-          <el-input v-model="form.sdtDeptPidName" @focus="sectoralChoice = true"></el-input>
+          <el-input v-model="form.sdtParentName" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
         <el-form-item label="部门名称：" :label-width="'120px'"  prop="sdtDeptName">
           <el-input v-model="form.sdtDeptName"></el-input>
@@ -195,7 +195,7 @@ export default {
       ],
       form: {
         sdtDeptPid: "1",
-        sdtDeptPidName:"湖南分公司",
+        sdtParentName:"湖南分公司",
         sdtDeptName: "",
         sdtOrderNum: "",
         sdtLeader: "",
@@ -329,6 +329,7 @@ export default {
       if(isEditor){
         getSysDeptEdit(rows.sdtDeptId).then(res=>{
           this.form = res
+          this.form.sdtParentName = res.sdtParentName;
         })
       }else {
           this.form.sdtDeptPid = rows.sdtDeptId;
