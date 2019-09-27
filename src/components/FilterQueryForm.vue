@@ -127,7 +127,7 @@ export default {
             }
           }}
         >
-          <i class="el-icon-arrow-down" />
+          <i class="el-icon-arrow-down" style={{transform: this.filterVisible ? 'rotate(180deg)' : 'rotate(0deg)'}}/>
         </div>
       </div>
     );
@@ -155,10 +155,17 @@ export default {
     bottom: -18px;
     left: 50%;
     transform: translate(-50%, 0);
-    background: #796e6e;
-    width: 20px;
+    background: rgba(255,255,255, 0.3);
+    width: 50px;
     height: 20px;
+    line-height: 20px;
     text-align: center;
+    border-radius: 0 0 20px 20px;
+    cursor: pointer;
+    i {
+      display: inline-block;
+      transition: all .5s;
+    }
   }
 }
 </style>
