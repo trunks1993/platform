@@ -503,7 +503,7 @@ export default {
   margin-left: 15px;
 }
 </style>
-<style>
+<style lang="scss">
 .el-tree-node {
   position: relative;
   padding-left: 0px;
@@ -543,5 +543,22 @@ export default {
   top: 15px;
   width: 16px;
 }
+
+// .is-expanded {
+//   .el-tree-node__label:after {
+//     border-top: 1px dashed #4386c6;
+//     display: block;
+//     height: 1px;
+//     position: absolute;
+//     left: -27px;
+//     content: '';
+//     top: 11px;
+//     right: 73px;
+//   }
+// }
+
+// .el-tree-node__label {
+//   position: relative;
+// }
 </style>
 

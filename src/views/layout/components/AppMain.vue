@@ -1,8 +1,8 @@
 <template>
   <section class="app-main" id="app-main">
-    <transition name="fade" mode="out-in">
+    <transition name="fade-transform" mode="out-in">
       <!-- <keep-alive :include="cachedViews"> -->
-        <router-view></router-view>
+      <router-view :key="key" />
       <!-- </keep-alive> -->
     </transition>
   </section>
@@ -12,19 +12,18 @@ export default {
 	data() {
 		return {};
 	},
-    mounted() {
-      
-    },
-	methods: {
-        
-	},
+  computed: {
+    key() {
+      return this.$route.path
+    }
+  }
     
 };
 </script>
 <style lang="scss" scoped>
-    .app-main {
-        width: 100%;
-        height: calc(100% - 26px);
-        margin-left: 15px;
-    }
+.app-main {
+  width: 100%;
+  height: calc(100% - 26px);
+  margin-left: 15px;
+}
 </style>
