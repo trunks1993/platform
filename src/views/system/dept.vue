@@ -37,7 +37,7 @@
             <el-table-column label="状态" show-overflow-tooltip>
               <template slot-scope="scope">
                 <span
-                  :class="[scope.row.sdtStatus == '0'  ? 'normal' : 'stop']"
+                  :style="{color:scope.row.sdtStatus == '0' ? '#45eba7' : '#cb3203'}"
                 >{{scope.row.sdtStatus == '0' ? '正常' : '停用'}}</span>
               </template>
             </el-table-column>
@@ -59,9 +59,9 @@
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form"  ref="editForm" :inline="true">
-        <el-form-item label="上级部门：" :label-width="'120px'"  prop="sdtDeptPid">
-          <el-input v-model="form.sdtDeptPid" @focus="sectoralChoice = true"></el-input>
+      <el-form :model="form"  ref="editForm"  :rules="rules" :inline="true">
+        <el-form-item label="上级部门：" :label-width="'120px'"  prop="sdtDeptPidName">
+          <el-input v-model="form.sdtDeptPidName" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
         <el-form-item label="部门名称：" :label-width="'120px'"  prop="sdtDeptName">
           <el-input v-model="form.sdtDeptName"></el-input>
@@ -132,6 +132,19 @@ import { mixin } from "@/mixins";
 export default {
   mixins: [mixin],
   data() {
+    var checkPhone = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('手机号不能为空'));
+      } else {
+        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
+        console.log(reg.test(value));
+        if (reg.test(value)) {
+          callback();
+        } else {
+          return callback(new Error('请输入正确的手机号'));
+        }
+      }
+      };
     return {
       baseExpApi:
         "http://192.168.0.105:9091/uumsApi/v1/manage/post/exportExcel",
@@ -180,7 +193,8 @@ export default {
         }
       ],
       form: {
-        sdtDeptPid: "",
+        sdtDeptPid: "1",
+        sdtDeptPidName:"湖南分公司",
         sdtDeptName: "",
         sdtOrderNum: "",
         sdtLeader: "",
@@ -188,7 +202,20 @@ export default {
         sdtEmail: "",
         sdtStatus: "1"
       },
-      bmId: "",
+      rules:{
+        sdtDeptPid:[
+          { required: true, message: '请选择上级部门', trigger: 'blur' }
+        ],
+        sdtDeptName:[
+          { required: true, message: '请输入部门名称', trigger: 'blur' }
+        ],
+        sdtLeader:[
+          { required: true, message: '请输入负责人', trigger: 'blur' }
+        ],
+        sdtPhone:[
+           {validator: checkPhone, trigger: 'blur'}
+        ],
+      },
       type: 0,
       tableData: [],
       '120px': "120px",
@@ -253,19 +280,21 @@ export default {
     },
     revise() {
       //批量修改
-      this.type = 1;
-      if (
-        typeof this.multipleSelection == "undefined" ||
-        this.multipleSelection.length == 0
-      ) {
+      if (this.$refs.tableTree.selection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
         });
       } else {
-        console.log(this.multipleSelection);
+        if(this.$refs.tableTree.selection.length > 1){
+            this.$message({
+                message: "只能选择一条数据进行修改",
+                type: "warning"
+            });
+            return;
+        }
         this.dialogFormVisible = true;
-        let rows = this.multipleSelection.pop(); //获取最后一条
+        let rows = this.$refs.tableTree.selection.pop(); //获取最后一条
         this.editor(rows,true);
       }
     },
@@ -284,10 +313,6 @@ export default {
         this.dialogVisible = false;
        this.query();
       });
-    },
-    handleNodeClick(data) { //部门选择树
-      this.form.sdtDeptPid = data.sdtDeptName;
-      this.bmId = data.sdtDeptId;
     },
     handleUnfold(){ //展开折叠
       const arr = [...document.getElementsByClassName("el-table__expand-icon")];
@@ -308,20 +333,26 @@ export default {
       }
     },
     handleSave() {
-      const requestApi = this.isEditor ? putSysDeptEdit : postSysDeptAdd;
-      requestApi(this.form).then(res => {
-        this.handleFormDlogClose('editForm', 'dialogFormVisible');
-        let msgName = this.isEditor ? "修改成功!":"新增成功!";
-        this.$message({
-          type: "success",
-          message: msgName
-        });
-        this.query();
-      })
+      this.$refs["editForm"].validate((valid) => {
+        if (valid) {
+          const requestApi = this.isEditor ? putSysDeptEdit : postSysDeptAdd;
+          requestApi(this.form).then(res => {
+            this.handleFormDlogClose('editForm', 'dialogFormVisible');
+            let msgName = this.isEditor ? "修改成功!":"新增成功!";
+            this.$message({
+              type: "success",
+              message: msgName
+            });
+            this.query();
+          })
+        } else {
+          return false;
+        }
+      });
     },
     handleNodeSelect() {
-      console.log(_.clone(this.nodeSelTemp))
       this.form.sdtDeptPid = _.clone(this.nodeSelTemp).sdtDeptId;
+      this.form.sdtDeptPidName = _.clone(this.nodeSelTemp).sdtDeptName;
       this.nodeSelTemp = '';
       this.sectoralChoice = false;
     }

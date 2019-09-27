@@ -19,6 +19,7 @@
         <div class="content-box-table">
           <el-table
             :data="tableDataList"
+            ref="multipleTable"
             row-key="menuId"
             @selection-change="handleSelectionChange"
           >
@@ -33,9 +34,11 @@
               </span>
             </el-table-column>
             <el-table-column label="显示" prop="visible">
-              <span slot-scope="scope">
-                {{+scope.row.visible ? '隐藏' : '显示'}}
-              </span>
+              <template slot-scope="scope">
+                <span
+                  :style="{color:scope.row.visible == '0' ? '#45eba7' : '#cb3203'}"
+                >{{scope.row.visible == '0' ? '显示' : '隐藏'}}</span>
+              </template>
             </el-table-column>
             <el-table-column label="权限标识" prop="perms" />
             <el-table-column label="操作">
@@ -55,9 +58,9 @@
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" ref="editForm" :inline="true">
-        <el-form-item label="上级菜单" label-width="120px" prop="parentId">
-          <el-input v-model="form.parentId" @focus="sectoralChoice = true"></el-input>
+      <el-form :model="form" ref="editForm" :rules="rules" :inline="true">
+        <el-form-item label="上级菜单" label-width="120px" prop="parentName">
+          <el-input v-model="form.parentName" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
         <el-form-item label="菜单类型" label-width="120px" prop="menuType">
           <el-radio v-model="form.menuType" label="M">目录</el-radio>
@@ -112,10 +115,10 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;">
-        <el-tree :data="tableDataList" :expand-on-click-node="false" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
+        <el-tree :data="tableDataList" :expand-on-click-node="false" :props="defaultProps" @node-click="handleNodeSelect"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
-        <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
+        <!-- <el-button type="primary" @click="handleNodeSelect">确 定</el-button> -->
         <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -175,6 +178,7 @@ export default {
       dialogFormVisible: false,
       form: {
         parentId:"",
+        parentName:"",
         menuType: "M",
         menuName: "",
         component: "",
@@ -183,6 +187,23 @@ export default {
         orderNum: "",
         icon: "",
         visible: "0",
+      },
+      rules:{
+        parentId:[
+          { required: true, message: '请选择上级菜单', trigger: 'blur' }
+        ],
+        menuName:[
+          { required: true, message: '请输入菜单名称', trigger: 'blur' }
+        ],
+        component:[
+          { required: true, message: '请输入资源路径', trigger: 'blur' }
+        ],
+        path:[
+          { required: true, message: '请输入请求地址', trigger: 'blur' }
+        ],
+        perms:[
+          { required: true, message: '请输入权限标识', trigger: 'blur' }
+        ],
       },
       sizeForm: {
         menuName: "",
@@ -236,18 +257,21 @@ export default {
       });
     },
     revise() {
-      //修改
-      if (
-        typeof this.multipleSelection == "undefined" ||
-        this.multipleSelection.length == 0
-      ) {
+     if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
         });
       } else {
+        if(this.$refs.multipleTable.selection.length > 1){
+            this.$message({
+                message: "只能选择一条数据进行修改",
+                type: "warning"
+            });
+            return;
+        }
         this.dialogFormVisible = true;
-        let rows = this.multipleSelection.pop(); //获取最后一条
+        let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
         this.editor(rows,true);
       }
     },
@@ -261,32 +285,40 @@ export default {
       this.multipleSelection = val;
     },
     handleSave() {
-      const requestApi = this.isEditor ? putMenuEdit : putMenuAdd;
-      requestApi(this.form).then(res => {
-        this.handleFormDlogClose('editForm', 'dialogFormVisible');
-        let msgName = this.isEditor ? "修改成功!":"新增成功!";
-        this.$message({
-          type: "success",
-          message: msgName
-        });
-        this.query();
-      })
+       this.$refs["editForm"].validate((valid) => {
+        if (valid) {
+        const requestApi = this.isEditor ? putMenuEdit : putMenuAdd;
+        requestApi(this.form).then(res => {
+          this.handleFormDlogClose('editForm', 'dialogFormVisible');
+          let msgName = this.isEditor ? "修改成功!":"新增成功!";
+          this.$message({
+            type: "success",
+            message: msgName
+          });
+          this.query();
+        })
+        } else {
+          return false;
+        }
+      });
     },
     editor(rows, isEditor) {
-      this.dialogFormVisible = true;
-      this.isEditor = isEditor;
-     if(isEditor){
-        getQueryByMenuId({menuId:rows.menuId}).then(res=>{
-          this.form = _.pick(res, _.keys(this.form));
-          this.form.menuId = rows.menuId;
-        })
-      }else {
-          this.form.parentId = rows.menuId;
-      }
+          this.dialogFormVisible = true;
+          this.isEditor = isEditor;
+          if(isEditor){
+              getQueryByMenuId({menuId:rows.menuId}).then(res=>{
+                this.form = _.pick(res, _.keys(this.form));
+                this.form.menuId = rows.menuId;
+              })
+          }else {
+              this.form.parentId = rows.menuId;
+              this.form.parentName = rows.menuName;
+          }
+        
     },
-    handleNodeSelect() {
-      this.form.parentId = _.clone(this.nodeSelTemp).menuId;
-      this.nodeSelTemp = '';
+    handleNodeSelect(data) {
+      this.form.parentId = data.menuId;
+       this.form.parentName = data.menuName;
       this.sectoralChoice = false;
     }
   }
