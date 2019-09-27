@@ -77,7 +77,7 @@ export default {
       <div class="filter-container" style={{height: this.filterVisible ? '100px' : '25px'}}>
         
         <div class="filter-container-form" style={{display: this.filterVisible ? 'block' : 'none'}}>
-          <el-form {...{ attrs: this.fAttr }}>
+          <el-form ref="test" {...{ attrs: this.fAttr }}>
             {this.model.map(item => (
               <el-form-item {...{ attrs: item.fiAttr }}>
                 {getEL(item)}
@@ -106,6 +106,22 @@ export default {
               {...{
                 on: {
                   click: () => {
+                    Object.keys(this.queryFilter).forEach(key => {
+                      const typeStr = Object.prototype.toString.call(this.queryFilter[key]);
+                      switch(typeStr) {
+                        case '[object Array]':
+                          this.queryFilter[key] = [];
+                        break
+                        case '[object Boolean]':
+                          this.queryFilter[key] = false;
+                        break
+                        case '[object Object]':
+                          this.queryFilter[key] = {};
+                        break
+                        default:
+                          this.queryFilter[key] = '';
+                      }
+                    })
                     this.$emit("afterReset");
                   }
                 }
