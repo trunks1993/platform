@@ -7,8 +7,9 @@
       :model="fqForm"
       @afterReset="query"
       @afterFilter="handleFilter($event, querySearch)"
+      @handleVisible="e => filterVisible = e"
     ></FilterQueryForm>
-    <div class="app-wrapper">
+    <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
       <div class="content-box">
         <div class="content-box-tool">
           <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
@@ -236,6 +237,7 @@ export default {
       data: [],
       dialogVisible: false,
       ids: "",
+      filterVisible:true,
       sdtDeptNameId:"",
       nodeSelTemp: '',
       isExpand: true

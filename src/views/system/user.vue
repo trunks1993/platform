@@ -581,14 +581,14 @@ export default {
 .tree :first-child .el-tree-node:before {
   border-left: none;
 }
-.el-tree-node__expand-icon:before {
+.el-tree-node:before {
   border-left: 1px dashed #4386c6;
   bottom: 0px;
   height: 100%;
   top: -14px;
   width: 1px;
 }
-.el-tree-node__expand-icon:after {
+.el-tree-node:after {
   border-top: 1px dashed #4386c6;
   height: 20px;
   top: 15px;
