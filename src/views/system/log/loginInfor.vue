@@ -100,11 +100,13 @@ export default {
           el: "select",
           elAttr: {},
           bindKey: "slrStatus",
-          option: [
-            { label: "所有", value: "" },
-            { label: "成功", value: 0 },
-            { label: "失败", value: 1 }
-          ]
+          bindValue: "",
+          option: {
+            url:
+              "/v1/dictionaries/dictData/selectByDictType?dictType=sys_login_status",
+            labelKey: "dictLabel",
+            valueKey: "dictValue"
+          }
         }
         // {
         //   fiAttr: {

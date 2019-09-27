@@ -12,7 +12,6 @@ function getRouterMap(menuList) {
       item.component = _import(item.component);
       item.name = item.menuName;
     } catch (e) {
-      console.warn(e);
       item.component = _import('/404');
     }
 
