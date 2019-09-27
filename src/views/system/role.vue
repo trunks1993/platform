@@ -2,7 +2,7 @@
   <div class="common-container">
     <FilterQueryForm
       :fAttr="{'label-width': '80px'}"
-      :resetBtnVisible="false"
+      :resetBtnVisible="true"
       :searchBtnVisible="true"
       :model="fqForm"
       @afterFilter="handleFilter($event, query)"
@@ -64,7 +64,7 @@
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" :inline="true"  ref="editForm">
+      <el-form :model="form" :inline="true" :rules="rules" ref="editForm">
         <el-form-item label="角色名称：" label-width="120px" prop="roleName">
           <el-input v-model="form.roleName"></el-input>
         </el-form-item>
@@ -110,7 +110,7 @@
      <div style="width:100%;color:#63ACDF;text-align:center;">{{handleData}}</div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="sure">确 定</el-button>
-        <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
     <!-- 数据权限 -->
@@ -259,6 +259,17 @@ export default {
         remark: "",
         dataScope: "",
       },
+      rules:{
+        roleName:[
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ],
+        roleKey:[
+          { required: true, message: '请输入权限字符', trigger: 'blur' }
+        ],
+        roleSort:[
+          { required: true, message: '请输入显示顺序', trigger: 'blur' }
+        ],
+      },
       pageShow: true,
       dialogVisible: false,
       ids: "",
@@ -312,33 +323,34 @@ export default {
     batchDelete() {
       //批量删除
       let selectArr = [];
-      if (
-        typeof this.multipleSelection == "undefined" ||
-        this.multipleSelection.length == 0
-      ) {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要删除的数据！",
           type: "warning"
         });
       } else {
-        this.multipleSelection.forEach((v, i) => {
-          selectArr.push(v.roleId);
+        this.$refs.multipleTable.selection.forEach((v, i) => {
+          selectArr.push(v.postId);
         });
         this.deleted(selectArr.join(","));
       }
     },
     revise() {
-      if (
-        typeof this.multipleSelection == "undefined" ||
-        this.multipleSelection.length == 0
-      ) {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
         });
       } else {
+        if(this.$refs.multipleTable.selection.length > 1){
+            this.$message({
+                message: "只能选择一条数据进行修改",
+                type: "warning"
+            });
+            return;
+        }
         this.dialogFormVisible = true;
-        let rows = this.multipleSelection.pop(); //获取最后一条
+        let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
         this.editor(rows,true);
       }
     },
@@ -421,17 +433,24 @@ export default {
       this.deptIds = arr;
     },
     handleSave() {
-      const requestApi = this.isEditor ? putRoleEdit : putRoleAdd;
-      this.form.menuIds = this.menuIds.toString();
-      requestApi(this.form).then(res => {
-        this.handleFormDlogClose('editForm', 'dialogFormVisible');
-        let msgName = this.isEditor ? "修改成功!":"新增成功!";
-        this.$message({
-          type: "success",
-          message: msgName
-        });
-        this.query();
-      })
+      this.$refs["editForm"].validate((valid) => {
+        if (valid) {
+          const requestApi = this.isEditor ? putRoleEdit : putRoleAdd;
+          this.form.menuIds = this.menuIds.toString();
+          requestApi(this.form).then(res => {
+            this.handleFormDlogClose('editForm', 'dialogFormVisible');
+            let msgName = this.isEditor ? "修改成功!":"新增成功!";
+            this.$message({
+              type: "success",
+              message: msgName
+            });
+            this.query();
+          })
+        } else {
+          return false;
+        }
+      });
+     
     },
     handleNodeClicks(data) {
       let sdtDeptId = parseInt(data.sdtDeptId);
@@ -453,6 +472,8 @@ export default {
         getQueryByRoleId({roleId:rows.roleId}).then(res=>{
           this.form = _.pick(res, _.keys(this.form))
           console.log(res);
+          this.form.menuId = this.form.sysRoleMenus[0].menuId;
+          console.log(menuId)
         })
       }else {
         this.form.parentId = rows.menuId;
@@ -466,6 +487,10 @@ export default {
     },
     assignUsers(rows){ //分配用户
       this.$router.push({path:'/system/assignUsers',query:{roleId:rows.roleId}});
+    },
+    cancel(){
+      this.dialogVisible = false;
+      this.query();
     }
   }
 };

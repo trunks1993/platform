@@ -125,6 +125,9 @@ export default {
       font-size: 14px;
     }
   }
+  .head-container-tools {
+    font-size: 14px;
+  }
   .head-title {
     display: inline-block;
     margin: 0 auto;
