@@ -7,14 +7,14 @@
       <h1>统一管理平台登录界面</h1>
     </div>
     <div class="head-container-tools">
-      <span class="item">
+      <!-- <span class="item">
         <i class="el-icon-back" />
         <span>返回</span>
       </span>
       <span class="item">
         <i class="el-icon-setting" />
         <span>设置</span>
-      </span>
+      </span> -->
       <span class="item" v-popover:pannel>
         <i class="el-icon-user" />
         <span>{{userInfo.surUserName }}</span>

@@ -12,7 +12,7 @@
         <div class="content-box-tool">
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="clearLog">清空</el-button>
-          <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button>
+          <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi,'登录日志')">导出</el-button>
         </div>
         <div class="content-box-table">
           <el-table :data="tableDataList" ref="multipleTable">

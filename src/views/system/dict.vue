@@ -64,7 +64,7 @@
         <span class="title">字典管理基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" ref="editForm" :inline="true">
+      <el-form :model="form" ref="editForm" :inline="true" :rules="rules">
         <el-form-item label="字典编号" prop="dictId" :label-width="formLabelWidth" style="display:none">
           <el-input v-model="form.dictId" autocomplete="off" disabled></el-input>
         </el-form-item>
@@ -175,6 +175,14 @@ export default {
       dialogVisible:false,
       ids:'',
       count:0,
+      rules: {
+				  dictName: [
+					{ required: true, message: '请输入字典名称', trigger: 'blur' }
+				  ],
+				  dictType: [
+					{ required: true, message: '请输入字典类型', trigger: 'blur' }
+          ]
+			}
     };
   },
   components: {
@@ -248,15 +256,21 @@ export default {
       });
     },
     handleSave() {//弹框保存
-      const requestApi = this.isEditor ? editorDictPage : addDictPage;//判断是修改还是新增，isEditor为true是修改
-      requestApi(this.form).then(res => {
-        this.$message({
-          message: "操作成功！",
-          type: "success"
-        });
-        this.handleFormDlogClose('editForm', 'dialogFormVisible');
-        this.query();
-      })
+      this.$refs['editForm'].validate((valid) => {
+          if (valid) {
+            const requestApi = this.isEditor ? editorDictPage : addDictPage;//判断是修改还是新增，isEditor为true是修改
+            requestApi(this.form).then(res => {
+              this.$message({
+                message: "操作成功！",
+                type: "success"
+              });
+              this.handleFormDlogClose('editForm', 'dialogFormVisible');
+              this.query();
+            })
+          } else {
+            return false;
+          }
+      });
     },
     handDictDate(rows){
         this.$router.push('/system/dictData?type='+rows.dictType+'&id='+rows.dictId);

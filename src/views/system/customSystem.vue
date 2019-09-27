@@ -49,13 +49,13 @@
       </div>
     </div>
     </div>
-    <el-dialog :visible.sync="dialogFormVisible" :before-close="handleFormDlogClose.bind(null, 'editForm')">
+    <el-dialog :visible.sync="dialogFormVisible" :before-close="handleFormDlogClose.bind(null, 'editForm')" >
        <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt="">
         <span class="title">系统基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt="">
       </div>
-      <el-form :model="form" ref="editForm" :inline="true">
+      <el-form :rules="rules" :model="form" ref="editForm" :inline="true">
         <el-form-item label="系统编号" prop="systemId" :label-width="formLabelWidth" style="display:none">
           <el-input v-model="form.systemId" autocomplete="off" disabled></el-input>
         </el-form-item>
@@ -143,6 +143,14 @@ export default {
       dialogVisible:false,
       ids:'',
       count:0,
+      rules: {
+				  systemName: [
+					{ required: true, message: '请输入系统名称', trigger: 'blur' }
+				  ],
+				  systemKey: [
+					{ required: true, message: '请输入系统key', trigger: 'blur' }
+				  ],
+			}
     };
   },
   components: {
@@ -216,15 +224,21 @@ export default {
       });
     },
     handleSave() {//弹框保存
-      const requestApi = this.isEditor ? editorSysData : addSysData;//判断是修改还是新增，isEditor为true是修改
-      requestApi(this.form).then(res => {
-        this.$message({
-          message: "操作成功！",
-          type: "success"
-        });
-        this.handleFormDlogClose('editForm', 'dialogFormVisible');
-        this.query();
-      })
+      this.$refs['editForm'].validate((valid) => {
+          if (valid) {
+            const requestApi = this.isEditor ? editorSysData : addSysData;//判断是修改还是新增，isEditor为true是修改
+            requestApi(this.form).then(res => {
+              this.$message({
+                message: "操作成功！",
+                type: "success"
+              });
+              this.handleFormDlogClose('editForm', 'dialogFormVisible');
+              this.query();
+            })
+          } else {
+            return false;
+          }
+      });
     },
   }
 };
