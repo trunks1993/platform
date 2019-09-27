@@ -6,9 +6,10 @@
       :searchBtnVisible="true"
       :model="fqForm"
       @afterFilter="handleFilter($event, query)"
+      @handleVisible="e => filterVisible = e"
     ></FilterQueryForm>
 
-    <div class="app-wrapper" style="display: flex;">
+    <div class="app-wrapper" :style="{display: 'flex', height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
       <div class="org-box">
         <div class="revise">
           <i @click="handleEditor" class="el-icon-editor"></i>
@@ -266,7 +267,8 @@ export default {
       sectoralChoice: false,
       dialogVisible: false,
       ids: "",
-      isEditor:false
+      isEditor:false,
+      filterVisible: true,
     };
   },
   components: {
@@ -503,7 +505,7 @@ export default {
   margin-left: 15px;
 }
 </style>
-<style>
+<style lang="scss">
 .el-tree-node {
   position: relative;
   padding-left: 0px;
@@ -543,5 +545,22 @@ export default {
   top: 15px;
   width: 16px;
 }
+
+// .is-expanded {
+//   .el-tree-node__label:after {
+//     border-top: 1px dashed #4386c6;
+//     display: block;
+//     height: 1px;
+//     position: absolute;
+//     left: -27px;
+//     content: '';
+//     top: 11px;
+//     right: 73px;
+//   }
+// }
+
+// .el-tree-node__label {
+//   position: relative;
+// }
 </style>
 
