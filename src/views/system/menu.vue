@@ -262,13 +262,11 @@ export default {
       })
     },
     editor(rows, isEditor) {
-      console.log(rows, isEditor)
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
       this.$nextTick(() => {
         isEditor ? this.form = _.pick(rows, _.keys(this.form)) : this.form.parentId = rows.menuId;
       });
-      console.log(this.form);
     },
     handleNodeSelect() {
       this.form.parentId = _.clone(this.nodeSelTemp).menuId;
