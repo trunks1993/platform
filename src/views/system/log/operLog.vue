@@ -95,7 +95,7 @@
             <span class="title">系统提示信息</span>
             <img src="../../../assets/images/icon-title-right.png" alt />
         </div>
-        <div style="width:100%;color:#63ACDF;text-align:center;">{{content}}？</div>
+        <div style="width:100%;color:#63ACDF;text-align:center;">{{content}}</div>
         <div slot="footer" style="text-align: center;">
             <el-button type="primary" @click="sure">确 定</el-button>
             <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
