@@ -12,7 +12,7 @@
     <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="editor({},false)">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="handleUnfold">展开/折叠</el-button>
         </div>
@@ -62,7 +62,7 @@
       </div>
       <el-form :model="form"  ref="editForm"  :rules="rules" :inline="true">
         <el-form-item label="上级部门：" :label-width="'120px'"  prop="sdtDeptPidName">
-          <el-input v-model="form.sdtParentName" @focus="sectoralChoice = true"></el-input>
+          <el-input v-model="form.sdtDeptPidName" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
         <el-form-item label="部门名称：" :label-width="'120px'"  prop="sdtDeptName">
           <el-input v-model="form.sdtDeptName"></el-input>
@@ -104,12 +104,12 @@
     </el-dialog>
     <!-- 部门选择 -->
     <el-dialog :visible.sync="sectoralChoice">
-      <div slot="title" class="dailog-title">
+      <div slot="title" class="dailog-title"  style="max-height: 400px; overflow: auto;">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">部门选择</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;">
+      <div style="width:100%;color:#63ACDF;text-align:center;padding-left: 100px;">
         <el-tree :data="data" :expand-on-click-node="false" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
@@ -195,7 +195,7 @@ export default {
       ],
       form: {
         sdtDeptPid: "1",
-        sdtParentName:"湖南分公司",
+        sdtDeptPidName:"湖南分公司",
         sdtDeptName: "",
         sdtOrderNum: "",
         sdtLeader: "",
@@ -329,7 +329,7 @@ export default {
       if(isEditor){
         getSysDeptEdit(rows.sdtDeptId).then(res=>{
           this.form = res
-          this.form.sdtParentName = res.sdtParentName;
+          this.form.sdtDeptPidName = res.sdtDeptPidName;
         })
       }else {
           this.form.sdtDeptPid = rows.sdtDeptId;
@@ -355,7 +355,7 @@ export default {
     },
     handleNodeSelect() {
       this.form.sdtDeptPid = _.clone(this.nodeSelTemp).sdtDeptId;
-      this.form.sdtParentName = _.clone(this.nodeSelTemp).sdtDeptName;
+      this.form.sdtDeptPidName = _.clone(this.nodeSelTemp).sdtDeptName;
       this.nodeSelTemp = '';
       this.sectoralChoice = false;
     }

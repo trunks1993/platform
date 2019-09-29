@@ -26,7 +26,7 @@ service.interceptors.response.use(
     if (data instanceof Blob) return data;
     if (data.code == '0') {
       return data.data;
-    } if (data.code == 1) {
+    }else if (data.code == 1) {
       MessageBox.alert(data.msg, {
         confirmButtonText: '确定',
         callback: (action) => {
