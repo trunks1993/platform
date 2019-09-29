@@ -2,7 +2,7 @@
   <div class="common-container">
      <FilterQueryForm
       :fAttr="{'label-width': '80px'}"
-      :resetBtnVisible="false"
+      :resetBtnVisible="true"
       :searchBtnVisible="true"
       :model="fqForm"
       @afterFilter="handleFilter($event, querySearch)"

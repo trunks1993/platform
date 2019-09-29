@@ -1,6 +1,5 @@
 <template>
   <div class="common-container">
-
     <FilterQueryForm
       :fAttr="{'label-width': '80px'}"
       :resetBtnVisible="true"
@@ -10,10 +9,13 @@
       @afterFilter="handleFilter($event, querySearch)"
       @handleVisible="e => filterVisible = e"
     ></FilterQueryForm>
-    <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
+    <div
+      class="app-wrapper"
+      :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}"
+    >
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="editor({},false)">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="handleUnfold">展开/折叠</el-button>
         </div>
@@ -29,10 +31,8 @@
             <el-table-column label="排序" prop="orderNum" />
             <el-table-column label="资源路径" prop="component" />
             <el-table-column label="路由" prop="path" />
-            <el-table-column label="类型" >
-              <span slot-scope="scope">
-                {{scope.row.menuType | getMenuTypeName}}
-              </span>
+            <el-table-column label="类型">
+              <span slot-scope="scope">{{scope.row.menuType | getMenuTypeName}}</span>
             </el-table-column>
             <el-table-column label="显示" prop="visible">
               <template slot-scope="scope">
@@ -53,7 +53,11 @@
         </div>
       </div>
     </div>
-    <el-dialog title="基本信息" :visible.sync="dialogFormVisible" :before-close="handleFormDlogClose.bind(null, 'editForm')">
+    <el-dialog
+      title="基本信息"
+      :visible.sync="dialogFormVisible"
+      :before-close="handleFormDlogClose.bind(null, 'editForm')"
+    >
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
@@ -87,7 +91,7 @@
           <el-input v-model="form.icon"></el-input>
         </el-form-item>
         <el-form-item label="菜单状态" label-width="120px">
-           <el-switch v-model="form.visible" active-value="0" inactive-value="1"></el-switch>
+          <el-switch v-model="form.visible" active-value="0" inactive-value="1"></el-switch>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
@@ -115,11 +119,16 @@
         <span class="title">菜单选择</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;">
-        <el-tree :data="tableDataList" :expand-on-click-node="false" :props="defaultProps" @node-click="handleNodeSelect"></el-tree>
+      <div style="width:100%;color:#63ACDF;text-align:center;padding-left:100px; ">
+        <el-tree
+          :data="tableDataList"
+          :expand-on-click-node="false"
+          :props="defaultProps"
+          @node-click="data => nodeSelTemp = data"
+        ></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
-        <!-- <el-button type="primary" @click="handleNodeSelect">确 定</el-button> -->
+        <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
         <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -137,7 +146,7 @@ import {
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
-import _ from 'lodash';
+import _ from "lodash";
 
 export default {
   mixins: [mixin],
@@ -178,8 +187,8 @@ export default {
       multipleSelection: [],
       dialogFormVisible: false,
       form: {
-        parentId:"",
-        parentName:"",
+        parentId: "",
+        parentName: "",
         menuType: "M",
         menuName: "",
         component: "",
@@ -187,34 +196,30 @@ export default {
         perms: "",
         orderNum: "",
         icon: "",
-        visible: "0",
+        visible: "0"
       },
-      rules:{
-        parentId:[
-          { required: true, message: '请选择上级菜单', trigger: 'blur' }
+      rules: {
+        parentId: [
+          { required: true, message: "请选择上级菜单", trigger: "blur" }
         ],
-        menuName:[
-          { required: true, message: '请输入菜单名称', trigger: 'blur' }
+        menuName: [
+          { required: true, message: "请输入菜单名称", trigger: "blur" }
         ],
-        component:[
-          { required: true, message: '请输入资源路径', trigger: 'blur' }
+        component: [
+          { required: true, message: "请输入资源路径", trigger: "blur" }
         ],
-        path:[
-          { required: true, message: '请输入请求地址', trigger: 'blur' }
-        ],
-        perms:[
-          { required: true, message: '请输入权限标识', trigger: 'blur' }
-        ],
+        path: [{ required: true, message: "请输入请求地址", trigger: "blur" }],
+        perms: [{ required: true, message: "请输入权限标识", trigger: "blur" }]
       },
       sizeForm: {
         menuName: "",
-        visible: "",
+        visible: ""
       },
-      nodeSelTemp: '',
+      nodeSelTemp: "",
       dialogVisible: false,
       sectoralChoice: false,
       ids: "",
-      filterVisible:true,
+      filterVisible: true,
       defaultProps: {
         children: "children",
         label: "menuName"
@@ -259,68 +264,69 @@ export default {
       });
     },
     revise() {
-     if (this.$refs.multipleTable.selection.length == 0) {
+      if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要修改的数据！",
           type: "warning"
         });
       } else {
-        if(this.$refs.multipleTable.selection.length > 1){
-            this.$message({
-                message: "只能选择一条数据进行修改",
-                type: "warning"
-            });
-            return;
+        if (this.$refs.multipleTable.selection.length > 1) {
+          this.$message({
+            message: "只能选择一条数据进行修改",
+            type: "warning"
+          });
+          return;
         }
         this.dialogFormVisible = true;
         let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
-        this.editor(rows,true);
+        this.editor(rows, true);
       }
     },
-    handleUnfold(){ //展开折叠
+    handleUnfold() {
+      //展开折叠
       const arr = [...document.getElementsByClassName("el-table__expand-icon")];
-      arr.forEach(item=>{
+      arr.forEach(item => {
         item.click();
-      })
+      });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     handleSave() {
-       this.$refs["editForm"].validate((valid) => {
+      this.$refs["editForm"].validate(valid => {
         if (valid) {
-        const requestApi = this.isEditor ? putMenuEdit : putMenuAdd;
-        requestApi(this.form).then(res => {
-          this.handleFormDlogClose('editForm', 'dialogFormVisible');
-          let msgName = this.isEditor ? "修改成功!":"新增成功!";
-          this.$message({
-            type: "success",
-            message: msgName
+          const requestApi = this.isEditor ? putMenuEdit : putMenuAdd;
+          requestApi(this.form).then(res => {
+            this.handleFormDlogClose("editForm", "dialogFormVisible");
+            let msgName = this.isEditor ? "修改成功!" : "新增成功!";
+            this.$message({
+              type: "success",
+              message: msgName
+            });
+            this.query();
           });
-          this.query();
-        })
         } else {
           return false;
         }
       });
     },
     editor(rows, isEditor) {
-          this.dialogFormVisible = true;
-          this.isEditor = isEditor;
-          if(isEditor){
-              getQueryByMenuId({menuId:rows.menuId}).then(res=>{
-                this.form = _.pick(res, _.keys(this.form));
-                this.form.menuId = rows.menuId;
-              })
-          }else {
-              this.form.parentId = rows.menuId;
-              this.form.parentName = rows.menuName;
-          }
-        
+      this.dialogFormVisible = true;
+      this.isEditor = isEditor;
+      if (isEditor) {
+        getQueryByMenuId({ menuId: rows.menuId }).then(res => {
+          this.form = _.pick(res, _.keys(this.form));
+          this.form.menuId = rows.menuId;
+        });
+      } else {
+        this.form.parentId = this.tableDataList[0].menuId;
+        this.form.parentName = this.tableDataList[0].menuName;
+      }
     },
     handleNodeSelect(data) {
-      this.form.parentId = data.menuId;
-       this.form.parentName = data.menuName;
+       this.form.parentId = _.clone(this.nodeSelTemp).menuId;
+      this.form.parentName = _.clone(this.nodeSelTemp).menuName;
+      this.nodeSelTemp = '';
       this.sectoralChoice = false;
     }
   }

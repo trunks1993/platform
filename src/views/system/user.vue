@@ -5,8 +5,10 @@
       :resetBtnVisible="true"
       :searchBtnVisible="true"
       :model="fqForm"
+      ref="search"
       @afterFilter="handleFilter($event, query)"
       @handleVisible="e => filterVisible = e"
+      @queryChange="queryStatus"
     ></FilterQueryForm>
 
     <div class="app-wrapper" :style="{display: 'flex', height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
@@ -24,7 +26,7 @@
       </div>
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="editor({},false)">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi,'用户管理')">导出</el-button>
@@ -105,7 +107,7 @@
           <el-radio v-model="form.surSex" label="1">男</el-radio>
           <el-radio v-model="form.surSex" label="2">女</el-radio>
         </el-form-item>
-        <el-form-item label="用户状态" label-width="120px">
+        <el-form-item label="用户状态" label-width="120px" prop="surStatus">
           <el-switch v-model="form.surStatus" active-value="0" inactive-value="1"></el-switch>
         </el-form-item>
         <el-form-item label="角 色" label-width="120px" prop="roleIds">
@@ -157,16 +159,16 @@
     </el-dialog>
     <!-- 部门选择 -->
     <el-dialog :visible.sync="sectoralChoice">
-      <div slot="title" class="dailog-title">
+      <div slot="title" class="dailog-title"  style="max-height: 400px; overflow: auto;">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">部门选择</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;padding-left:50px;">
-        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+      <div style="width:100%;color:#63ACDF;text-align:center;padding-left:100px;">
+        <el-tree :data="data" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
-        <!-- <el-button type="primary" @click="sectoralChoice = false">确 定</el-button> -->
+        <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
         <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -196,7 +198,6 @@ export default {
         return callback(new Error('手机号不能为空'));
       } else {
         const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
-        console.log(reg.test(value));
         if (reg.test(value)) {
           callback();
         } else {
@@ -278,7 +279,7 @@ export default {
           { required: true, message: '请输入登录名称', trigger: 'blur' }
         ],
         surDeptName:[
-          { required: true, message: '请选择归属部门', trigger: 'blur' }
+          { required: true, message: '请选择归属部门', trigger: 'change' }
         ],
         surPhoneNumber:[
           {validator: checkPhone, trigger: 'blur'}
@@ -324,10 +325,11 @@ export default {
     })
     getSysRoleList().then(res=>{ //角色
       this.cities = res.rows;
-      console.log(res);
     })
   },
   methods: {
+    queryStatus(queryFilter){
+    },
     handleEditor(){
       this.$router.push({path:'/system/dept'});
     },
@@ -370,14 +372,13 @@ export default {
         });
       } else {
         this.$refs.multipleTable.selection.forEach((v, i) => {
-          selectArr.push(v.postId);
+          selectArr.push(v.surUserId);
         });
         this.deleted(selectArr.join(","));
       }
     },
     resetPassword(row) {
       //重置
-      console.log(row);
       this.dialogFormVisiblespass = true;
       this.passWordForm = row;
     },
@@ -419,15 +420,26 @@ export default {
       this.handleData = "确定要删除列表数据吗？";
     },
     editorStatus(rows){ //开关按钮
-      console.log(rows.surStatus)
       this.dialogVisible = true;
-      this.form = rows;
-      this.handleData = rows.surStatus == 0 ? "确认要正常用户吗？": "确认要停用用户吗？";
+      let editRows = {};
+      getSysUserEdit(rows.surUserId).then(res=>{
+        editRows = res;
+        res.roles.forEach((item)=>{
+          editRows.roleIds.push(item.roleId);
+        })
+        res.posts.forEach((item)=>{
+          editRows.postIds.push(item.postId);
+        })
+        this.form = _.pick(editRows, _.keys(this.form));
+        this.form.roleIds = this.form.roleIds.toString();
+        this.form.postIds = this.form.postIds.toString();
+        this.form.surStatus = rows.surStatus;
+        this.handleData = this.form.surStatus == 0 ? "确认要正常用户吗？": "确认要停用用户吗？";
+      })
     },
     sure() {
       //确认删除
-      console.log(this.ids)
-      if(this.ids.length != 0){
+      if(this.ids.length){
         deleteUserGwPage({ ids: this.ids }).then(res => {
           let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
           this.$message({
@@ -449,7 +461,6 @@ export default {
       }
     },
     handleSave() {
-      console.log("12312")
       this.$refs['editForm'].validate((valid) => {
         if (valid) {
           const requestApi = this.isEditor ? putUserEdit : getSysUserAdd;
@@ -458,7 +469,6 @@ export default {
           }
           this.form.roleIds = this.form.roleIds.toString();
           this.form.postIds = this.form.postIds.toString();
-          console.log(this.form);
           requestApi(this.form).then(res => {
             this.handleFormDlogClose('editForm', 'dialogFormVisible');
             let msgName = this.isEditor ? "修改成功!":"新增成功!";
@@ -471,36 +481,40 @@ export default {
             this.this.isEditor = false;
           })
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
     },
     handleNodeClicks(data) {
-      let sdtDeptId = parseInt(data.sdtDeptId);
-      getSysUserList({
-        surDeptId: sdtDeptId,
-        pageNum: this.queryList.pageNum,
-        pageSize: this.queryList.pageSize
-      }).then(res => {
-         this.tableDataList = res.rows;
-         this.total = Number(res.total);
-      });
+
+      let sdtDeptId = +data.sdtDeptId;
+      // const data = Object.assign(this.queryFilter, { sdtDeptId });
+      const cloneQF = _.clone(this.$refs.search.queryFilter);
+      _.assign(cloneQF, { surDeptId:sdtDeptId });
+
+      this.handleFilter(cloneQF, this.query);
+//       getSysUserList({
+//         surDeptId: sdtDeptId,
+//         pageNum: this.queryList.pageNum,
+//         pageSize: this.queryList.pageSize,
+//         surStatus
+//       }).then(res => {
+//          this.tableDataList = res.rows;
+//          this.total = Number(res.total);
+//       });
     },
-    handleNodeClick(data) {
-      console.log(data);
-      this.form.surDeptId = data.sdtDeptId;
-      this.form.surDeptName = data.sdtDeptName;
+    handleNodeSelect(data) {
+      this.form.surDeptId = _.clone(this.nodeSelTemp).sdtDeptId;
+      this.form.surDeptName = _.clone(this.nodeSelTemp).sdtDeptName;
+      this.nodeSelTemp = '';
       this.sectoralChoice = false;
     },
     editor(rows, isEditor) {
       this.isEditor = isEditor;
       let editRows = {};
       if(this.isEditor){
-        console.log(rows.surUserId)
         getSysUserEdit(rows.surUserId).then(res=>{
           editRows = res;
-          console.log(res);
           res.roles.forEach((item)=>{
             editRows.roleIds.push(item.roleId);
           })
@@ -508,11 +522,11 @@ export default {
             editRows.postIds.push(item.postId);
           })
           this.form = _.pick(editRows, _.keys(this.form))
-          
-          // this.form.surDeptName = 
+
         })
       }else {
-        this.form.sdtDeptPid = rows.sdtDeptPid;
+        this.form.sdtDeptPid = this.data[0].sdtDeptId;
+        this.form.surDeptName = this.data[0].sdtDeptName;
       }
       this.dialogFormVisible = true;
     },
@@ -595,21 +609,9 @@ export default {
   width: 16px;
 }
 
-// .is-expanded {
-//   .el-tree-node__label:after {
-//     border-top: 1px dashed #4386c6;
-//     display: block;
-//     height: 1px;
-//     position: absolute;
-//     left: -27px;
-//     content: '';
-//     top: 11px;
-//     right: 73px;
-//   }
-// }
-
-// .el-tree-node__label {
-//   position: relative;
-// }
+.el-tree-node:focus > .el-tree-node__content > .el-tree-node__label {
+  color: #ffffff !important;
+}
 </style>
+
 

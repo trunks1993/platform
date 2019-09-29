@@ -12,7 +12,7 @@
     <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="editor(form,false)">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="handleUnfold">展开/折叠</el-button>
         </div>
@@ -62,7 +62,7 @@
       </div>
       <el-form :model="form"  ref="editForm"  :rules="rules" :inline="true">
         <el-form-item label="上级部门：" :label-width="'120px'"  prop="sdtDeptPidName">
-          <el-input v-model="form.sdtParentName" @focus="sectoralChoice = true"></el-input>
+          <el-input v-model="form.sdtDeptPidName" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
         <el-form-item label="部门名称：" :label-width="'120px'"  prop="sdtDeptName">
           <el-input v-model="form.sdtDeptName"></el-input>
@@ -79,7 +79,7 @@
         <el-form-item label="邮箱：" :label-width="'120px'"  prop="sdtEmail">
           <el-input v-model="form.sdtEmail"></el-input>
         </el-form-item>
-        <el-form-item label="部门状态" :label-width="'120px'">
+        <el-form-item label="部门状态" :label-width="'120px'" prop="sdtStatus">
           <el-radio v-model="form.sdtStatus" label="0">正常</el-radio>
           <el-radio v-model="form.sdtStatus" label="1">停用</el-radio>
         </el-form-item>
@@ -104,12 +104,12 @@
     </el-dialog>
     <!-- 部门选择 -->
     <el-dialog :visible.sync="sectoralChoice">
-      <div slot="title" class="dailog-title">
+      <div slot="title" class="dailog-title"  style="max-height: 400px; overflow: auto;">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">部门选择</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <div style="width:100%;color:#63ACDF;text-align:center;">
+      <div style="width:100%;color:#63ACDF;text-align:center;padding-left: 100px;">
         <el-tree :data="data" :expand-on-click-node="false" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
@@ -138,7 +138,6 @@ export default {
         return callback(new Error('手机号不能为空'));
       } else {
         const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
-        console.log(reg.test(value));
         if (reg.test(value)) {
           callback();
         } else {
@@ -195,13 +194,13 @@ export default {
       ],
       form: {
         sdtDeptPid: "1",
-        sdtParentName:"湖南分公司",
+        sdtDeptPidName:"湖南分公司",
         sdtDeptName: "",
         sdtOrderNum: "",
         sdtLeader: "",
         sdtPhone: "",
         sdtEmail: "",
-        sdtStatus: "1"
+        sdtStatus: "0"
       },
       rules:{
         sdtDeptPid:[
@@ -257,16 +256,15 @@ export default {
   created() {
     this.query();
     this.queryDate();
+    // this.form.sdtDeptPidName = this.data[0].sdtDeptName;
   },
   methods: {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     onSubmit() { //输入框搜索
-      console.log(this.sizeForm);
       searchSysDeptList(this.sizeForm).then(res => {
         this.tableDataList = res;
-        console.log(this.tableData);
       });
     },
     queryDate() {
@@ -323,16 +321,16 @@ export default {
       })
     },
     editor(rows, isEditor) {
-      console.log(rows, isEditor)
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
       if(isEditor){
         getSysDeptEdit(rows.sdtDeptId).then(res=>{
           this.form = res
-          this.form.sdtParentName = res.sdtParentName;
+          this.form.sdtDeptPidName = res.sdtDeptPidName;
         })
       }else {
-          this.form.sdtDeptPid = rows.sdtDeptId;
+          this.form.sdtDeptPid = this.data[0].sdtDeptId;
+          this.form.sdtDeptPidName = this.data[0].sdtDeptName;
       }
     },
     handleSave() {
@@ -355,7 +353,7 @@ export default {
     },
     handleNodeSelect() {
       this.form.sdtDeptPid = _.clone(this.nodeSelTemp).sdtDeptId;
-      this.form.sdtParentName = _.clone(this.nodeSelTemp).sdtDeptName;
+      this.form.sdtDeptPidName = _.clone(this.nodeSelTemp).sdtDeptName;
       this.nodeSelTemp = '';
       this.sectoralChoice = false;
     }
