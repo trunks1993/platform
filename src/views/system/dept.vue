@@ -12,7 +12,7 @@
     <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="editor({},false)">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="editor(form,false)">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="handleUnfold">展开/折叠</el-button>
         </div>
@@ -138,7 +138,6 @@ export default {
         return callback(new Error('手机号不能为空'));
       } else {
         const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
-        console.log(reg.test(value));
         if (reg.test(value)) {
           callback();
         } else {
@@ -257,16 +256,15 @@ export default {
   created() {
     this.query();
     this.queryDate();
+    // this.form.sdtDeptPidName = this.data[0].sdtDeptName;
   },
   methods: {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     onSubmit() { //输入框搜索
-      console.log(this.sizeForm);
       searchSysDeptList(this.sizeForm).then(res => {
         this.tableDataList = res;
-        console.log(this.tableData);
       });
     },
     queryDate() {
@@ -323,7 +321,6 @@ export default {
       })
     },
     editor(rows, isEditor) {
-      console.log(rows, isEditor)
       this.dialogFormVisible = true;
       this.isEditor = isEditor;
       if(isEditor){
@@ -332,8 +329,8 @@ export default {
           this.form.sdtDeptPidName = res.sdtDeptPidName;
         })
       }else {
-          this.form.sdtDeptPid = rows.sdtDeptId;
-          this.form.sdtDeptPidName = rows.sdtDeptName;
+          this.form.sdtDeptPid = this.data[0].sdtDeptId;
+          this.form.sdtDeptPidName = this.data[0].sdtDeptName;
       }
     },
     handleSave() {

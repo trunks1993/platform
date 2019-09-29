@@ -319,8 +319,8 @@ export default {
           this.form.menuId = rows.menuId;
         });
       } else {
-        this.form.parentId = rows.menuId;
-        this.form.parentName = rows.menuName;
+        this.form.parentId = this.tableDataList[0].menuId;
+        this.form.parentName = this.tableDataList[0].menuName;
       }
     },
     handleNodeSelect(data) {

@@ -522,11 +522,11 @@ export default {
             editRows.postIds.push(item.postId);
           })
           this.form = _.pick(editRows, _.keys(this.form))
-          
-          // this.form.surDeptName = 
+
         })
       }else {
-        this.form.sdtDeptPid = rows.sdtDeptPid;
+        this.form.sdtDeptPid = this.data[0].sdtDeptId;
+        this.form.surDeptName = this.data[0].sdtDeptName;
       }
       this.dialogFormVisible = true;
     },
