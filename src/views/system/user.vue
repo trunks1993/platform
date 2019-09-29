@@ -198,7 +198,6 @@ export default {
         return callback(new Error('手机号不能为空'));
       } else {
         const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
-        console.log(reg.test(value));
         if (reg.test(value)) {
           callback();
         } else {
@@ -326,12 +325,10 @@ export default {
     })
     getSysRoleList().then(res=>{ //角色
       this.cities = res.rows;
-      console.log(res);
     })
   },
   methods: {
     queryStatus(queryFilter){
-      console.log(queryFilter.surStatus);
     },
     handleEditor(){
       this.$router.push({path:'/system/dept'});
@@ -382,7 +379,6 @@ export default {
     },
     resetPassword(row) {
       //重置
-      console.log(row);
       this.dialogFormVisiblespass = true;
       this.passWordForm = row;
     },
@@ -443,7 +439,6 @@ export default {
     },
     sure() {
       //确认删除
-      console.log(this.ids)
       if(this.ids.length){
         deleteUserGwPage({ ids: this.ids }).then(res => {
           let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
@@ -474,7 +469,6 @@ export default {
           }
           this.form.roleIds = this.form.roleIds.toString();
           this.form.postIds = this.form.postIds.toString();
-          console.log(this.form);
           requestApi(this.form).then(res => {
             this.handleFormDlogClose('editForm', 'dialogFormVisible');
             let msgName = this.isEditor ? "修改成功!":"新增成功!";
@@ -487,7 +481,6 @@ export default {
             this.this.isEditor = false;
           })
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
@@ -520,10 +513,8 @@ export default {
       this.isEditor = isEditor;
       let editRows = {};
       if(this.isEditor){
-        console.log(rows.surUserId)
         getSysUserEdit(rows.surUserId).then(res=>{
           editRows = res;
-          console.log(res);
           res.roles.forEach((item)=>{
             editRows.roleIds.push(item.roleId);
           })

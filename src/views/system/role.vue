@@ -297,7 +297,6 @@ export default {
       this.data = res;
     });
     getSysDeptTreeData().then(res => {
-      console.log(res);
       this.deptData = res;
     });
   },
@@ -314,10 +313,6 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    //搜索按钮
-    onSubmit() {
-      console.log("submit!");
-    },
     exported() {
       //导出
       window.location.href =
@@ -326,7 +321,6 @@ export default {
     batchDelete() {
       //批量删除
       let selectArr = [];
-      console.log(this.$refs.multipleTable.selection)
       if (this.$refs.multipleTable.selection.length == 0) {
         this.$message({
           message: "请选择需要删除的数据！",
@@ -416,7 +410,6 @@ export default {
       this.$refs.tree.setCheckedKeys([]);
     },
     handleCheckChange() { //选择菜单
-      // console.log(data);
       let res = this.$refs.tree.getCheckedNodes();
       let arr = [];
       res.forEach(item => {
@@ -425,7 +418,6 @@ export default {
       this.menuIds = arr;
     },
     handleCheckChangeDept() { //选择部门
-      // console.log(data);
       let res = this.$refs.tree.getCheckedNodes();
       let arr = [];
       res.forEach(item => {
@@ -477,11 +469,8 @@ export default {
           let terrCheck = [];
           res.sysRoleMenus.forEach(item=>{
             terrCheck.push(item.menuId);
-            // console.log(this.treeSelectionDialog)
           })
           this.treeSelectionDialog = terrCheck;
-          // console.log(this.$refs.tree);
-          // this.$refs.tree.setCheckNodes(this.treeSelectionDialog);
         })
       }else {
         this.form.parentId = rows.menuId;
