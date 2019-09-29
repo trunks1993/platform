@@ -182,9 +182,12 @@ export default {
   transition: all 0.5s;
   &-form {
     transition: all 0.5s;
+    width: calc(100% - 286px);
   }
   &-btn {
     transition: all 0.5s;
+    width: 286px;
+    padding-right: 20px;
   }
 
   &-visible {
