@@ -209,7 +209,11 @@ export default {
     box-sizing: border-box;
     .will_BeSelect{
       margin-bottom: 5px;
-      text-align: left
+      text-align: center;
+      &:hover{
+        background: url(../../../assets/images/tags-bg-active.png) no-repeat;
+        color:#fff;
+      }
     }
   }
   .tags-view-item {
