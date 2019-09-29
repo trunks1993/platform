@@ -165,10 +165,10 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;padding-left:100px;">
-        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        <el-tree :data="data" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
-        <!-- <el-button type="primary" @click="sectoralChoice = false">确 定</el-button> -->
+        <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
         <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -510,10 +510,10 @@ export default {
 //          this.total = Number(res.total);
 //       });
     },
-    handleNodeClick(data) {
-      console.log(data);
-      this.form.surDeptId = data.sdtDeptId;
-      this.form.surDeptName = data.sdtDeptName;
+    handleNodeSelect(data) {
+      this.form.surDeptId = _.clone(this.nodeSelTemp).sdtDeptId;
+      this.form.surDeptName = _.clone(this.nodeSelTemp).sdtDeptName;
+      this.nodeSelTemp = '';
       this.sectoralChoice = false;
     },
     editor(rows, isEditor) {

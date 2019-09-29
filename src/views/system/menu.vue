@@ -124,11 +124,11 @@
           :data="tableDataList"
           :expand-on-click-node="false"
           :props="defaultProps"
-          @node-click="handleNodeSelect"
+          @node-click="data => nodeSelTemp = data"
         ></el-tree>
       </div>
       <div slot="footer" style="text-align: center;">
-        <!-- <el-button type="primary" @click="handleNodeSelect">确 定</el-button> -->
+        <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
         <el-button type="primary" @click="sectoralChoice = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -324,8 +324,9 @@ export default {
       }
     },
     handleNodeSelect(data) {
-      this.form.parentId = data.menuId;
-      this.form.parentName = data.menuName;
+       this.form.parentId = _.clone(this.nodeSelTemp).menuId;
+      this.form.parentName = _.clone(this.nodeSelTemp).menuName;
+      this.nodeSelTemp = '';
       this.sectoralChoice = false;
     }
   }

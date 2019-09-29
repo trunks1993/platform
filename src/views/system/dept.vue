@@ -79,7 +79,7 @@
         <el-form-item label="邮箱：" :label-width="'120px'"  prop="sdtEmail">
           <el-input v-model="form.sdtEmail"></el-input>
         </el-form-item>
-        <el-form-item label="部门状态" :label-width="'120px'">
+        <el-form-item label="部门状态" :label-width="'120px'" prop="sdtStatus">
           <el-radio v-model="form.sdtStatus" label="0">正常</el-radio>
           <el-radio v-model="form.sdtStatus" label="1">停用</el-radio>
         </el-form-item>
@@ -201,7 +201,7 @@ export default {
         sdtLeader: "",
         sdtPhone: "",
         sdtEmail: "",
-        sdtStatus: "1"
+        sdtStatus: "0"
       },
       rules:{
         sdtDeptPid:[
@@ -333,6 +333,7 @@ export default {
         })
       }else {
           this.form.sdtDeptPid = rows.sdtDeptId;
+          this.form.sdtDeptPidName = rows.sdtDeptName;
       }
     },
     handleSave() {
