@@ -38,7 +38,7 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$refs.test);
+    // console.log(this.$refs.test);
   },
   async created() {
     for (let item of this.model) {

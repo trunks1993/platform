@@ -11,7 +11,7 @@
     <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
     <div class="content-box">
       <div class="content-box-tool">
-        <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true">新增</el-button>
+        <el-button type="tool" icon="el-icon-plus" @click="editor({},false)">新增</el-button>
         <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
         <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
         <!-- <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi)">导出</el-button> -->

@@ -12,7 +12,7 @@
     <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="dialogFormVisible = true, form.dictType = $refs.fqForm.queryFilter.dictType">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="add">新增</el-button>
           <el-button type="tool" icon="el-icon-close" @click="batchDelete">删除</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="handleExport(baseExpApi,'字典数据')">导出</el-button>
@@ -172,7 +172,7 @@ export default {
           bindKey: "status",
           bindValue: "",
           option: {
-            url: "/v1/dictionaries/dictData/selectByDictType?dictType=sys_user_status",
+            url: "/v1/dictionaries/dictData/selectByDictType?dictType=sys_data_status",
             labelKey: "dictLabel",
             valueKey: "dictValue"
           }
@@ -281,6 +281,10 @@ export default {
         let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
         this.editor(rows, true);
       }
+    },
+    add(){
+      this.form.dictType = this.$refs.fqForm.queryFilter.dictType
+      this.editor({},false);
     },
     editor(rows, isEditor) {
       this.dialogFormVisible = true;
