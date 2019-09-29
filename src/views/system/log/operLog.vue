@@ -22,7 +22,7 @@
             <el-table-column prop="title" label="系统模块"></el-table-column>
             <el-table-column prop="operatorType" label="操作类型" show-overflow-tooltip>
                 <template slot-scope="scope">
-                    <span v-for="(item,index) in options" :key="index">{{item.value == scope.row.businessType ? item.label : ''}}</span>
+                    <span v-for="(item,index) in options" :key="index">{{item.value == scope.row.operatorType ? item.label : ''}}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="operName" label="操作人员" show-overflow-tooltip></el-table-column>
