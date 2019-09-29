@@ -244,7 +244,7 @@ export default {
     },
     selectType() { //操作类型
         selectTypePage({
-            dictType: "log_oper_type"
+            dictType: "sys_oper_type"
         }).then(res => {
             res.forEach((item, index) => {
             var obj = {};
