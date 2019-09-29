@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       queryFilter: {},
-      filterVisible: true,
+      filterVisible: true
     };
   },
   watch: {
@@ -74,9 +74,14 @@ export default {
     const getEL = data => jsxmap[data.el](data);
 
     return (
-      <div class="filter-container" style={{height: this.filterVisible ? '100px' : '25px'}}>
-        
-        <div class="filter-container-form" style={{display: this.filterVisible ? 'block' : 'none'}}>
+      <div
+        class="filter-container"
+        style={{ height: this.filterVisible ? "100px" : "25px" }}
+      >
+        <div
+          class="filter-container-form"
+          style={{ display: this.filterVisible ? "block" : "none" }}
+        >
           <el-form ref="test" {...{ attrs: this.fAttr }}>
             {this.model.map(item => (
               <el-form-item {...{ attrs: item.fiAttr }}>
@@ -85,7 +90,10 @@ export default {
             ))}
           </el-form>
         </div>
-        <div class="filter-container-btn" style={{display: this.filterVisible ? 'block' : 'none'}}>
+        <div
+          class="filter-container-btn"
+          style={{ display: this.filterVisible ? "block" : "none" }}
+        >
           {this.searchBtnVisible && (
             <el-button
               type="primary"
@@ -107,21 +115,23 @@ export default {
                 on: {
                   click: () => {
                     Object.keys(this.queryFilter).forEach(key => {
-                      const typeStr = Object.prototype.toString.call(this.queryFilter[key]);
-                      switch(typeStr) {
-                        case '[object Array]':
+                      const typeStr = Object.prototype.toString.call(
+                        this.queryFilter[key]
+                      );
+                      switch (typeStr) {
+                        case "[object Array]":
                           this.queryFilter[key] = [];
-                        break
-                        case '[object Boolean]':
+                          break;
+                        case "[object Boolean]":
                           this.queryFilter[key] = false;
-                        break
-                        case '[object Object]':
+                          break;
+                        case "[object Object]":
                           this.queryFilter[key] = {};
-                        break
+                          break;
                         default:
-                          this.queryFilter[key] = '';
+                          this.queryFilter[key] = "";
                       }
-                    })
+                    });
                     this.$emit("afterReset");
                   }
                 }
@@ -131,7 +141,6 @@ export default {
             </el-button>
           )}
         </div>
-        
 
         <div
           class="filter-container-visible"
@@ -143,7 +152,12 @@ export default {
             }
           }}
         >
-          <i class="el-icon-arrow-down" style={{transform: this.filterVisible ? 'rotate(180deg)' : 'rotate(0deg)'}}/>
+          <i
+            class="el-icon-arrow-down"
+            style={{
+              transform: this.filterVisible ? "rotate(180deg)" : "rotate(0deg)"
+            }}
+          />
         </div>
       </div>
     );
@@ -158,12 +172,12 @@ export default {
   display: flex;
   align-items: center;
   position: relative;
-  transition: all .5s;
+  transition: all 0.5s;
   &-form {
-    transition: all .5s;
+    transition: all 0.5s;
   }
   &-btn {
-    transition: all .5s;
+    transition: all 0.5s;
   }
 
   &-visible {
@@ -171,7 +185,7 @@ export default {
     bottom: -18px;
     left: 50%;
     transform: translate(-50%, 0);
-    background: rgba(255,255,255, 0.3);
+    background: rgba(255, 255, 255, 0.3);
     width: 50px;
     height: 20px;
     line-height: 20px;
@@ -180,7 +194,9 @@ export default {
     cursor: pointer;
     i {
       display: inline-block;
-      transition: all .5s;
+      transition: all 0.5s;
+      position: relative;
+      top: -2px;
     }
   }
 }
