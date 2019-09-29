@@ -44,13 +44,13 @@ export default {
   },
   computed: {
     visitedViews(){
-        this.$store.getters.visitedViews.forEach(e=>{
+        this.$store.getters.visitedViews.forEach(e => {
             delete e.matched;// 该对象属性（matched）循环引用导致JSON.stringify报错
         })
         if(this.$store.getters.visitedViews.length){
-            window.sessionStorage.setItem('menuList',JSON.stringify(this.$store.getters.visitedViews))
+            window.sessionStorage.setItem('SESSION_MENU',JSON.stringify(this.$store.getters.visitedViews))
         }
-        const SESSION_MENU = JSON.parse(window.sessionStorage.getItem('menuList')) || [];
+        const SESSION_MENU = JSON.parse(window.sessionStorage.getItem('SESSION_MENU')) || [];
         return SESSION_MENU.length ?  SESSION_MENU : this.$store.getters.visitedViews;
     },
     routes() {
@@ -68,9 +68,9 @@ export default {
       this.showNewContextMenu = false;
     })
     this.initTags();
-    let menuList = JSON.parse(window.sessionStorage.getItem('menuList'))||[];
-    if(menuList.length) { //如果缓存中存在标签记录，不默认添加标签；否，则添加一条。
-        menuList.forEach(e => { //将缓存中的标签记录继续存到store中。
+    const SESSION_MENU = JSON.parse(window.sessionStorage.getItem('SESSION_MENU')) || [];
+    if(SESSION_MENU.length) { //如果缓存中存在标签记录，不默认添加标签；否，则添加一条。
+        SESSION_MENU.forEach(e => { //将缓存中的标签记录继续存到store中。
           this.$store.dispatch("addView", e);        
         })
     } else { 

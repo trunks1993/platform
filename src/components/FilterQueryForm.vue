@@ -66,11 +66,18 @@ export default {
       );
     };
 
+    const getTimerPicker = ({ el, elAttr, bindKey, option }) => {
+      return (
+        <el-date-picker
+          v-model={this.queryFilter[bindKey]} {...{ attrs: elAttr }}> 
+        </el-date-picker>
+      )
+    }
     const jsxmap = {
       input: getInput,
-      select: getSelect
+      select: getSelect,
+      datePicker: getTimerPicker
     };
-
     const getEL = data => jsxmap[data.el](data);
 
     return (

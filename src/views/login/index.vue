@@ -83,6 +83,7 @@ export default {
 	methods: {
 		login(ruleForm) {
       let self = this;
+      window.sessionStorage.removeItem('SESSION_MENU')
       this.ruleForm.password = md5(this.ruleForm.password);
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
