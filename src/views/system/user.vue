@@ -424,12 +424,10 @@ export default {
       this.handleData = "确定要删除列表数据吗？";
     },
     editorStatus(rows){ //开关按钮
-      console.log(rows.surStatus)
       this.dialogVisible = true;
       let editRows = {};
       getSysUserEdit(rows.surUserId).then(res=>{
         editRows = res;
-        console.log(res);
         res.roles.forEach((item)=>{
           editRows.roleIds.push(item.roleId);
         })
@@ -446,7 +444,7 @@ export default {
     sure() {
       //确认删除
       console.log(this.ids)
-      if(this.ids.length != null){
+      if(this.ids.length){
         deleteUserGwPage({ ids: this.ids }).then(res => {
           let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
           this.$message({
@@ -499,7 +497,7 @@ export default {
       let sdtDeptId = +data.sdtDeptId;
       // const data = Object.assign(this.queryFilter, { sdtDeptId });
       const cloneQF = _.clone(this.$refs.search.queryFilter);
-      _.assign(cloneQF, { sdtDeptId });
+      _.assign(cloneQF, { surDeptId:sdtDeptId });
 
       this.handleFilter(cloneQF, this.query);
 //       getSysUserList({
@@ -620,21 +618,9 @@ export default {
   width: 16px;
 }
 
-// .is-expanded {
-//   .el-tree-node__label:after {
-//     border-top: 1px dashed #4386c6;
-//     display: block;
-//     height: 1px;
-//     position: absolute;
-//     left: -27px;
-//     content: '';
-//     top: 11px;
-//     right: 73px;
-//   }
-// }
-
-// .el-tree-node__label {
-//   position: relative;
-// }
+.el-tree-node:focus > .el-tree-node__content > .el-tree-node__label {
+  color: #ffffff !important;
+}
 </style>
+
 

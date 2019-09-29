@@ -370,7 +370,7 @@ export default {
       this.handleData = rows.status == 0 ? "确认要正常用户吗？": "确认要停用用户吗？";
     },
     sure() {
-      if(this.ids.length != 0){
+      if(this.ids.length){
         deleteRoleGwPage({ roleIds: this.ids }).then(res => {
           let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
           this.$message({
@@ -381,11 +381,8 @@ export default {
           this.query();
         });
       } else {
-        let obj = {
-          roleId:this.form.roleId,
-          status:this.form.status,
-        }
-        putRoleEdit(obj).then(res => {  
+        delete(this.form["params"]);
+        putRoleEdit(this.form).then(res => {  
           this.$message({
             type: "success",
             message: "修改成功!"
