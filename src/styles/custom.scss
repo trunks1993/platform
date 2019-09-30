@@ -462,7 +462,7 @@ $green: #0ebae1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-// elementUI消息弹窗样式修改
+// elementUI消息弹窗样式修改;并隐藏掉弹窗关闭按钮
 .el-message-box__wrapper{
   width: 400px;
   height: 200px;
