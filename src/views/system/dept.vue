@@ -12,7 +12,7 @@
     <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
       <div class="content-box">
         <div class="content-box-tool">
-          <el-button type="tool" icon="el-icon-plus" @click="editor(form,false)">新增</el-button>
+          <el-button type="tool" icon="el-icon-plus" @click="editor({},false)">新增</el-button>
           <el-button type="tool" icon="el-icon-editor" @click="revise">修改</el-button>
           <el-button type="tool" icon="el-icon-export" @click="handleUnfold">展开/折叠</el-button>
         </div>
@@ -193,8 +193,8 @@ export default {
         }
       ],
       form: {
-        sdtDeptPid: "1",
-        sdtDeptPidName:"湖南分公司",
+        sdtDeptPid: "",
+        sdtDeptPidName:"",
         sdtDeptName: "",
         sdtOrderNum: "",
         sdtLeader: "",
@@ -326,11 +326,16 @@ export default {
       if(isEditor){
         getSysDeptEdit(rows.sdtDeptId).then(res=>{
           this.form = res
-          this.form.sdtDeptPidName = res.sdtDeptPidName;
+          this.form.sdtDeptPidName = res.sdtParentName;
         })
       }else {
-          this.form.sdtDeptPid = this.data[0].sdtDeptId;
-          this.form.sdtDeptPidName = this.data[0].sdtDeptName;
+          if(JSON.stringify(rows) == "{}"){
+             this.form.sdtDeptPid = this.data[0].sdtDeptId;
+             this.form.sdtDeptPidName = this.data[0].sdtDeptName;
+          } else {
+             this.form.sdtDeptPid = rows.sdtDeptId;
+             this.form.sdtDeptPidName = rows.sdtDeptName;
+          }
       }
     },
     handleSave() {

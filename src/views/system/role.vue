@@ -102,7 +102,7 @@
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
-    <el-dialog :visible.sync="dialogVisible">
+    <el-dialog :visible.sync="dialogVisible" @close='closeDialog'>
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">系统提示信息</span>
@@ -488,6 +488,9 @@ export default {
     },
     cancel(){
       this.dialogVisible = false;
+      this.query();
+    },
+    closeDialog(){
       this.query();
     }
   }
