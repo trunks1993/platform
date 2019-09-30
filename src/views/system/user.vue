@@ -145,7 +145,7 @@
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
-    <el-dialog :visible.sync="dialogVisible">
+    <el-dialog :visible.sync="dialogVisible" @close='closeDialog'>
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">系统提示信息</span>
@@ -488,20 +488,9 @@ export default {
     handleNodeClicks(data) {
 
       let sdtDeptId = +data.sdtDeptId;
-      // const data = Object.assign(this.queryFilter, { sdtDeptId });
       const cloneQF = _.clone(this.$refs.search.queryFilter);
       _.assign(cloneQF, { surDeptId:sdtDeptId });
-
       this.handleFilter(cloneQF, this.query);
-//       getSysUserList({
-//         surDeptId: sdtDeptId,
-//         pageNum: this.queryList.pageNum,
-//         pageSize: this.queryList.pageSize,
-//         surStatus
-//       }).then(res => {
-//          this.tableDataList = res.rows;
-//          this.total = Number(res.total);
-//       });
     },
     handleNodeSelect(data) {
       this.form.surDeptId = _.clone(this.nodeSelTemp).sdtDeptId;
@@ -525,13 +514,16 @@ export default {
 
         })
       }else {
-        this.form.sdtDeptPid = this.data[0].sdtDeptId;
+        this.form.surDeptId = this.data[0].sdtDeptId;
         this.form.surDeptName = this.data[0].sdtDeptName;
       }
       this.dialogFormVisible = true;
     },
     cancel(){
       this.dialogVisible = false;
+      this.query();
+    },
+    closeDialog(){
       this.query();
     }
   }
