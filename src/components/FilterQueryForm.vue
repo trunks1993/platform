@@ -72,7 +72,8 @@ export default {
           v-model={this.queryFilter[bindKey]} {...{ attrs: elAttr }}> 
         </el-date-picker>
       )
-    }
+    };
+    
     const jsxmap = {
       input: getInput,
       select: getSelect,

@@ -1,7 +1,7 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
     <!-- <scroll-pane ref="scrollPane" class="tags-view-wrapper"> -->
-    <div v-if="showNewContextMenu" class="c_menu" :style="{left:positionX,top:positionY}" ref="menu">
+    <div v-if="showNewContextMenu" class="c_menu" :style="{left: positionX, top: positionY}" ref="menu">
       <div class="will_BeSelect" v-if="showPrev" @click="closeSelectedTag(visitedViews[curIndex - 1])">删除前一个</div>
       <div class="will_BeSelect" v-if="showNext" @click="closeSelectedTag(visitedViews[curIndex + 1])">删除后一个</div>
       <div class="will_BeSelect" @click="closeAllTags(visitedViews[curIndex])">删除全部</div>
