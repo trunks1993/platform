@@ -72,7 +72,7 @@
           <el-input v-model="form.postCode" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="显示顺序" prop="postSort" :label-width="formLabelWidth">
-          <el-input v-model="form.postSort" autocomplete="off"></el-input>
+          <el-input v-model.number="form.postSort" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="岗位状态" prop="status" :label-width="formLabelWidth">
           <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
@@ -185,7 +185,8 @@ export default {
 					{ required: true, message: '请输入岗位编码', trigger: 'blur' }
           ],
 				  postSort: [
-					{ required: true, message: '请输入显示顺序', trigger: 'blur' }
+          { required: true, message: '请输入显示顺序', trigger: 'change' },
+          { type: 'number', message: '只能输入数字', trigger: 'blur' },
           ]
 			}
     };

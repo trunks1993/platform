@@ -79,14 +79,6 @@ $green: #0ebae1;
   }
 }
 
-.el-tree .is-indeterminate {
-  input {
-    background: url("../assets/icon.png") no-repeat;
-    background-position: -57px -301px;
-    background-color: $navy;
-  }
-}
-
 // 表格样式
 .el-table {
   font-size: 14px;
@@ -108,11 +100,7 @@ $green: #0ebae1;
         border-left: $tableBorder;
       }
     }
-    &:hover {
-      background: rgba(0,0,0,0.2);
-    }
   }
-  
   .cell {
     white-space: normal;
     word-break: break-all;
@@ -412,10 +400,6 @@ $green: #0ebae1;
       height: 26px;
       cursor: pointer;
       &:hover {
-        background-color: none;
-        color: #fff;
-      }
-      &:focus {
         background-color: none;
         color: #fff;
       }
