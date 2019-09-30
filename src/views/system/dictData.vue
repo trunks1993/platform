@@ -79,7 +79,7 @@
           <el-input v-model="form.cssClass" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="字典排序" prop="dictSort"  :label-width="formLabelWidth">
-          <el-input v-model="form.dictSort" autocomplete="off"></el-input>
+          <el-input v-model.number="form.dictSort" autocomplete="off"></el-input>
         </el-form-item>
         <!-- <el-form-item label="回显样式" :label-width="formLabelWidth">
         <el-select v-model="form.listClass" multiple placeholder="请选择">-->
@@ -208,7 +208,8 @@ export default {
 					{ required: true, message: '请输入字典类型', trigger: 'blur' }
           ],
 				  dictSort: [
-					{ required: true, message: '请输入字典排序', trigger: 'blur' }
+          { required: true, message: '请输入字典排序', trigger: 'change' },
+          { type: 'number', message: '只能输入数字', trigger: 'blur' },
           ]
 			}
     };
