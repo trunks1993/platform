@@ -319,8 +319,14 @@ export default {
           this.form.menuId = rows.menuId;
         });
       } else {
-        this.form.parentId = this.tableDataList[0].menuId;
-        this.form.parentName = this.tableDataList[0].menuName;
+       
+        if(JSON.stringify(rows) == "{}"){
+            this.form.parentId = this.tableDataList[0].menuId;
+            this.form.parentName = this.tableDataList[0].menuName;
+        } else {
+            this.form.parentId = rows.menuId;
+            this.form.parentName = rows.menuName;
+        }
       }
     },
     handleNodeSelect(data) {

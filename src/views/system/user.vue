@@ -22,7 +22,7 @@
           <label style="font-size: 14px;">组织机构</label>
         </div>
 
-        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClicks"></el-tree>
+        <el-tree :data="data" :expand-on-click-node="false" :props="defaultProps" @node-click="handleNodeClicks"></el-tree>
       </div>
       <div class="content-box">
         <div class="content-box-tool">
