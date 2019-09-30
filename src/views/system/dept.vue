@@ -174,6 +174,21 @@ export default {
             valueKey: "dictValue"
           }
         }
+        // {
+        //   fiAttr: {
+        //     label: "选择日期"
+        //   },
+        //   el: "datePicker",
+        //   elAttr: {
+        //     type:'daterange',//date单选日期格式 dates 多选时间格式 daterange 日期选择范围格式
+        //     //若日期格式为不同的格式，如范围格式，日期时间格式等；可在此传入不同的属性值，如下所示
+        //     'range-separator':"-",
+        //     'start-placeholder':"开始日期",
+        //     'end-placeholder':"结束日期"
+        //   },
+        //   bindKey: "sdtTime",
+        //   bindValue:['2019-08-10', '2019-09-13']
+        // }
       ],
       tableList: [
         {
