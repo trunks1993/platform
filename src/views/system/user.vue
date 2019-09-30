@@ -284,10 +284,6 @@ export default {
         surPhoneNumber:[
           {validator: checkPhone, trigger: 'blur'}
         ],
-        surEmail:[
-          { required: true, message: '请输入邮箱', trigger: 'blur' },
-          { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-        ],
         surLoginName:[
           { required: true, message: '请输入登录账号', trigger: 'blur' }
         ],
@@ -457,6 +453,22 @@ export default {
             message: "修改成功!"
           });
           this.dialogVisible = false;
+          this.form= {
+            surUserName: "",
+            surDeptId: "",
+            surDeptName:"",
+            surPhoneNumber: "",
+            surEmail: "",
+            surLoginName: "",
+            surPassword: "",
+            resource: "",
+            surStatus:"0",
+            surSex: "1",
+            form: "0",
+            surUserId:"",
+            postIds:[],
+            roleIds:[],
+          },
           this.query();
         })
       }
@@ -512,7 +524,6 @@ export default {
             editRows.postIds.push(item.postId);
           })
           this.form = _.pick(editRows, _.keys(this.form))
-
         })
       }else {
         this.form.surDeptId = this.data[0].sdtDeptId;
@@ -522,9 +533,41 @@ export default {
     },
     cancel(){
       this.dialogVisible = false;
+      this.form= {
+          surUserName: "",
+          surDeptId: "",
+          surDeptName:"",
+          surPhoneNumber: "",
+          surEmail: "",
+          surLoginName: "",
+          surPassword: "",
+          resource: "",
+          surStatus:"0",
+          surSex: "1",
+          form: "0",
+          surUserId:"",
+          postIds:[],
+          roleIds:[],
+        },
       this.query();
     },
     closeDialog(){
+      this.form= {
+          surUserName: "",
+          surDeptId: "",
+          surDeptName:"",
+          surPhoneNumber: "",
+          surEmail: "",
+          surLoginName: "",
+          surPassword: "",
+          resource: "",
+          surStatus:"0",
+          surSex: "1",
+          form: "0",
+          surUserId:"",
+          postIds:[],
+          roleIds:[],
+        },
       this.query();
     }
   }

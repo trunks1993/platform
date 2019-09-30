@@ -85,7 +85,7 @@
           <el-input v-model="form.perms"></el-input>
         </el-form-item>
         <el-form-item label="显示排序" label-width="120px" prop="orderNum">
-          <el-input v-model="form.orderNum"></el-input>
+          <el-input v-model.number="form.orderNum"></el-input>
         </el-form-item>
         <el-form-item label="图标" label-width="120px" prop="icon">
           <el-input v-model="form.icon"></el-input>
@@ -208,6 +208,10 @@ export default {
         component: [
           { required: true, message: "请输入资源路径", trigger: "blur" }
         ],
+        orderNum: [
+          { required: true, message: "请输入正确显示顺序", trigger: "blur" },
+          { type: "number", message: "只能输入数字", trigger: "blur" }
+        ],
         path: [{ required: true, message: "请输入请求地址", trigger: "blur" }],
         perms: [{ required: true, message: "请输入权限标识", trigger: "blur" }]
       },
@@ -319,20 +323,19 @@ export default {
           this.form.menuId = rows.menuId;
         });
       } else {
-       
-        if(JSON.stringify(rows) == "{}"){
-            this.form.parentId = this.tableDataList[0].menuId;
-            this.form.parentName = this.tableDataList[0].menuName;
+        if (JSON.stringify(rows) == "{}") {
+          this.form.parentId = this.tableDataList[0].menuId;
+          this.form.parentName = this.tableDataList[0].menuName;
         } else {
-            this.form.parentId = rows.menuId;
-            this.form.parentName = rows.menuName;
+          this.form.parentId = rows.menuId;
+          this.form.parentName = rows.menuName;
         }
       }
     },
     handleNodeSelect(data) {
-       this.form.parentId = _.clone(this.nodeSelTemp).menuId;
+      this.form.parentId = _.clone(this.nodeSelTemp).menuId;
       this.form.parentName = _.clone(this.nodeSelTemp).menuName;
-      this.nodeSelTemp = '';
+      this.nodeSelTemp = "";
       this.sectoralChoice = false;
     }
   }

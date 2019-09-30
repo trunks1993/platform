@@ -8,7 +8,10 @@
       @afterFilter="handleFilter($event, query)"
       @handleVisible="e => filterVisible = e"
     ></FilterQueryForm>
-    <div class="app-wrapper" :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}">
+    <div
+      class="app-wrapper"
+      :style="{height: filterVisible ? 'calc(100% - 115px)': 'calc(100% - 40px)'}"
+    >
       <div class="content-box">
         <div class="content-box-tool">
           <el-button type="tool" icon="el-icon-plus" @click="editor({},false)">新增</el-button>
@@ -31,7 +34,12 @@
             <el-table-column prop="roleSort" label="显示顺序" show-overflow-tooltip></el-table-column>
             <el-table-column label="角色状态" width="120">
               <template slot-scope="scope">
-                <el-switch v-model="scope.row.status"  @change="editorStatus(scope.row)"  active-value="0" inactive-value="1"></el-switch>
+                <el-switch
+                  v-model="scope.row.status"
+                  @change="editorStatus(scope.row)"
+                  active-value="0"
+                  inactive-value="1"
+                ></el-switch>
               </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip></el-table-column>
@@ -59,13 +67,23 @@
         </div>
       </div>
     </div>
-    <el-dialog :visible.sync="dialogFormVisible"  :before-close="handleFormDlogClose.bind(null, 'editForm')" @close="close">
+    <el-dialog
+      :visible.sync="dialogFormVisible"
+      :before-close="handleFormDlogClose.bind(null, 'editForm')"
+      @close="close"
+    >
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-      <el-form :model="form" :inline="true" :rules="rules" ref="editForm" style="max-height: 400px; overflow: auto;">
+      <el-form
+        :model="form"
+        :inline="true"
+        :rules="rules"
+        ref="editForm"
+        style="max-height: 400px; overflow: auto;"
+      >
         <el-form-item label="角色名称：" label-width="120px" prop="roleName">
           <el-input v-model="form.roleName"></el-input>
         </el-form-item>
@@ -73,12 +91,12 @@
           <el-input v-model="form.roleKey"></el-input>
         </el-form-item>
         <el-form-item label="显示顺序：" label-width="120px" prop="roleSort">
-          <el-input v-model="form.roleSort"></el-input>
+          <el-input v-model.number="form.roleSort"></el-input>
         </el-form-item>
         <el-form-item label="状态：" label-width="120px" prop="status">
-         <el-switch v-model="form.status" active-value="0" inactive-value="1" ></el-switch>
+          <el-switch v-model="form.status" active-value="0" inactive-value="1"></el-switch>
         </el-form-item>
-        <el-form-item label="菜单权限" label-width="120px" >
+        <el-form-item label="菜单权限" label-width="120px">
           <el-tree
             :data="data"
             show-checkbox
@@ -92,23 +110,23 @@
             style="top: 7px;"
           ></el-tree>
         </el-form-item>
-        <el-form-item label="备注：" label-width="120px"  prop="remark">
+        <el-form-item label="备注：" label-width="120px" prop="remark">
           <el-input v-model="form.remark" autocomplete="off" type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;">
-        <el-button  @click="handleSave" type="primary">保 存</el-button>
+        <el-button @click="handleSave" type="primary">保 存</el-button>
         <el-button type="primary" @click="handleFormDlogClose('editForm', 'dialogFormVisible')">关 闭</el-button>
       </div>
     </el-dialog>
     <!-- 删除弹框 -->
-    <el-dialog :visible.sync="dialogVisible" @close='closeDialog'>
+    <el-dialog :visible.sync="dialogVisible" @close="closeDialog">
       <div slot="title" class="dailog-title">
         <img src="../../assets/images/icon-title-left.png" alt />
         <span class="title">系统提示信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
-     <div style="width:100%;color:#63ACDF;text-align:center;">{{handleData}}</div>
+      <div style="width:100%;color:#63ACDF;text-align:center;">{{handleData}}</div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="sure">确 定</el-button>
         <el-button type="primary" @click="cancel">取 消</el-button>
@@ -138,19 +156,19 @@
           </el-select>
         </el-form-item>
         <el-form-item label="数据权限" v-if="editForm.dataScope == 1" label-width="120px">
-            <el-tree
-              :data="deptData"
-              show-checkbox
-              node-key="menuId"
-              width="500px"
-              ref="tree"
-              highlight-current
-              :props="defaultPropsTree"
-              :default-checked-keys="treeSelection"
-              @check-change="handleCheckChangeDept"
-              style="top: 7px;"
-            ></el-tree>
-          </el-form-item>
+          <el-tree
+            :data="deptData"
+            show-checkbox
+            node-key="menuId"
+            width="500px"
+            ref="tree"
+            highlight-current
+            :props="defaultPropsTree"
+            :default-checked-keys="treeSelection"
+            @check-change="handleCheckChangeDept"
+            style="top: 7px;"
+          ></el-tree>
+        </el-form-item>
         <!-- <el-form-item label="数据权限" prop="region">
             <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
         </el-form-item>-->
@@ -171,7 +189,7 @@ import {
   putRoleEdit,
   getMenuList,
   getQueryByRoleId,
-  getSysDeptTreeData 
+  getSysDeptTreeData
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -218,7 +236,7 @@ export default {
         }
       ],
       data: [],
-      deptData:[],
+      deptData: [],
       defaultProps: {
         children: "children",
         label: "menuName"
@@ -241,7 +259,7 @@ export default {
       // valueF:false,
       multipleSelection: [],
       dialogFormVisible: false,
-      filterVisible:true,
+      filterVisible: true,
       editdialogVisible: false,
       sizeForm: {
         roleName: "",
@@ -249,8 +267,8 @@ export default {
         status: "",
         remark: "",
         status: "",
-        deptIds:[],
-        roleId:"",
+        deptIds: [],
+        roleId: ""
       },
 
       form: {
@@ -259,18 +277,19 @@ export default {
         roleSort: "",
         status: "0",
         remark: "",
-        dataScope: "",
+        dataScope: ""
       },
-      rules:{
-        roleName:[
-          { required: true, message: '请输入角色名称', trigger: 'blur' }
+      rules: {
+        roleName: [
+          { required: true, message: "请输入角色名称", trigger: "blur" }
         ],
-        roleKey:[
-          { required: true, message: '请输入权限字符', trigger: 'blur' }
+        roleKey: [
+          { required: true, message: "请输入权限字符", trigger: "blur" }
         ],
-        roleSort:[
-          { required: true, message: '请输入正确显示顺序', trigger: 'blur' },
-        ],
+        roleSort: [
+          { required: true, message: "请输入正确显示顺序", trigger: "blur" },
+          { type: "number", message: "只能输入数字", trigger: "blur" }
+        ]
       },
       pageShow: true,
       dialogVisible: false,
@@ -278,9 +297,9 @@ export default {
       isSearch: true,
       deptIds: [],
       menuIds: [],
-      treeSelection:[],
-      treeSelectionDialog:[],
-      handleData:"确定要删除列表数据吗？"
+      treeSelection: [],
+      treeSelectionDialog: [],
+      handleData: "确定要删除列表数据吗？"
     };
   },
   components: {
@@ -340,16 +359,16 @@ export default {
           type: "warning"
         });
       } else {
-        if(this.$refs.multipleTable.selection.length > 1){
-            this.$message({
-                message: "只能选择一条数据进行修改",
-                type: "warning"
-            });
-            return;
+        if (this.$refs.multipleTable.selection.length > 1) {
+          this.$message({
+            message: "只能选择一条数据进行修改",
+            type: "warning"
+          });
+          return;
         }
         this.dialogFormVisible = true;
         let rows = this.$refs.multipleTable.selection.pop(); //获取最后一条
-        this.editor(rows,true);
+        this.editor(rows, true);
       }
     },
     deleted(ids) {
@@ -358,16 +377,17 @@ export default {
       this.ids = ids;
       this.handleData = "确定要删除列表数据吗？";
     },
-    editorStatus(rows){ //开关按钮
+    editorStatus(rows) {
+      //开关按钮
       this.dialogVisible = true;
       this.form = rows;
-      this.handleData = rows.status == 0 ? "确认要正常用户吗？": "确认要停用用户吗？";
+      this.handleData =
+        rows.status == 0 ? "确认要正常用户吗？" : "确认要停用用户吗？";
     },
     sure() {
-      console.log(this.ids)
-      if(this.handleData == "确定要删除列表数据吗？"){
+      if (this.handleData == "确定要删除列表数据吗？") {
         deleteRoleGwPage({ roleIds: this.ids }).then(res => {
-          let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
+          let msgName = this.ids.length > 4 ? "批量删除成功!" : "删除成功!";
           this.$message({
             type: "success",
             message: msgName
@@ -376,15 +396,23 @@ export default {
           this.query();
         });
       } else {
-        delete(this.form["params"]);
-        putRoleEdit(this.form).then(res => {  
+        delete this.form["params"];
+        putRoleEdit(this.form).then(res => {
           this.$message({
             type: "success",
             message: "修改成功!"
           });
           this.dialogVisible = false;
-          this.query();
-        })
+          (this.form = {
+            roleName: "",
+            roleKey: "",
+            roleSort: "",
+            status: "0",
+            remark: "",
+            dataScope: ""
+          }),
+            this.query();
+        });
       }
     },
     sureEdit() {
@@ -410,7 +438,8 @@ export default {
     resetChecked() {
       this.$refs.tree.setCheckedKeys([]);
     },
-    handleCheckChange() { //选择菜单
+    handleCheckChange() {
+      //选择菜单
       let res = this.$refs.tree.getCheckedNodes();
       let arr = [];
       res.forEach(item => {
@@ -418,7 +447,8 @@ export default {
       });
       this.menuIds = arr;
     },
-    handleCheckChangeDept() { //选择部门
+    handleCheckChangeDept() {
+      //选择部门
       let res = this.$refs.tree.getCheckedNodes();
       let arr = [];
       res.forEach(item => {
@@ -427,53 +457,53 @@ export default {
       this.deptIds = arr;
     },
     handleSave() {
-      this.$refs["editForm"].validate((valid) => {
+      this.$refs["editForm"].validate(valid => {
         if (valid) {
           const requestApi = this.isEditor ? putRoleEdit : putRoleAdd;
           this.form.menuIds = this.menuIds.toString();
           requestApi(this.form).then(res => {
-            this.handleFormDlogClose('editForm', 'dialogFormVisible');
-            let msgName = this.isEditor ? "修改成功!":"新增成功!";
+            this.handleFormDlogClose("editForm", "dialogFormVisible");
+            let msgName = this.isEditor ? "修改成功!" : "新增成功!";
             this.$message({
               type: "success",
               message: msgName
             });
             this.query();
             this.$refs.tree.setCheckedKeys([]);
-          })
+          });
         } else {
           return false;
         }
       });
     },
-    close(){
+    close() {
       this.$refs.tree.setCheckedKeys([]);
     },
-    handleNodeClicks(data) {
-      let sdtDeptId = parseInt(data.sdtDeptId);
-      getSysUserList({
-        surDeptId: sdtDeptId,
-        pageNum: this.queryList.pageNum,
-        pageSize: this.queryList.pageSize
-      }).then(res => {
-         this.tableDataList = res.rows;
-      });
-    },
+    handleNodeClicks(data) {
+      let sdtDeptId = parseInt(data.sdtDeptId);
+      getSysUserList({
+        surDeptId: sdtDeptId,
+        pageNum: this.queryList.pageNum,
+        pageSize: this.queryList.pageSize
+      }).then(res => {
+        this.tableDataList = res.rows;
+      });
+    },
     handleNodeClick(data) {
       this.form.surDeptId = data.sdtDeptId;
     },
     editor(rows, isEditor) {
       this.isEditor = isEditor;
-      if(isEditor){
-        getQueryByRoleId({roleId:rows.roleId}).then(res=>{
+      if (isEditor) {
+        getQueryByRoleId({ roleId: rows.roleId }).then(res => {
           this.form = _.pick(res, _.keys(this.form));
           let terrCheck = [];
-          res.sysRoleMenus.forEach(item=>{
+          res.sysRoleMenus.forEach(item => {
             terrCheck.push(item.menuId);
-          })
+          });
           this.treeSelectionDialog = terrCheck;
-        })
-      }else {
+        });
+      } else {
         this.form.parentId = rows.menuId;
       }
       this.form.roleId = rows.roleId;
@@ -481,18 +511,38 @@ export default {
     },
     // 数据权限
     editdialog(rows) {
-      this.editForm = _.pick(rows, _.keys(this.editForm))
+      this.editForm = _.pick(rows, _.keys(this.editForm));
       this.editdialogVisible = true;
     },
-    assignUsers(rows){ //分配用户
-      this.$router.push({path:'/system/assignUsers',query:{roleId:rows.roleId}});
+    assignUsers(rows) {
+      //分配用户
+      this.$router.push({
+        path: "/system/assignUsers",
+        query: { roleId: rows.roleId }
+      });
     },
-    cancel(){
+    cancel() {
       this.dialogVisible = false;
-      this.query();
+      (this.form = {
+        roleName: "",
+        roleKey: "",
+        roleSort: "",
+        status: "0",
+        remark: "",
+        dataScope: ""
+      }),
+        this.query();
     },
-    closeDialog(){
-      this.query();
+    closeDialog() {
+      (this.form = {
+        roleName: "",
+        roleKey: "",
+        roleSort: "",
+        status: "0",
+        remark: "",
+        dataScope: ""
+      }),
+        this.query();
     }
   }
 };
