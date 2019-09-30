@@ -84,10 +84,10 @@ export default {
 		login(ruleForm) {
       let self = this;
       window.sessionStorage.removeItem('SESSION_MENU')
-      this.ruleForm.password = md5(this.ruleForm.password);
+      let password = this.ruleForm.password;
 			this.$refs[ruleForm].validate((valid) => {
 			  if (valid) {
-          this.$store.dispatch('Login', this.ruleForm).then(res => {
+          this.$store.dispatch('Login', {username:this.ruleForm.username,password:md5(password)}).then(res => {
             this.$router.push('/')
           })
 			  }

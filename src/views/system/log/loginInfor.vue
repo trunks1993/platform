@@ -21,7 +21,7 @@
             <el-table-column prop="slrInfoId" label="访问编码"></el-table-column>
             <el-table-column prop="slrLoginName" label="登录名称"></el-table-column>
             <el-table-column prop="slrIpaddr" label="登录地址" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="slrLoginLocation" label="登录地点" show-overflow-tooltip></el-table-column>
+            <!-- <el-table-column prop="slrLoginLocation" label="登录地点" show-overflow-tooltip></el-table-column> -->
             <el-table-column prop="slrBrowser" label="浏览器" show-overflow-tooltip></el-table-column>
             <el-table-column prop="slrOs" label="操作系统" show-overflow-tooltip></el-table-column>
             <el-table-column prop="slrStatus" label="登录状态" show-overflow-tooltip>
