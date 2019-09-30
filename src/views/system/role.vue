@@ -269,7 +269,7 @@ export default {
           { required: true, message: '请输入权限字符', trigger: 'blur' }
         ],
         roleSort:[
-          { required: true, message: '请输入显示顺序', trigger: 'blur' }
+          { required: true, message: '请输入正确显示顺序', trigger: 'blur' },
         ],
       },
       pageShow: true,
@@ -364,7 +364,8 @@ export default {
       this.handleData = rows.status == 0 ? "确认要正常用户吗？": "确认要停用用户吗？";
     },
     sure() {
-      if(this.ids.length){
+      console.log(this.ids)
+      if(this.handleData == "确定要删除列表数据吗？"){
         deleteRoleGwPage({ roleIds: this.ids }).then(res => {
           let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
           this.$message({

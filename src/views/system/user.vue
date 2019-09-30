@@ -449,6 +449,7 @@ export default {
           this.dialogVisible = false;
           this.query();
         });
+        this.ids = "";
       } else {
         putUserEdit(this.form).then(res => {  
           this.$message({
