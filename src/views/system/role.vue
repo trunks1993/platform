@@ -287,7 +287,7 @@ export default {
           { required: true, message: "请输入权限字符", trigger: "blur" }
         ],
         roleSort: [
-          { required: true, message: "请输入正确显示顺序", trigger: "blur" },
+          { required: true, message: "请输入正确显示顺序", trigger: "change" },
           { type: "number", message: "只能输入数字", trigger: "blur" }
         ]
       },

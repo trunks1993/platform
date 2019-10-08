@@ -209,7 +209,7 @@ export default {
           { required: true, message: "请输入资源路径", trigger: "blur" }
         ],
         orderNum: [
-          { required: true, message: "请输入正确显示顺序", trigger: "blur" },
+          { required: true, message: "请输入正确显示顺序", trigger: "change" },
           { type: "number", message: "只能输入数字", trigger: "blur" }
         ],
         path: [{ required: true, message: "请输入请求地址", trigger: "blur" }],
