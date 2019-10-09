@@ -21,8 +21,13 @@
         <div class="org-box-header">
           <label style="font-size: 14px;">组织机构</label>
         </div>
-
-        <el-tree :data="data" :expand-on-click-node="false" :props="defaultProps" @node-click="handleNodeClicks"></el-tree>
+        <el-tree :data="data" :expand-on-click-node="false" :props="defaultProps" @node-click="handleNodeClicks">
+          <template slot-scope="{ node, data }">
+            <span style="font-size:14px;" :class="{active:data.sdtDeptId == deptId}">
+              {{data.sdtDeptName}}
+            </span>
+          </template>
+        </el-tree>
       </div>
       <div class="content-box">
         <div class="content-box-tool">
@@ -87,7 +92,7 @@
         <el-form-item label="邮 箱" label-width="120px" prop="surEmail">
           <el-input v-model="form.surEmail" type="email" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录帐号" label-width="120px" prop="surLoginName">
+        <el-form-item label="登录名称" label-width="120px" prop="surLoginName">
           <el-input v-model="form.surLoginName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="登录密码" v-if="!isEditor" label-width="120px" prop="surPassword">
@@ -165,7 +170,11 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;padding-left:100px;">
-        <el-tree :data="data" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
+        <div style="width:223px">
+          <div style="width:223px;padding:20px;">
+             <el-tree :data="data" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
+          </div>
+        </div>
       </div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
@@ -276,7 +285,7 @@ export default {
 
       rules:{
         surUserName:[
-          { required: true, message: '请输入登录名称', trigger: 'blur' }
+          { required: true, message: '请输入用户名称', trigger: 'blur' }
         ],
         surDeptName:[
           { required: true, message: '请选择归属部门', trigger: 'change' }
@@ -284,15 +293,20 @@ export default {
         surPhoneNumber:[
           {validator: checkPhone, trigger: 'blur'}
         ],
-        surEmail:[
-          { required: true, message: '请输入邮箱', trigger: 'blur' },
-          { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+        surEmail: [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+			    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
         ],
         surLoginName:[
-          { required: true, message: '请输入登录账号', trigger: 'blur' }
+          { required: true, message: '请输入登录名称', trigger: 'blur' },
+          { min: 5, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         surPassword:[
           { required: true, message: '请输入登录密码', trigger: 'blur' }
+        ],
+      
+        roleIds:[
+          { required: true, message: '请选择角色', trigger: 'blur' }
         ],
       },
       handleData:"确定要删除列表数据吗？",
@@ -303,6 +317,7 @@ export default {
       sectoralChoice: false,
       dialogVisible: false,
       ids: "",
+      deptId:"",
       isEditor:false,
       filterVisible: true,
     };
@@ -439,7 +454,7 @@ export default {
     },
     sure() {
       //确认删除
-      if(this.ids.length){
+      if(typeof(this.ids) == "number" || this.ids.length > 4){
         deleteUserGwPage({ ids: this.ids }).then(res => {
           let msgName = this.ids.length > 4 ? "批量删除成功!":"删除成功!"
           this.$message({
@@ -449,6 +464,7 @@ export default {
           this.dialogVisible = false;
           this.query();
         });
+        this.ids = "";
       } else {
         putUserEdit(this.form).then(res => {  
           this.$message({
@@ -456,6 +472,22 @@ export default {
             message: "修改成功!"
           });
           this.dialogVisible = false;
+          this.form= {
+            surUserName: "",
+            surDeptId: "",
+            surDeptName:"",
+            surPhoneNumber: "",
+            surEmail: "",
+            surLoginName: "",
+            surPassword: "",
+            resource: "",
+            surStatus:"0",
+            surSex: "1",
+            form: "0",
+            surUserId:"",
+            postIds:[],
+            roleIds:[],
+          },
           this.query();
         })
       }
@@ -479,15 +511,16 @@ export default {
             this.query();
             this.form.roleIds = [];
             this.this.isEditor = false;
-          })
+          });
+          this.form.roleIds = this.form.roleIds;
         } else {
           return false;
         }
       });
     },
     handleNodeClicks(data) {
-
       let sdtDeptId = +data.sdtDeptId;
+      this.deptId = +data.sdtDeptId;
       const cloneQF = _.clone(this.$refs.search.queryFilter);
       _.assign(cloneQF, { surDeptId:sdtDeptId });
       this.handleFilter(cloneQF, this.query);
@@ -511,7 +544,6 @@ export default {
             editRows.postIds.push(item.postId);
           })
           this.form = _.pick(editRows, _.keys(this.form))
-
         })
       }else {
         this.form.surDeptId = this.data[0].sdtDeptId;
@@ -521,9 +553,41 @@ export default {
     },
     cancel(){
       this.dialogVisible = false;
+      this.form= {
+          surUserName: "",
+          surDeptId: "",
+          surDeptName:"",
+          surPhoneNumber: "",
+          surEmail: "",
+          surLoginName: "",
+          surPassword: "",
+          resource: "",
+          surStatus:"0",
+          surSex: "1",
+          form: "0",
+          surUserId:"",
+          postIds:[],
+          roleIds:[],
+        },
       this.query();
     },
     closeDialog(){
+      this.form= {
+          surUserName: "",
+          surDeptId: "",
+          surDeptName:"",
+          surPhoneNumber: "",
+          surEmail: "",
+          surLoginName: "",
+          surPassword: "",
+          resource: "",
+          surStatus:"0",
+          surSex: "1",
+          form: "0",
+          surUserId:"",
+          postIds:[],
+          roleIds:[],
+        },
       this.query();
     }
   }
@@ -559,6 +623,9 @@ export default {
   width: calc(100% - 238px);
   margin-left: 15px;
 }
+.active {
+  color: #fff;
+}
 </style>
 <style lang="scss">
 .el-tree-node {
@@ -587,6 +654,53 @@ export default {
 .tree :first-child .el-tree-node:before {
   border-left: none;
 }
+.el-tree-node__children {
+  width: 80%;
+  margin-left: 10%;
+}
+.el-tree {
+  .el-tree-node {
+     .el-tree-node__children {
+        margin-left: 9%;
+       .el-tree-node {
+         .el-tree-node__children {
+            margin-left: 19% !important;
+           .el-tree-node  {
+             .el-tree-node__content { 
+               padding-left: 18px !important;
+             }
+             .el-tree-node__children { 
+               margin-left: 34px !important;
+               .el-tree-node {
+                 .el-tree-node__content { 
+                   padding-left: 24px !important;
+                 }
+               }
+             }
+           }
+         }
+         .el-tree-node__content {
+           padding-left: 12px !important;
+         }
+       }
+     }
+  }
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children {
+  margin-left: 19% !important;
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__content { 
+   padding-left: 12px !important;
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__content {
+  padding-left: 18px !important;
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children { 
+  margin-left: 34px;
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__content {
+  padding-left: 24px !important;
+}
 .el-tree-node:before {
   border-left: 1px dashed #4386c6;
   bottom: 0px;
@@ -600,8 +714,24 @@ export default {
   top: 15px;
   width: 16px;
 }
-
-.el-tree-node:focus > .el-tree-node__content > .el-tree-node__label {
+.el-tree-node__content {
+  text-align: left;
+  // padding-left: 15px !important;
+}
+.el-tree-node__content > .is-leaf {
+  display: none;
+}
+.el-tree-node__content .expanded {
+  z-index: 999;
+  position: relative;
+  transform: rotate(0deg) !important;
+}
+.el-icon-caret-right::before {
+    z-index: 999;
+    position: relative;
+    background: #04152F;
+}
+.active {
   color: #ffffff !important;
 }
 </style>

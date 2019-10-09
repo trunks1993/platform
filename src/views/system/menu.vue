@@ -28,6 +28,7 @@
           >
             <el-table-column type="selection"></el-table-column>
             <el-table-column label="菜单名称" prop="menuName" />
+             <el-table-column label="平台名称" prop="systemName" />
             <el-table-column label="排序" prop="orderNum" />
             <el-table-column label="资源路径" prop="component" />
             <el-table-column label="路由" prop="path" />
@@ -63,7 +64,13 @@
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
+      
       <el-form :model="form" ref="editForm" :rules="rules" :inline="true">
+        <el-form-item label="平台名称" label-width="120px"  prop="systemId">
+          <el-select v-model="form.systemId" placeholder="请选择平台名称" @change="ListBySystemId">
+            <el-option v-for="(item,index) in systemData" :key="index" :label="item.systemName" :value="item.systemId"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="上级菜单" label-width="120px" prop="parentName">
           <el-input v-model="form.parentName" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
@@ -85,7 +92,7 @@
           <el-input v-model="form.perms"></el-input>
         </el-form-item>
         <el-form-item label="显示排序" label-width="120px" prop="orderNum">
-          <el-input v-model="form.orderNum"></el-input>
+          <el-input v-model.number="form.orderNum"></el-input>
         </el-form-item>
         <el-form-item label="图标" label-width="120px" prop="icon">
           <el-input v-model="form.icon"></el-input>
@@ -120,12 +127,14 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;padding-left:100px; ">
+         <div style="width:223px;padding:20px;">
         <el-tree
-          :data="tableDataList"
+          :data="tableListTree"
           :expand-on-click-node="false"
           :props="defaultProps"
           @node-click="data => nodeSelTemp = data"
         ></el-tree>
+         </div>
       </div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
@@ -142,7 +151,9 @@ import {
   getMenuList,
   getQueryByList,
   putMenuEdit,
-  getQueryByMenuId
+  getQueryByMenuId,
+  querySysData,
+  getListBySystemId 
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -189,6 +200,7 @@ export default {
       form: {
         parentId: "",
         parentName: "",
+        systemId:"",
         menuType: "M",
         menuName: "",
         component: "",
@@ -208,6 +220,10 @@ export default {
         component: [
           { required: true, message: "请输入资源路径", trigger: "blur" }
         ],
+        orderNum: [
+          { required: true, message: "请输入正确显示顺序", trigger: "change" },
+          { type: "number", message: "只能输入数字", trigger: "blur" }
+        ],
         path: [{ required: true, message: "请输入请求地址", trigger: "blur" }],
         perms: [{ required: true, message: "请输入权限标识", trigger: "blur" }]
       },
@@ -223,7 +239,9 @@ export default {
       defaultProps: {
         children: "children",
         label: "menuName"
-      }
+      },
+      systemData:[],
+      tableListTree:[],
     };
   },
   computed: {
@@ -236,8 +254,23 @@ export default {
   },
   created() {
     this.query();
+    querySysData().then(res => {
+      this.systemData = res.rows;
+    })
   },
   methods: {
+    ListBySystemId(){
+      getListBySystemId({systemId: this.form.systemId }).then(res => {
+        this.tableListTree = res;
+        if(JSON.stringify(res) == "[]"){
+           this.form.parentName = "";
+           this.form.parentId = "";
+        }else {
+          this.form.parentName = res[0].menuName;
+          this.form.parentId = res[0].menuId;
+        }
+      })
+    },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
@@ -319,20 +352,20 @@ export default {
           this.form.menuId = rows.menuId;
         });
       } else {
-       
-        if(JSON.stringify(rows) == "{}"){
-            this.form.parentId = this.tableDataList[0].menuId;
-            this.form.parentName = this.tableDataList[0].menuName;
+        if (JSON.stringify(rows) == "{}") {
+          this.form.parentId = this.tableDataList[0].menuId;
+          this.form.parentName = this.tableDataList[0].menuName;
         } else {
-            this.form.parentId = rows.menuId;
-            this.form.parentName = rows.menuName;
+          this.form.parentId = rows.menuId;
+          this.form.parentName = rows.menuName;
+          this.form.systemId = rows.systemId;
         }
       }
     },
     handleNodeSelect(data) {
-       this.form.parentId = _.clone(this.nodeSelTemp).menuId;
+      this.form.parentId = _.clone(this.nodeSelTemp).menuId ? _.clone(this.nodeSelTemp).menuId : 0;
       this.form.parentName = _.clone(this.nodeSelTemp).menuName;
-      this.nodeSelTemp = '';
+      this.nodeSelTemp = "";
       this.sectoralChoice = false;
     }
   }

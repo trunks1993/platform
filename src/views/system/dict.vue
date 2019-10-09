@@ -216,7 +216,7 @@ export default {
     },
     deleted(ids) {
       //删除
-      this.count = ids.split(",");
+      // this.count = ids.split(",");
       this.dialogVisible = true;
       this.ids = ids;
     },

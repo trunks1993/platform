@@ -399,12 +399,13 @@ $green: #0ebae1;
       align-items: center;
       height: 26px;
       cursor: pointer;
+      padding-top: 3px;
       &:hover {
         background-color: none;
         color: #fff;
       }
       & > .el-tree-node__expand-icon {
-        padding: 6px;
+        padding: 8px 6px 6px;
         cursor: pointer;
         color: #c0c4cc;
         font-size: 12px;
@@ -482,23 +483,7 @@ $green: #0ebae1;
     position: relative;
     vertical-align: middle;
     .el-message-box__header{
-      position: absolute;
-      bottom:-160px;
-      right:50%;
-      .el-message-box__headerbtn{
-        border:none;
-        outline:none;
-        width: 50px;
-        height: 50px;
-        // background-size: 100% 100%;
-        -webkit-transform: translate(50%, 0);
-        transform: translate(50%, 0);
-        background: url(../assets/images/icon-close-dialog.png) repeat;
-        background-size: cover;
-        .el-icon-close:before {
-          content: "";
-        }
-      }
+      display: none;
     }
     .el-message-box__message{
       p{

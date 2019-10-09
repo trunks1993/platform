@@ -3,10 +3,10 @@
     <el-menu-item :index="item.path" v-if="!item.children.length">
       {{item.menuName }}
     </el-menu-item>
-    <el-submenu v-else ref="subMenu" :class="{'el-submenu-parent': item.parentId === '0'}" :index="item.path">
+    <el-submenu v-else ref="subMenu" :class="{'el-submenu-parent': item.parentId === 0}" :index="item.path">
       <template slot="title">
           {{item.menuName }}
-          <div class="sub-title-line" v-if="item.parentId === '0'"></div>
+          <div class="sub-title-line" v-if="item.parentId === 0"></div>
       </template>
       <LoopMenu v-for="child in item.children" :key="child.path" :item="child"/>
     </el-submenu>
