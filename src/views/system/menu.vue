@@ -28,6 +28,7 @@
           >
             <el-table-column type="selection"></el-table-column>
             <el-table-column label="菜单名称" prop="menuName" />
+             <el-table-column label="平台名称" prop="systemName" />
             <el-table-column label="排序" prop="orderNum" />
             <el-table-column label="资源路径" prop="component" />
             <el-table-column label="路由" prop="path" />

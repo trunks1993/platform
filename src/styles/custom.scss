@@ -399,12 +399,13 @@ $green: #0ebae1;
       align-items: center;
       height: 26px;
       cursor: pointer;
+      padding-top: 3px;
       &:hover {
         background-color: none;
         color: #fff;
       }
       & > .el-tree-node__expand-icon {
-        padding: 6px;
+        padding: 8px 6px 6px;
         cursor: pointer;
         color: #c0c4cc;
         font-size: 12px;

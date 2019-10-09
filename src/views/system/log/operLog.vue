@@ -221,8 +221,8 @@ export default {
       //删除
         this.dialogVisible = true;
         this.isClear = false;
-        this.count = ids.split(",");
-        this.content = '确定要删除选中的'+this.count.length+'条数据吗？';
+        // this.count = ids.split(",");
+        this.content = '确定要删除选中数据吗？';
         this.ids = ids;
     },
     clearLog(){//清空
