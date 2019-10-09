@@ -165,7 +165,11 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;padding-left:100px;">
-        <el-tree :data="data" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
+        <div style="width:223px">
+          <div style="width:223px;padding:20px;">
+             <el-tree :data="data" :props="defaultProps" @node-click="data => nodeSelTemp = data"></el-tree>
+          </div>
+        </div>
       </div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
@@ -631,6 +635,53 @@ export default {
 .tree :first-child .el-tree-node:before {
   border-left: none;
 }
+.el-tree-node__children {
+  width: 80%;
+  margin-left: 10%;
+}
+.el-tree {
+  .el-tree-node {
+     .el-tree-node__children {
+        margin-left: 9%;
+       .el-tree-node {
+         .el-tree-node__children {
+            margin-left: 19% !important;
+           .el-tree-node  {
+             .el-tree-node__content { 
+               padding-left: 18px !important;
+             }
+             .el-tree-node__children { 
+               margin-left: 34px !important;
+               .el-tree-node {
+                 .el-tree-node__content { 
+                   padding-left: 24px !important;
+                 }
+               }
+             }
+           }
+         }
+         .el-tree-node__content {
+           padding-left: 12px !important;
+         }
+       }
+     }
+  }
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children {
+  margin-left: 22% !important;
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__content { 
+   padding-left: 12px !important;
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__content {
+  padding-left: 18px !important;
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children { 
+  margin-left: 34px;
+}
+.org-box > .el-tree > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__content {
+  padding-left: 24px !important;
+}
 .el-tree-node:before {
   border-left: 1px dashed #4386c6;
   bottom: 0px;
@@ -644,7 +695,23 @@ export default {
   top: 15px;
   width: 16px;
 }
-
+.el-tree-node__content {
+  text-align: left;
+  // padding-left: 15px !important;
+}
+.el-tree-node__content > .is-leaf {
+  display: none;
+}
+.el-tree-node__content .expanded {
+  z-index: 999;
+  position: relative;
+  transform: rotate(0deg) !important;
+}
+.el-icon-caret-right::before {
+    z-index: 999;
+    position: relative;
+    background: #04152F;
+}
 .el-tree-node:focus > .el-tree-node__content > .el-tree-node__label {
   color: #ffffff !important;
 }

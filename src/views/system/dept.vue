@@ -116,12 +116,14 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;padding-left: 100px;">
+        <div style="width:223px;padding:20px;">
         <el-tree
           :data="data"
           :expand-on-click-node="false"
           :props="defaultProps"
           @node-click="data => nodeSelTemp = data"
         ></el-tree>
+        </div>
       </div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="handleNodeSelect">确 定</el-button>

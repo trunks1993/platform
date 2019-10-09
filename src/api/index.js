@@ -162,6 +162,12 @@ export const getQueryByMenuId = params => request({
   method: 'get',
   params,
 });
+// 根据平台编号调取菜单所有
+export const getListBySystemId = params => request({
+  url: '/v1/menu/listBySystemId',
+  method: 'get',
+  params,
+});
 // 搜索部门管理信息
 export const searchSysDeptList = params => request({
   url: '/v1/api/dept/SysDept/list',

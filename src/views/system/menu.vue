@@ -63,7 +63,13 @@
         <span class="title">基本信息</span>
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
+      
       <el-form :model="form" ref="editForm" :rules="rules" :inline="true">
+        <el-form-item label="平台名称" label-width="120px"  prop="systemId">
+          <el-select v-model="form.systemId" placeholder="请选择平台名称" @change="ListBySystemId">
+            <el-option v-for="(item,index) in systemData" :key="index" :label="item.systemName" :value="item.systemId"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="上级菜单" label-width="120px" prop="parentName">
           <el-input v-model="form.parentName" @focus="sectoralChoice = true"></el-input>
         </el-form-item>
@@ -120,12 +126,14 @@
         <img src="../../assets/images/icon-title-right.png" alt />
       </div>
       <div style="width:100%;color:#63ACDF;text-align:center;padding-left:100px; ">
+         <div style="width:223px;padding:20px;">
         <el-tree
-          :data="tableDataList"
+          :data="tableListTree"
           :expand-on-click-node="false"
           :props="defaultProps"
           @node-click="data => nodeSelTemp = data"
         ></el-tree>
+         </div>
       </div>
       <div slot="footer" style="text-align: center;">
         <el-button type="primary" @click="handleNodeSelect">确 定</el-button>
@@ -142,7 +150,9 @@ import {
   getMenuList,
   getQueryByList,
   putMenuEdit,
-  getQueryByMenuId
+  getQueryByMenuId,
+  querySysData,
+  getListBySystemId 
 } from "@/api";
 import FilterQueryForm from "@/components/FilterQueryForm";
 import { mixin } from "@/mixins";
@@ -189,6 +199,7 @@ export default {
       form: {
         parentId: "",
         parentName: "",
+        systemId:"",
         menuType: "M",
         menuName: "",
         component: "",
@@ -227,7 +238,9 @@ export default {
       defaultProps: {
         children: "children",
         label: "menuName"
-      }
+      },
+      systemData:[],
+      tableListTree:[],
     };
   },
   computed: {
@@ -240,8 +253,23 @@ export default {
   },
   created() {
     this.query();
+    querySysData().then(res => {
+      this.systemData = res.rows;
+    })
   },
   methods: {
+    ListBySystemId(){
+      getListBySystemId({systemId: this.form.systemId }).then(res => {
+        this.tableListTree = res;
+        if(JSON.stringify(res) == "[]"){
+           this.form.parentName = "";
+           this.form.parentId = "";
+        }else {
+          this.form.parentName = res[0].menuName;
+          this.form.parentId = res[0].menuId;
+        }
+      })
+    },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
@@ -329,11 +357,12 @@ export default {
         } else {
           this.form.parentId = rows.menuId;
           this.form.parentName = rows.menuName;
+          this.form.systemId = rows.systemId;
         }
       }
     },
     handleNodeSelect(data) {
-      this.form.parentId = _.clone(this.nodeSelTemp).menuId;
+      this.form.parentId = _.clone(this.nodeSelTemp).menuId ? _.clone(this.nodeSelTemp).menuId : 0;
       this.form.parentName = _.clone(this.nodeSelTemp).menuName;
       this.nodeSelTemp = "";
       this.sectoralChoice = false;
